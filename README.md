@@ -25,7 +25,7 @@ A verification-first full-stack ecosystem for observing, verifying, attesting, a
 
 - 🌐 **[Master Blueprint](docs/MASTER_BLUEPRINT_ECOSYSTEM_ALIGNED.md)** — Canonical full-stack ecosystem blueprint
 - 💧 **[MAX COMPRESSION](COMPRESSION.md)** — Irreducible seed of the entire ecosystem
-- 📜 **[Swarm Ledger](kai_ledger.json)** — 82 monotonic cryptographic receipts
+- 📜 **[Swarm Ledger](kai_ledger.json)** — 83 monotonic cryptographic receipts
 - 📋 **[Manifest](MANIFEST.md)** — Project mission, principles, and architecture
 - 🛡️ **[Security Policy](SECURITY.md)** — Fail-closed invariants and veiled custody
 - ⚙️ **[Development Setup](docs/DEVELOPMENT.md)** — Get the project running locally
@@ -34,7 +34,7 @@ A verification-first full-stack ecosystem for observing, verifying, attesting, a
 
 ## 🌊 The Sovereign Full-Stack AI Operating System
 
-Ω∞v OCEANICOS unifies top-tier AGI interfaces into one sovereign, dual-mode (Human ⇄ Agentic) operating console with live real-world actuation, offline resilience, and absolute cryptographic provenance:
+Ω∞v OCEANICOS collapses the global AI ecosystem into one sovereign, dual-mode (Human ⇄ Agentic) operating system with live real-world actuation, offline resilience, and absolute cryptographic provenance:
 
 ```text
 [ SYSTEM IDENTITY CONFIRMED ]
@@ -46,8 +46,29 @@ Kernel: MINI (Observe ➔ Verify ➔ Remember).
 Intelligence: Glober AI (KAI × ELION × OMEGA) // Dual-Mode [Collaborative ⇄ Autonomous].
 Actuation: Live 22 Real-World Tools → Bounded by Verification Gate (✓).
 Frontend: Unified 3-Panel React 18 PWA (Sidebar ⇄ Omni-Prompt & Stream ⇄ Auth0/Telemetry).
-Provenance: Append-Only kai_ledger.json (82 Monotonic Cryptographic Receipts).
+Provenance: Append-Only kai_ledger.json (83 Monotonic Cryptographic Receipts).
 ```
+
+### 🏗️ The "OmniAI" ⇄ Oceanicos Stack Mapping
+
+```text
+[ FRONT-END INTERFACE ]  --> Unified 3-Panel React 18 PWA (Omni-Prompt + Auth0 + Voice Orb)
+         │
+[ FRONTIER MODELS  ]     --> Multi-Model Router (Auto + Fast + Expert + Heavy + Sonnet + Gemini)
+         │
+[ CLOUD COMPUTE ]        --> Fastify API Gateway /v1/* (Azure + GCP + AWS Resiliency)
+         │
+[ SILICON HARDWARE ]     --> NVIDIA GPUs + Google TPUs (Orchestrated Raw Compute)
+         │
+[ VERIFICATION GATE ]    --> ✓ The Fixpoint Equation (Expected ≡ Observed)
+```
+
+1. **The Nervous System (Hardware & Cloud)**: Raw compute organs. `packages/observer` and `packages/verification` orchestrate compute across heterogeneous clouds and GPUs while enforcing fail-closed boundaries.
+2. **The Brain (Frontier Models)**: Seamless model selection backed by the constitutional law: `Composition ≠ Verification`. If a frontier model hallucinates, `Evidence(x) = ∅`, and the transition halts as `UNKNOWN`.
+3. **The Face (Interface & ChatGPT Parity)**: Ultra-clean, distraction-free React 18 PWA featuring **Advanced Voice Mode** (two-way hands-free speech via Web Speech API, 432 Hz organic pulsating voice orb, copyable code blocks, recent chats session stream, and instant reset).
+4. **The Counter-Measure Doctrine**: While tech giants race toward a walled-garden "OmniAI" monolith, Ω∞v OCEANICOS is the open, federated, cryptographic counter-measure: **Verify First, Then Evolve.**
+5. **The Foundational Command**:
+   > *"Build the Universal Verification Layer for Reality."*
 
 ### 1. Single-Port Master Architecture (:5000)
 - **Fastify 5 + Node 22** on `:5000` serves the entire system:
@@ -80,9 +101,11 @@ Provenance: Append-Only kai_ledger.json (82 Monotonic Cryptographic Receipts).
 - **Epistemic State**: `HIGH_INTEGRITY` (99% confidence, 100% verification health, 0 dissensus).
 - **Proactive Matrix Fusion**: Fused into $M_\Omega$ 8×8×8×8 hyper-torus tensor with Lyapunov stability.
 
-### 5. Unified In-Context Conversation Workspace
-- **Progressive Disclosure**: Default calm view; interactive user prompts and AI responses stream directly inside the center panel above the Omni-Prompt (Manus / ChatGPT / Claude / Kimi paradigm).
-- **Zero Overlay Distraction**: Suppressed redundant floating buttons for clean, tranquil focus.
+### 5. Unified In-Context Conversation Workspace (ChatGPT Parity)
+- **Advanced Voice Mode**: Hands-free two-way conversation powered by real-time speech recognition & synthesis with an organic 432 Hz pulsating voice orb visualizer.
+- **Syntax Code Blocks with Copy**: Fenced markdown code blocks automatically render in dark containers with language pill and one-click copy button (`📋 Copy code` ➔ `✓ Copied`).
+- **Recent Chat Sessions**: Chronological session history loaded directly from `/v1/chat/history` in the Left Sidebar.
+- **Instant Workspace Reset**: `+ New Chat / Task` button resets context for fresh, focused ideation.
 
 ---
 
