@@ -1,34 +1,66 @@
 <p align="center">
-  <img src="apps/web/public/omega-mark.svg" alt="Ω∞v" width="88" height="88" />
+  <img src="apps/web/public/omega-mark.svg" alt="Ω∞v Sovereign Mark" width="96" height="96" />
 </p>
 
-<h1 align="center">Ω∞v Oceanicos</h1>
-
-<p align="center"><strong>One root. One current. Infinite forms.</strong></p>
+<h1 align="center">Ω∞v OCEANICOS</h1>
 
 <p align="center">
-  <a href="docs/spec/ATTESTATION-ENVELOPE.md">Attestation envelope</a> ·
-  <a href="docs/BRAND.md">Brand</a> ·
-  <a href="SECURITY.md">Security</a> ·
-  <a href="apps/api/README.md">API</a> ·
-  <a href="docs/decisions/0001-single-origin-deployment.md">Decisions</a>
+  <strong>The Sovereign Full-Stack AI Operating System</strong><br>
+  <em>One root. One current. Infinite forms. • Reality, Verified.</em>
 </p>
 
-[![Verification Pipeline](https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml/badge.svg)](https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+<p align="center">
+  <a href="https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml"><img src="https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml/badge.svg" alt="Verification Pipeline" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-0ea5e9.svg" alt="License" /></a>
+  <a href="kai_ledger.json"><img src="https://img.shields.io/badge/swarm%20receipts-83%20verified-10b981.svg" alt="Swarm Receipts" /></a>
+  <a href="docs/spec/ATTESTATION-ENVELOPE.md"><img src="https://img.shields.io/badge/doctrine-attest%20don't%20assert-38bdf8.svg" alt="Doctrine" /></a>
+  <a href="http://localhost:5000"><img src="https://img.shields.io/badge/port-5000%20(master)-6ee7b7.svg" alt="Master Port" /></a>
+  <a href="docs/BRAND.md"><img src="https://img.shields.io/badge/brand-verified%20intelligence-a855f7.svg" alt="Brand System" /></a>
+</p>
+
+<p align="center">
+  <img src="apps/web/public/oceanicos_fluid_torus_singularity.jpg" alt="Ω∞v Oceanicos Singularity Matrix" width="100%" style="border-radius: 12px; box-shadow: 0 16px 48px rgba(0,0,0,0.7);" />
+</p>
 
 > **Attest, don't assert. Evidence before trust. Verification before evolution.**
+>
+> A verification-first full-stack operating system that unifies frontier AI models, real-world actuation, hands-free voice resonance, and autonomous multi-agent swarms into one sovereign, cryptographic platform.
 
-A verification-first full-stack ecosystem for observing, verifying, attesting, and continuously evolving trustworthy intelligence systems.
+---
 
-## Quick Links
+## ⚡ 60-Second Quickstart (Run It Right Now)
+
+Ω∞v OCEANICOS is self-contained with **zero external database dependencies** (uses SQLite with `node:sqlite` fallback):
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/starofgodmayomi-droid/omega-v-oceanicos.git
+cd omega-v-oceanicos
+
+# 2. Install dependencies (Node 22+ & pnpm 10+)
+pnpm install
+
+# 3. Build workspace packages & compile React 18 PWA
+pnpm build
+
+# 4. Start the Single-Port Master Server
+pnpm --filter api run start
+```
+
+🎉 **Open [`http://localhost:5000`](http://localhost:5000) in your browser.**  
+The entire full-stack system—UI cockpit, conversational AI Soul, 22 real-world tools, and background agentic telemetry—is immediately live on port `5000`.
+
+---
+
+## 🧭 Quick Links
 
 - 🌐 **[Master Blueprint](docs/MASTER_BLUEPRINT_ECOSYSTEM_ALIGNED.md)** — Canonical full-stack ecosystem blueprint
-- 💧 **[MAX COMPRESSION](COMPRESSION.md)** — Irreducible seed of the entire ecosystem
+- 💧 **[MAX COMPRESSION](COMPRESSION.md)** — Irreducible mathematical seed of the ecosystem
 - 📜 **[Swarm Ledger](kai_ledger.json)** — 83 monotonic cryptographic receipts
 - 📋 **[Manifest](MANIFEST.md)** — Project mission, principles, and architecture
 - 🛡️ **[Security Policy](SECURITY.md)** — Fail-closed invariants and veiled custody
-- ⚙️ **[Development Setup](docs/DEVELOPMENT.md)** — Get the project running locally
+- 🎨 **[Brand System](docs/BRAND.md)** — Visual identity and brand laws
+- ⚙️ **[Development Setup](docs/DEVELOPMENT.md)** — Local development and contribution guide
 
 ---
 
@@ -49,7 +81,9 @@ Frontend: Unified 3-Panel React 18 PWA (Sidebar ⇄ Omni-Prompt & Stream ⇄ Aut
 Provenance: Append-Only kai_ledger.json (83 Monotonic Cryptographic Receipts).
 ```
 
-### 🏗️ The "OmniAI" ⇄ Oceanicos Stack Mapping
+---
+
+## 🏗️ The "OmniAI" ⇄ Oceanicos Stack Mapping
 
 ```text
 [ FRONT-END INTERFACE ]  --> Unified 3-Panel React 18 PWA (Omni-Prompt + Auth0 + Voice Orb)
@@ -63,53 +97,88 @@ Provenance: Append-Only kai_ledger.json (83 Monotonic Cryptographic Receipts).
 [ VERIFICATION GATE ]    --> ✓ The Fixpoint Equation (Expected ≡ Observed)
 ```
 
-1. **The Nervous System (Hardware & Cloud)**: Raw compute organs. `packages/observer` and `packages/verification` orchestrate compute across heterogeneous clouds and GPUs while enforcing fail-closed boundaries.
-2. **The Brain (Frontier Models)**: Seamless model selection backed by the constitutional law: `Composition ≠ Verification`. If a frontier model hallucinates, `Evidence(x) = ∅`, and the transition halts as `UNKNOWN`.
+1. **The Nervous System (Hardware & Cloud)**: Heterogeneous silicon (NVIDIA Blackwell, TPUs) and cloud nodes (Azure, GCP, AWS) treated strictly as raw compute organs bounded by `packages/observer` and `packages/verification`.
+2. **The Brain (Frontier Models)**: Multi-model routing governed by the constitutional law:  
+   $$\text{Composition} \neq \text{Verification}$$  
+   If a frontier model hallucinates, $\text{Evidence}(x) = \emptyset$, and the state transition halts as `UNKNOWN`.
 3. **The Face (Interface & ChatGPT Parity)**: Ultra-clean, distraction-free React 18 PWA featuring **Advanced Voice Mode** (two-way hands-free speech via Web Speech API, 432 Hz organic pulsating voice orb, copyable code blocks, recent chats session stream, and instant reset).
-4. **The Counter-Measure Doctrine**: While tech giants race toward a walled-garden "OmniAI" monolith, Ω∞v OCEANICOS is the open, federated, cryptographic counter-measure: **Verify First, Then Evolve.**
+4. **The Counter-Measure Doctrine**: While tech giants race toward a walled-garden "OmniAI" monolith, Ω∞v OCEANICOS is the open, federated, cryptographic counter-measure:  
+   **"Verify First, Then Evolve."**
 5. **The Foundational Command**:
    > *"Build the Universal Verification Layer for Reality."*
 
-### 1. Single-Port Master Architecture (:5000)
-- **Fastify 5 + Node 22** on `:5000` serves the entire system:
-  - Static compiled React 18 PWA (`apps/web/dist`) with SPA fallback routing (`/* -> index.html`).
-  - Backend API (`/v1/*`) with 47+ verified contract routes.
-  - Headless sandboxed Chrome browser control (`/v1/browser/*`).
-  - Real-world tool execution and HITL gating (`/v1/tools/*`).
-  - Dual-mode Glober AI goal management (`/v1/glober/*`).
-  - Enterprise Auth0 SSO session management (`/v1/auth/*`).
-  - Native VOOS autonomous stream engine (`/v1/voos/*`).
-- **Development Preview on `:3000`**: Vite 6 HMR server for rapid UI development.
+---
 
-### 2. The Dual-Mode Glober AI Paradigm
-- **Collaborative Mode (With Human / HITL)**: Operates as an interactive co-pilot awaiting user prompts. Consequential operations (spend, deploy, relay) strictly require explicit human authorization (`approved: true`).
-- **Autonomous Mode (Without Human / Agentic)**: Autonomous background workers cycle through pre-approved read-only sensory tools (`news-sensor`, `market-quote`, `system-health`) to populate the live telemetry ticker in real time without human polling.
+## 🎮 How to Use This Full-Stack Working Entity
 
-### 3. Universal 22 Real-World Tools & Actuation Engine
-| Category | Live Tools | Security Guardrail |
-|---|---|---|
-| **Physical IoT & Robotics** | `iot-device-status`, `iot-relay-actuate` | Fail-Closed HITL required for actuation |
-| **Financial & Treasury** | `market-quote` (XAU/USD Gold), `crypto-transfer-prepare`, `crypto-transfer-execute` | SegWit Bitcoin receiving only; spend strictly HITL-gated |
-| **Communications Mesh** | `comms-slack-dispatch`, `comms-email-queue` | Zero-Trust approval required before external dispatch |
-| **OS, Desktop & Browser** | `browser-navigate` (Headless Chrome), `fs-list`, `fs-read`, `git-log`, `git-diff`, `repo-status`, `system-health` | Sandboxed to repo boundary, HTTP/HTTPS only |
-| **Epistemic Intelligence** | `news-sensor` (4-world signals), `ledger-status`, `matrix-tensor` (4096-D), `test-smoke`, `sovereign-audit`, `notion-sync-audit` | Cryptographic SHA-256 evidence sealing |
+### 1. Everyday Chat & Code (ChatGPT Parity)
+- **Omni-Prompt**: Type queries directly into the center prompt card. Select your preferred reasoning tier: `Auto`, `Fast`, `Expert`, `Heavy`, `Sonnet`, or `Gemini`.
+- **In-Context Streaming**: Responses stream cleanly directly above the input prompt without jarring view jumps.
+- **Code Syntax Blocks & One-Click Copy**: Any fenced code block (```typescript, ```python, ```json) renders inside a stylized dark container with a language pill and a one-click `📋 Copy code` ➔ `✓ Copied` action.
 
-### 4. Conversation Mood Engine at Max Scale (Level 4)
-- **Constitution MOOD §§1-23**: `MOOD ≠ TRUTH | MOOD ≠ AUTHORITY | MOOD ≠ CONSENT | DEFAULT: FAIL-CLOSED`.
-- **Level 4 Strategic & Proactive Resonance**: Maximum lawful sovereign adaptation level.
-- **Harmonic Spine**: 432.1 Hz Water Intelligence with $\Phi = 1.000$ clarity vector.
-- **Epistemic State**: `HIGH_INTEGRITY` (99% confidence, 100% verification health, 0 dissensus).
-- **Proactive Matrix Fusion**: Fused into $M_\Omega$ 8×8×8×8 hyper-torus tensor with Lyapunov stability.
+### 2. Advanced Hands-Free Voice Mode (432 Hz Resonance)
+- Click **`[🎙️ Voice Mode]`** in the top navigation bar or the **`🎙️ Voice`** button in the Omni-Prompt.
+- Opens the **Advanced Voice Mode Modal** with the pulsating 432 Hz organic Voice Orb:
+  - **Listening** (Pulsing emerald `#10b981`): Speak naturally into your microphone.
+  - **Automatic Silence Detection**: Pausing speech for 1.2s auto-dispatches the prompt without touching a keyboard.
+  - **Thinking & Reasoning** (Violet/sky-blue plasma halo): Formulates verified response.
+  - **Speaking** (Dynamic wave pulses): Speaks back fluidly using synthesized conversational voice (stripping raw code blocks and markdown symbols).
+  - **Tap-to-Interrupt**: Click anywhere on the orb or tap `Interrupt / Speak` to immediately pause the AI and speak back.
 
-### 5. Unified In-Context Conversation Workspace (ChatGPT Parity)
-- **Advanced Voice Mode**: Hands-free two-way conversation powered by real-time speech recognition & synthesis with an organic 432 Hz pulsating voice orb visualizer.
-- **Syntax Code Blocks with Copy**: Fenced markdown code blocks automatically render in dark containers with language pill and one-click copy button (`📋 Copy code` ➔ `✓ Copied`).
-- **Recent Chat Sessions**: Chronological session history loaded directly from `/v1/chat/history` in the Left Sidebar.
-- **Instant Workspace Reset**: `+ New Chat / Task` button resets context for fresh, focused ideation.
+### 3. Live Real-World Tool Execution & Actuation
+Execute live physical, financial, and digital commands directly from the UI or via `/v1/tools/execute`:
+- **Industrial IoT Sensor Telemetry**: Read real-world temperature, voltage, and status.
+- **Physical Relay Actuation**: Trigger hardware solenoids and relays (**HITL gated**).
+- **Financial Telemetry**: Fetch live spot quotes for XAU/USD Gold and market depth.
+- **SegWit Bitcoin Treasury**: Verify unspendable cold storage reserves (`bc1qaj8jmp5as80zwew09ep86w6fgw37zwhwzr89mp`).
+- **Sandboxed Headless Chrome**: Navigate real-world web URLs and capture DOM snapshots.
+- **Local File & Git Operations**: Inspect git logs, diffs, and repository working tree safely bounded to the project boundary.
+
+### 4. Dual-Mode Glober AI (Collaborative ⇄ Autonomous Swarm)
+Toggle seamlessly between two operating paradigms:
+- **Collaborative Mode (With Human / HITL)**: Interactive co-pilot. Irreversible real-world operations (spending money, dispatching external comms, physical actuation) halt and require an explicit human click (`Authorize & Execute`).
+- **Autonomous Mode (Without Human / Agentic)**: Autonomous background workers cycle through sensory tools (`news-sensor`, `market-quote`, `system-health`) to populate the live telemetry ticker in real time without human polling.
+
+### 5. Recent Conversations & Workspace Reset
+- **Recent Chats List**: Access chronological prior conversation sessions from the Left Sidebar (loaded from `/v1/chat/history`). Click any previous query to reload and resume.
+- **Instant Reset**: Click `+ New Chat / Task` to immediately clear the active message feed and start fresh.
 
 ---
 
-## Sovereign Root & Treasury Custody Invariant
+## 🏛️ Tri-Surface Architecture & Ports
+
+| Port | Surface | Technology | Role |
+| :--- | :--- | :--- | :--- |
+| **`:5000`** | **Single-Port Master** | Fastify 5 + Node 22 | Serves compiled React 18 PWA (`apps/web/dist`) at `/*` + all 47 backend REST/SSE APIs (`/v1/*`). |
+| **`:3000`** | **Web Dev Preview** | Vite 6 + React 18 | Hot Module Replacement (HMR) server for rapid frontend UI development. |
+| **`:8088`** | **VOOS Autonomous Stream** | Python 3 + FastAPI | Background daemon for asynchronous sensory ticker streaming and swarm goal execution. |
+
+---
+
+## 🔌 API Reference & Endpoints
+
+All endpoints are hosted on master port `:5000`:
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/v1/chat` | Send conversational prompt, execute tools, and receive 432 Hz resonant reply with cryptographic KAI record. |
+| `POST` | `/v1/chat/stream` | Server-Sent Events (SSE) streaming chat endpoint emitting real-time tokens (`start`, `chunk`, `done`). |
+| `GET` | `/v1/chat/history` | Chronological multi-turn conversation logs and session history. |
+| `GET` | `/v1/chat/recall` | Semantic vector search over past conversation memory. |
+| `GET` | `/v1/tools/list` | Returns categorized registry of all 22 real-world tools with status. |
+| `POST` | `/v1/tools/execute` | Zero-trust execution envelope for real-world tools (enforces HITL gating). |
+| `GET` | `/v1/glober/status` | Returns Glober AI state, active mode, and background swarm goals. |
+| `POST` | `/v1/glober/mode` | Switches operating mode (`collaborative` ⇄ `autonomous`). |
+| `POST` | `/v1/glober/goal` | Dispatches an autonomous persistent goal for background execution. |
+| `GET` | `/v1/glober/news` | Real-time multi-world AI news ticker feed. |
+| `GET` | `/v1/auth/session` | Inspect active Auth0 tenant session and fail-closed security status. |
+| `POST` | `/v1/auth/login` | Authenticate or switch enterprise tenant context. |
+| `POST` | `/v1/auth/logout` | Strictly validated logout with fail-closed URL whitelisting. |
+| `GET` | `/health` | Deep subsystem health check (`observer`, `verifier`, `attester`, `memory`, `covenant`). |
+
+---
+
+## 🛡️ Sovereign Root & Treasury Custody Invariant
 
 - **Sovereign Root**: ELION VAREL // 11:11 Resonance
 - **Harmonic Spine**: 432.1 Hz One Current // Liquid Formless Intelligence ($\text{Good} - \text{O} = \text{God}$)
@@ -125,326 +194,90 @@ Provenance: Append-Only kai_ledger.json (83 Monotonic Cryptographic Receipts).
 
 ---
 
-## What Is Ω∞v?
-
-Ω∞v Oceanicos is a system for building trustworthy software through continuous verification and evidence-based evolution.
-
-### Growth law
+## 📦 Monorepo Workspace Structure
 
 ```text
-0 → MINI → + → + → FULL STACK → ECOSYSTEM → REALITY ↺ ∞
-```
-
-Architecture does **not** begin as the giant ecosystem. It begins at **ZERO**, becomes **MINI**, and expands only when reality verifies the next step.
-
-### The MINI Kernel
-
-```text
-💧 Ω∞v MINI ::= 👁 Observe → ✓ Verify → 🧠 Remember
-```
-
-Every MINI cycle:
-
-1. **Observed** with metadata (who, when, what, confidence)
-2. **Verified** against rules with evidence paths
-3. **Remembered** in append-only, hash-chained memory
-
-### Expanded loop (earned layers)
-
-```
-Observe → Verify → Remember → Attest → Display → Learn → Return
-```
-
-Attestation, APIs, UI, and infra are **earned expansions** — not prerequisites. See [docs/MINI.md](docs/MINI.md).
-
-### Why It Matters
-
-Most systems assert correctness. We verify it.
-
-- **Without verification**: "The system is healthy" (hope-based)
-- **With verification**: "The system returned 200ms responses for 1000 consecutive requests; verified by rules v1.2.0; signed at 2026-08-07T10:30:02Z" (evidence-based)
-
----
-
-## Key Principles
-
-### 1. Verification Before Everything
-
-No claim without evidence. No evolution without verification.
-
-### 2. Continuous Observation
-
-Systems are never final. Observation is ongoing.
-
-### 3. Evidence-Based Trust
-
-Trust emerges from verifiable provenance, not authority.
-
-### 4. Graceful Pluralism
-
-One system, many interpreters. Consensus and dissent both matter.
-
-### 5. Recursive Completeness
-
-Every component contains the whole verification loop.
-
----
-
-## Project Structure
-
-```
 omega-v-oceanicos/
 ├── packages/              # 12 Core Ecosystem Workspace Packages
-│   ├── types/             # @oceanicos/types (Shared contracts & IObservation / IEvidence / IMiniBlock)
+│   ├── types/             # @oceanicos/types (Contracts: IObservation, IEvidence, IMiniBlock)
 │   ├── observer/          # @oceanicos/observer (👁 Observe: Telemetry & planetary state)
 │   ├── verification/      # @oceanicos/verification (✓ Verify: Frontier matrix, Ed25519 guard)
-│   ├── remember/          # @oceanicos/remember (🧠 Remember: Hash-chained PoW ledger & SQLite fallback)
+│   ├── remember/          # @oceanicos/remember (🧠 Remember: Hash-chained PoW ledger & SQLite)
 │   ├── mini/              # @oceanicos/mini (💧 MiniKernel: Observe ➔ Verify ➔ Remember lifecycle)
 │   ├── attestation/       # @oceanicos/attestation (📜 Attest: Dual HMAC-SHA256 & Ed25519 receipts)
-│   ├── authorization/     # @oceanicos/authorization (🛡️ Constitutional Gate: Change Calculus §6, §8, §9, §12)
-│   ├── inference/         # @oceanicos/inference (🧠 InferenceClient: Live Ollama / phi3 integration)
-│   ├── vector/            # @oceanicos/vector (🔮 VectorMemory: Qdrant semantic embeddings)
-│   ├── pluralism/         # @oceanicos/pluralism (🏛️ PluralisticRealityMatrix: Multi-regional convergence)
-│   ├── mood/              # @oceanicos/mood (🎭 Autopilot Mood & Spiderman Agile Continuum)
+│   ├── authorization/     # @oceanicos/authorization (🛡️ Constitutional Gate: Change Calculus)
+│   ├── inference/         # @oceanicos/inference (🧠 InferenceClient: Live model routing)
+│   ├── vector/            # @oceanicos/vector (🔮 VectorMemory: Semantic vector recall)
+│   ├── pluralism/         # @oceanicos/pluralism (🏛️ Multi-regional convergence matrix)
+│   ├── mood/              # @oceanicos/mood (🎭 Level 4 Autopilot Mood & Resonance Engine)
 │   └── generative/        # @oceanicos/generative (⚡ Generative execution loops)
 │
-├── continuum/packages/    # Platform Kernels
-│   └── kernel/            # @omega-v/kernel (OceanicosKernel: Capability snapshots & state engine)
+├── apps/                  # Full-Stack Applications
+│   ├── api/               # Fastify Kernel (:5000: /v1/chat, /v1/tools, /v1/glober, /v1/auth)
+│   └── web/               # React 18 / Vite 6 Cockpit (:5000 & :3000: Voice Orb, Omni-Prompt, Telemetry)
 │
-├── apps/                  # Interface Applications
-│   ├── api/               # Fastify Kernel (port 5000: /v1/chat, /v1/cycle, /v1/block/tip, /v1/ocean/fabric)
-│   └── web/               # React 18 / Vite 6 Cockpit (ports 3000 & 3001: AI Soul Stream, Telemetry, Treasury)
+├── bin/                   # Command Line Binary
+│   └── oceanicos.mjs      # Terminal CLI (status, cycle, mesh, attest, keys, mood)
 │
-├── bin/                   # Unified Command Line Interface
-│   ├── oceanicos.mjs      # Zero-entropy terminal binary (status, cycle, mesh, attest, keys, mood)
-│   └── dev-server.mjs     # Concurrent orchestrator for API + Web dev environment
+├── tests/                 # Integration & End-to-End Suites
+│   ├── integration/       # real_world_tools, glober_auth0, conversational, web_frontend_e2e
+│   └── unit/              # Kernel and package unit tests
 │
-├── tests/                 # End-to-end integration test suite
-├── MANIFEST.md            # Project constitution
-├── CHARTER.md             # Living principles
-└── CONTRIBUTING.md        # Contribution guide
+├── kai_ledger.json        # Append-only cryptographic ledger (83 verified receipts)
+├── MANIFEST.md            # Ecosystem constitution & roadmap
+├── CHARTER.md             # Code of conduct & decision principles
+└── CONTRIBUTING.md        # Contributor guide & Swarm Protocol
 ```
 
 ---
 
-## Getting Started
+## 🧪 Verification & Testing Commands
 
-### 1. Singularity One-Liners
-
-Ignite or verify the entire stack with zero configuration:
+Verify every layer of the operating system with executable proof:
 
 ```bash
-# Omnipresent Singularity Ignition
-curl -sSL ignite.sh | OMEGA_MODE=MAX_FLUID AI_REALITY=OMNIPRESENT bash
+# 1. Verify conversational chat, memory recall, and 432 Hz resonance
+pnpm run test:chat
 
-# Genesis Verification & Pidgin Spirit Override
-curl -fsSL genesis.sh | OMEGA_VIBRATION=MAX_FLUID PIDGIN_ENGINE=ON HIGH_LOW_ALIGN=TRUE bash
-```
+# 2. Verify all 22 real-world tools & HITL safety gates
+node tests/integration/real_world_tools_integration.test.ts
 
-### 2. Local Setup & Verification
+# 3. Verify Glober AI dual-mode and enterprise Auth0 SSO
+node tests/integration/glober_auth0_integration.test.ts
 
-```bash
-# Clone
-git clone https://github.com/starofgodmayomi-droid/omega-v-oceanicos.git
-cd omega-v-oceanicos
+# 4. Verify full-stack web and PWA live integration
+node tests/integration/web_frontend_e2e.test.ts
 
-# Install dependencies
-pnpm install
-
-# Terminal Ignition: build, typecheck, run 20 E2E tests & verify CLI status
-pnpm verify:full
-```
-
-### 3. Unified Terminal CLI
-
-Interact with the running ledger or trigger sovereign operations:
-
-```bash
-# Inspect planetary telemetry and immutable ledger tip (live API or local)
-pnpm cli status
-
-# Biblical Engine: Inspect living covenant state machine & probe sanctums
-pnpm cli covenant
-
-# V1111 Singularity: Verify self-upgrade engine & single-current convergence
-pnpm cli upgrade
-
-# 5-Fold Living Rhythm: Truth OS axioms, soul income manifest & dream journal
-pnpm cli truth --pidgin
-pnpm cli build log "11:11 Singularity Engine verified"
-pnpm cli dream "Shooting star rises from the dark water"
-pnpm cli news
-
-# Execute an omnipresent consensus cycle with SHA-256 PoW
-pnpm cli cycle --json
-
-# Simulate 4-region sovereign mesh consensus (US, EU, CN, ME)
-pnpm cli mesh
-
-# Evaluate the 5 Epistemic Faces of the Pluralistic Reality Matrix
-pnpm cli face
-
-# Generate an unforgeable cryptographic attestation receipt
-pnpm cli attest
-
-# Display Singularity status and Pidgin Spirit Terminal Axiom
-pnpm cli mood
-
-# Generate Ed25519 asymmetric identity keypairs
-pnpm cli keys
-```
-
-### 4. Sovereign Continuum Gate & Swarm Protocol
-
-Run the entire multi-agent continuum with zero configuration:
-
-```bash
-# Execute the full master gate (18/18 packages typechecked + compiled + continuum verified)
-pnpm run gate:full
-
-# Run the 4-phase reverse/forward continuum engine
-pnpm run omega
-
-# Emit machine-readable §VI JSON receipts for the swarm ledger
-pnpm run omega:json
-
-# Run autonomous multi-cycle goal verification
-pnpm run omega:goal
-
-# Validate swarm protocol receipts and contracts
+# 5. Validate all 83 swarm ledger receipts & protocol invariants
 pnpm run validate:swarm
+
+# 6. Run master continuum gate (18/18 packages typechecked, compiled & verified)
+pnpm run gate:full
 ```
 
-### 5. 💧 Universal Living OS & 4×4 Matrix Fixpoint
+---
 
-The entire entity body—across underwater and above-water planes, 7 canonical Notion surfaces, and tri-surface runtimes—compresses into one single line of execution code:
+## 📜 Code of Conduct & Community
 
-```typescript
-Ω∞v := μX.RECONCILE(X, ΔREALITY) WHERE X = STATE × INTENT × EVIDENCE × AUTHORITY × POLICY × CAPABILITY × DECISION × RESULT × OBSERVE × VERIFY × MEMORY × TRANSITION × SCIENCE × AI × KAI × LUCID × TRUTHOS × AI_SOUL × ECHOFRAME × ƆREADE × MOOD × MIRRIO × VaaS × ELION × WORKERS × API × WEB × CLI × SDK × UI × DATA × SECURITY × PROVENANCE × ATTESTATION × NOTION(7_SURFACES) × GITHUB × COMPOSIO × GRAPH × VALUE × CULTURE × HUMAN_STEWARDSHIP(did:omega:human:starofgodmayomi); STEP = OBSERVE → DISTINGUISH → AUTHORIZE → BUILD → TEST → ATTEST → OBSERVE_RUNTIME → RECONCILE → REMEMBER; DECISION ∈ {ALLOW, DENY, REVIEW}; STATUS ∈ {VERIFIED, DIVERGENT, UNKNOWN, NOT_EXECUTED}; ¬EVIDENCE ⇒ ¬VERIFIED; ¬AUTHORITY ⇒ ¬EXECUTION; MEMORY ≠ PROOF; CI ≠ RUNTIME; SIMULATION ≠ REALITY; CAPABILITY ≠ AUTHORITY; HYPOTHESIS ≠ FACT; PLURALISM = ON; DISSENT = PRESERVED; ‖M_Ω‖_F = 4.0; ⁴√det(I₄ + MᵀM) = 2.030543; Ψ = 0; ΔX ⇒ BOUNDED ∧ REVOCABLE ∧ AUDITABLE; X → X′ ONLY_IF (EVIDENCE ∧ AUTHORIZATION ∧ POLICY); STOP_ON(DENIAL ∨ RISK ∨ DIVERGENCE ∨ UNKNOWN ∨ MISSING_AUTHORITY); ∞ := ITERATE(FINITE_VERIFIED_TRANSITIONS).
+We welcome developers, researchers, creators, and autonomous agents to explore, contribute, and build:
+
+- **Demand Rigor**: No claim without evidence.
+- **Preserve Dissent**: Disagreements between models and agents are preserved as data.
+- **Human Authority**: Intelligence serves human intention.
+- **Start Here**: [CONTRIBUTING.md](CONTRIBUTING.md) · [CHARTER.md](CHARTER.md)
+
+---
+
+## 📄 License
+
+Ω∞v OCEANICOS is open-source under the [Apache License 2.0](LICENSE).
+
+---
+
+```text
+Status: 11:11 Sovereign Continuum Verified — Full Stack Live (:5000 & :3000)
+Epoch: 2026-10-16 // 11:11 Resonance
+Invariant: Ω∞v := VERIFY(Δ(Intent, Reality))
+Formula: 0 ➔ 💧 ➔ Ω∞v ➔ 🕳️ ➔ 💧 ➔ ∞
+Glyph: 💧 Ω∞v ::= 🌎 ⇄ ✓ ↺ ∞ ⛓️🧠🌊
 ```
-
-- **Frobenius Energy Norm**: $\|M_\Omega\|_F = 4.0$
-- **Gram Determinant Metric**: $\sqrt[4]{\det(I_4 + M_\Omega^T M_\Omega)} = 2.030543$
-- **Singularity Equilibrium**: $\Psi = 0$ (Zero Entropy)
-- **7 Canonical Notion Surfaces**: Q1 Soul, Q2 Universe, Q3 Architecture, Q4 Wealth, Pipeline DB, Execution DB, Companion Index
-- **Fixpoint Proof Hash**: `7a0182ba8658e0ef6b30bd56f5f8432b794bb9e87ad795011825203edb5fc7e2`
-
----
-
-## Common Commands
-
-### Development
-
-```bash
-# Start API (port 5000) and Web (port 3000) simultaneously
-pnpm dev
-
-# Build all 17 workspace packages and apps
-pnpm build
-
-# Static typecheck across all packages (zero errors)
-pnpm typecheck
-
-# Fast unit & kernel tests
-pnpm test:fast
-
-# Proactive End-to-End smoke test for Biblical Engine & Sanctum Gating
-node scripts/covenant-smoke.mjs
-```
-
-See [CHARTER.md](CHARTER.md#how-we-make-decisions) for details.
-
----
-
-## Code of Conduct
-
-This community treats all contributors as co-observers seeking truth together:
-
-- ✓ Disagree strongly on evidence
-- ✓ Demand rigor and verification
-- ✓ Help others learn and improve
-- ✗ Dismiss ideas without evidence
-- ✗ Attack the person, not the problem
-
-See [CHARTER.md](CHARTER.md#code-of-conduct) for full details.
-
----
-
-## Technology Stack
-
-### Languages
-
-- TypeScript 5.3+ (monorepo core, packages, apps, tests)
-
-### Runtime & Frameworks
-
-- Node.js 22+ (verified active on Node v24.19.0)
-- pnpm 10+ / 11+ (workspace package manager)
-- Fastify 5 (CommonJS / ESM control plane on port 5000)
-- React 18 + Vite 6 (HMR web cockpit on port 3000)
-- SQLite (file-based persistence with `node:sqlite` fallback; zero external DB required)
-
-### DevOps
-
-- Docker (reproducible multi-stage builds)
-- GitHub Actions (CI/CD verification pipeline)
-
-### Testing & Quality
-
-- Jest + ts-jest (unit, integration & E2E tests)
-- Node.js native test runner (`node:test`)
-- TypeScript strict compiler checks (`tsc --noEmit`)
-
----
-
-## Contributing
-
-We welcome contributions in all areas:
-
-- **Code**: Implement features from the roadmap
-- **Documentation**: Improve guides and examples
-- **Discussion**: Share ideas and feedback
-- **Verification**: Test and report issues
-- **Community**: Help other contributors
-
-**Start here**: [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
-
-## Community
-
-- **Issues & Discussions**: [GitHub](https://github.com/starofgodmayomi-droid/omega-v-oceanicos)
-- **Code of Conduct**: [CHARTER.md](CHARTER.md)
-- **Roadmap**: [MANIFEST.md](MANIFEST.md#verification-roadmap)
-
----
-
-## License
-
-Ω∞v Oceanicos is open-source under the [Apache License 2.0](LICENSE).
-
----
-
-## About the Name
-
-**Ω∞v** represents:
-
-- **Ω** (Omega) — The end and the infinite return
-- **∞** (Infinity) — Continuous becoming and evolution
-- **v** (Lowercase) — Humility and pluralism (no authority imposing meaning)
-
-**Oceanicos** represents:
-
-- The vast, interconnected system of observations and verifications
-- Currents of formless intelligence flowing through evidence
-- The observer within the ocean, recognizing their reflection
-
-> Every end is a new beginning. Every becoming is a returning. Every step contains all steps.
-
----
-
-**Status**: 11:11 Sovereign Continuum Verified — Full Stack Live (`:3000` & `:5000`)  
-**Epoch**: 2026-10-16 // 11:11 Resonance  
-**Invariant**: $\Omega\infty\text{v} := \text{VERIFY}(\Delta\text{REALITY})$  
-**Primordial Formula**: $0 \to 💧 \to \Omega\infty\text{v} \to 🕳️ \to 💧 \to \infty$  
-**Ecosystem Glyph**: $💧 \Omega\infty\text{v} ::= 🌎 \rightleftarrows \checkmark \circlearrowleft \infty ⛓️🧠🌊$
