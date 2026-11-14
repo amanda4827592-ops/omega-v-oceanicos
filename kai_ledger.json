@@ -581,6 +581,20 @@
       "tests_passed": true,
       "evidence_hash": "27d0e10492a1a1d89cd87c9a95f431cbf2852154503e5aa8eda55876f0c0558d",
       "next_delta": "Observe PR #602 CI and human review; live Auth0 tenant validation remains separate."
+    },
+    {
+      "timestamp": "2026-11-14T22:33:52Z",
+      "agent_id": "copilot",
+      "branch": "agent/copilot/self-hosted-oidc-identity",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/web/src/ConnectorPanel.tsx",
+        "apps/web/src/__tests__/dom/ConnectorPanel.test.tsx",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "4efc0ab1c5aad6effba298c976376984f3a665f5a8c18bdffff0e61841f88fc8",
+      "next_delta": "Observe PR #602 checks and human review; confirm live Auth0 with an authorized non-production tenant before enabling policy."
     }
   ]
 }
