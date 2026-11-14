@@ -43,6 +43,97 @@ async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
   return payload as T;
 }
 
+/* ── CodeBlock Component with Copy-To-Clipboard (ChatGPT Parity) ── */
+function CodeBlock({ language, code }: { language: string; code: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        margin: '10px 0',
+        borderRadius: '8px',
+        overflow: 'hidden',
+        background: '#090d14',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '6px 12px',
+          background: 'rgba(255, 255, 255, 0.04)',
+          fontSize: '11px',
+          color: '#94a3b8',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+          fontFamily: theme.fontMono,
+        }}
+      >
+        <span>{language || 'code'}</span>
+        <button
+          onClick={handleCopy}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: copied ? '#10b981' : '#94a3b8',
+            cursor: 'pointer',
+            fontSize: '11px',
+            fontFamily: theme.fontMono,
+          }}
+        >
+          {copied ? '✓ Copied' : '📋 Copy code'}
+        </button>
+      </div>
+      <pre
+        style={{
+          margin: 0,
+          padding: '12px',
+          overflowX: 'auto',
+          fontSize: '12px',
+          color: '#e2e8f0',
+          fontFamily: theme.fontMono,
+          lineHeight: 1.5,
+        }}
+      >
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function renderMessageContent(content: string) {
+  if (!content.includes('```')) {
+    return <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{content}</div>;
+  }
+
+  const parts = content.split(/(```[\s\S]*?```)/g);
+  return (
+    <div>
+      {parts.map((part, index) => {
+        if (part.startsWith('```') && part.endsWith('```')) {
+          const firstLineEnd = part.indexOf('\n');
+          const language = firstLineEnd !== -1 ? part.slice(3, firstLineEnd).trim() : '';
+          const code = firstLineEnd !== -1 ? part.slice(firstLineEnd + 1, -3) : part.slice(3, -3);
+          return <CodeBlock key={index} language={language} code={code} />;
+        }
+        return (
+          <div key={index} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: '4px 0' }}>
+            {part}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export interface RealWorldTool {
   id: string;
   name: string;
@@ -74,6 +165,7 @@ export interface GloberAgiCommandCenterProps {
   }>;
   isSending?: boolean;
   onSendMessage?: (message: string, mode?: string, model?: string) => void;
+  onClearChat?: () => void;
   className?: string;
 }
 
@@ -81,6 +173,7 @@ export function GloberAgiCommandCenter({
   chatMessages,
   isSending: externalIsSending,
   onSendMessage,
+  onClearChat,
 }: GloberAgiCommandCenterProps) {
   // ── Layout State (Progressive Disclosure) ──
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
@@ -135,6 +228,21 @@ export function GloberAgiCommandCenter({
   const [newsSignals, setNewsSignals] = useState<any[]>([]);
   const [lastExecutedEvidence, setLastExecutedEvidence] = useState<string | null>(null);
 
+  // ── ChatGPT Advanced Voice Mode State & Invariants ──
+  const [voiceModeActive, setVoiceModeActive] = useState(false);
+  const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+  const recognitionRef = useRef<any>(null);
+  const silenceTimerRef = useRef<any>(null);
+
+  // ── Recent Conversations / Sessions ──
+  const [recentChats, setRecentChats] = useState<Array<{
+    id: string;
+    title: string;
+    fullPrompt: string;
+    timestamp: string;
+  }>>([]);
+
   // Auto-scroll when messages update
   useEffect(() => {
     if (messages.length > 0) {
@@ -153,11 +261,12 @@ export function GloberAgiCommandCenter({
   // ── Fetch Session, Tools & Glober Status ──
   const loadState = useCallback(async () => {
     try {
-      const [sessionData, statusData, newsData, toolsData] = await Promise.all([
+      const [sessionData, statusData, newsData, toolsData, historyData] = await Promise.all([
         apiRequest<any>('/v1/auth/session').catch(() => null),
         apiRequest<any>('/v1/glober/status').catch(() => null),
         apiRequest<any>('/v1/glober/news').catch(() => null),
         apiRequest<any>('/v1/tools/list').catch(() => null),
+        apiRequest<any>('/v1/chat/history?limit=12').catch(() => null),
       ]);
       if (sessionData?.success) setAuthSession(sessionData);
       if (statusData?.success && statusData.state) {
@@ -170,6 +279,19 @@ export function GloberAgiCommandCenter({
       }
       if (toolsData?.success && Array.isArray(toolsData.tools)) {
         setToolsList(toolsData.tools);
+      }
+      if (historyData?.success && Array.isArray(historyData.messages)) {
+        const userQueries = historyData.messages
+          .filter((m: any) => m.sender === 'user')
+          .slice(-8)
+          .reverse()
+          .map((m: any) => ({
+            id: m.id,
+            title: m.content.length > 38 ? m.content.slice(0, 38) + '…' : m.content,
+            fullPrompt: m.content,
+            timestamp: m.timestamp || '',
+          }));
+        setRecentChats(userQueries);
       }
     } catch {
       /* ambient */
@@ -325,6 +447,161 @@ export function GloberAgiCommandCenter({
     );
   };
 
+  // ── ChatGPT Advanced Voice Mode Engine ──
+  const cleanSpokenText = (text: string): string => {
+    return text
+      .replace(/```[\s\S]*?```/g, 'Code block omitted.')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/[#*_~]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
+  const stopListening = useCallback(() => {
+    clearTimeout(silenceTimerRef.current);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort();
+      } catch {}
+      recognitionRef.current = null;
+    }
+  }, []);
+
+  const startListening = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRec) return;
+
+    stopListening();
+
+    const recognition = new SpeechRec();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => {
+      setVoiceState('listening');
+    };
+
+    recognition.onresult = (event: any) => {
+      let interim = '';
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      const current = finalTranscript || interim;
+      setVoiceTranscript(current);
+
+      if (finalTranscript.trim()) {
+        clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = setTimeout(() => {
+          stopListening();
+          const query = finalTranscript.trim();
+          setVoiceTranscript(query);
+          setVoiceState('thinking');
+          handleSendPrompt(query);
+        }, 1200);
+      }
+    };
+
+    recognition.onerror = () => {
+      if (voiceModeActive && voiceState === 'listening') {
+        setTimeout(() => startListening(), 600);
+      }
+    };
+
+    recognition.onend = () => {
+      if (voiceModeActive && voiceState === 'listening') {
+        try {
+          recognition.start();
+        } catch {}
+      }
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {}
+  }, [voiceModeActive, voiceState, stopListening]);
+
+  const speakText = useCallback((text: string) => {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const cleanText = cleanSpokenText(text);
+    if (!cleanText) return;
+
+    setVoiceState('speaking');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(
+      (v) => (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.lang.startsWith('en'))
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+
+    utterance.onend = () => {
+      if (voiceModeActive) {
+        setVoiceState('listening');
+        startListening();
+      } else {
+        setVoiceState('idle');
+      }
+    };
+
+    utterance.onerror = () => {
+      if (voiceModeActive) {
+        setVoiceState('listening');
+        startListening();
+      } else {
+        setVoiceState('idle');
+      }
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }, [voiceModeActive, startListening]);
+
+  const startVoiceMode = () => {
+    setVoiceModeActive(true);
+    setVoiceState('listening');
+    startListening();
+  };
+
+  const stopVoiceMode = () => {
+    setVoiceModeActive(false);
+    setVoiceState('idle');
+    stopListening();
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+  };
+
+  // Auto-speak AI reply when in Advanced Voice Mode
+  useEffect(() => {
+    if (voiceModeActive && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg.sender === 'aisoul') {
+        speakText(lastMsg.content);
+      }
+    }
+  }, [messages, voiceModeActive, speakText]);
+
+  // Clean up synthesis and recognition on unmount
+  useEffect(() => {
+    return () => {
+      stopListening();
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [stopListening]);
+
   return (
     <div
       style={{
@@ -433,6 +710,28 @@ export function GloberAgiCommandCenter({
             <span>MOOD: LVL 4 MAX</span>
           </button>
 
+          {/* ChatGPT Parity: Advanced Voice Mode Button */}
+          <button
+            onClick={() => startVoiceMode()}
+            title="ChatGPT Parity: Advanced Voice Mode (Natural 2-Way Hands-Free Speech)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 182, 212, 0.22) 100%)',
+              border: '1px solid rgba(52, 211, 153, 0.45)',
+              borderRadius: '6px',
+              padding: '4px 10px',
+              color: '#6ee7b7',
+              cursor: 'pointer',
+              fontSize: '11px',
+              fontWeight: 700,
+            }}
+          >
+            <span style={{ fontSize: '13px' }}>🎙️</span>
+            <span>Voice Mode</span>
+          </button>
+
           <button
             onClick={() => setRightPanelOpen(!rightPanelOpen)}
             title="Toggle Sensory & Telemetry Panel"
@@ -473,6 +772,8 @@ export function GloberAgiCommandCenter({
               onClick={() => {
                 setPromptText('');
                 setLastExecutedEvidence(null);
+                setLocalMessages([]);
+                if (onClearChat) onClearChat();
               }}
               style={{
                 display: 'flex',
@@ -491,6 +792,54 @@ export function GloberAgiCommandCenter({
             >
               <span>+</span> New Chat / Task
             </button>
+
+            {/* Recent Conversations (ChatGPT Parity) */}
+            {recentChats.length > 0 && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Recent Chats
+                  </span>
+                  <span style={{ fontSize: '9px', color: '#64748b' }}>{recentChats.length}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '140px', overflowY: 'auto' }}>
+                  {recentChats.map((c) => (
+                    <div
+                      key={c.id}
+                      onClick={() => setPromptText(c.fullPrompt)}
+                      title={c.fullPrompt}
+                      style={{
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid rgba(255, 255, 255, 0.04)',
+                        fontSize: '11px',
+                        color: '#cbd5e1',
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        transition: 'background 0.15s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(105, 231, 185, 0.08)';
+                        e.currentTarget.style.borderColor = 'rgba(105, 231, 185, 0.2)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.04)';
+                      }}
+                    >
+                      <span style={{ color: '#64748b', fontSize: '10px' }}>💬</span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.title}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* LIVE REAL-WORLD TOOL REGISTRY */}
             <div>
@@ -895,11 +1244,9 @@ export function GloberAgiCommandCenter({
                           fontSize: '13px',
                           color: '#f1f5f9',
                           lineHeight: 1.6,
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-word',
                         }}
                       >
-                        {m.content}
+                        {renderMessageContent(m.content)}
                       </div>
 
                       {m.metadata?.evidenceHash && (
@@ -1043,19 +1390,26 @@ export function GloberAgiCommandCenter({
                 </button>
 
                 <button
-                  onClick={() => setIsRecording(!isRecording)}
-                  title="Toggle Voice Input"
+                  onClick={() => (voiceModeActive ? stopVoiceMode() : startVoiceMode())}
+                  title="Toggle ChatGPT Parity Advanced Voice Mode"
                   style={{
-                    background: isRecording ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                    border: `1px solid ${isRecording ? '#ef4444' : 'rgba(255, 255, 255, 0.1)'}`,
+                    background: voiceModeActive
+                      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                    border: `1px solid ${voiceModeActive ? '#10b981' : 'rgba(255, 255, 255, 0.1)'}`,
                     borderRadius: '8px',
-                    padding: '6px 10px',
-                    color: isRecording ? '#ef4444' : '#94a3b8',
+                    padding: '6px 12px',
+                    color: voiceModeActive ? '#6ee7b7' : '#94a3b8',
                     cursor: 'pointer',
                     fontSize: '12px',
+                    fontWeight: voiceModeActive ? 700 : 400,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
                   }}
                 >
-                  🎙️ {isRecording ? 'Listening…' : 'Voice'}
+                  <span>🎙️</span>
+                  <span>{voiceModeActive ? 'Voice Active' : 'Voice'}</span>
                 </button>
 
                 {[
@@ -1476,6 +1830,244 @@ export function GloberAgiCommandCenter({
                 Sign in with Corporate SAML / OIDC
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CHATGPT ADVANCED VOICE MODE MODAL (432 Hz Pulsing Voice Orb) ── */}
+      {voiceModeActive && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'radial-gradient(circle at center, rgba(6, 24, 32, 0.98) 0%, rgba(2, 6, 12, 0.99) 100%)',
+            backdropFilter: 'blur(30px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '40px 24px',
+            color: '#f8fafc',
+            fontFamily: theme.fontSans,
+          }}
+        >
+          {/* Top Voice Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              maxWidth: '840px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '20px' }}>🎙️</span>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '15px', letterSpacing: '0.04em', color: '#6ee7b7' }}>
+                  ADVANCED VOICE MODE
+                </div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>
+                  ChatGPT Parity · Hands-Free Natural 2-Way Speech
+                </div>
+              </div>
+              <span
+                style={{
+                  fontSize: '11px',
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  color: '#34d399',
+                  padding: '3px 9px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(52, 211, 153, 0.3)',
+                  fontFamily: theme.fontMono,
+                }}
+              >
+                432 Hz RESONANCE
+              </span>
+            </div>
+
+            <button
+              onClick={stopVoiceMode}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#cbd5e1',
+                padding: '7px 16px',
+                borderRadius: '9999px',
+                cursor: 'pointer',
+                fontSize: '12px',
+                fontWeight: 600,
+              }}
+            >
+              ✕ Exit Voice
+            </button>
+          </div>
+
+          {/* Centered Pulsing Organic Voice Orb */}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flex: 1,
+              width: '100%',
+              maxWidth: '680px',
+            }}
+          >
+            <div
+              onClick={() => {
+                if (voiceState === 'speaking') {
+                  if (typeof window !== 'undefined' && window.speechSynthesis) {
+                    window.speechSynthesis.cancel();
+                  }
+                  setVoiceState('listening');
+                  startListening();
+                } else if (voiceState === 'listening') {
+                  stopListening();
+                  setVoiceState('idle');
+                } else {
+                  startListening();
+                }
+              }}
+              style={{
+                position: 'relative',
+                width: '190px',
+                height: '190px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background:
+                  voiceState === 'listening'
+                    ? 'radial-gradient(circle, #10b981 0%, #059669 40%, #047857 75%, #064e3b 100%)'
+                    : voiceState === 'thinking'
+                    ? 'radial-gradient(circle, #38bdf8 0%, #0284c7 40%, #8b5cf6 75%, #4c1d95 100%)'
+                    : voiceState === 'speaking'
+                    ? 'radial-gradient(circle, #6ee7b7 0%, #10b981 40%, #0284c7 80%, #0f172a 100%)'
+                    : 'radial-gradient(circle, #0ea5e9 0%, #0284c7 60%, #0369a1 100%)',
+                boxShadow:
+                  voiceState === 'listening'
+                    ? '0 0 70px rgba(16, 185, 129, 0.65), 0 0 140px rgba(5, 150, 105, 0.35), inset 0 0 30px rgba(255, 255, 255, 0.4)'
+                    : voiceState === 'thinking'
+                    ? '0 0 80px rgba(56, 189, 248, 0.65), 0 0 160px rgba(139, 92, 246, 0.45), inset 0 0 30px rgba(255, 255, 255, 0.4)'
+                    : voiceState === 'speaking'
+                    ? '0 0 90px rgba(110, 231, 183, 0.75), 0 0 180px rgba(16, 185, 129, 0.55), inset 0 0 40px rgba(255, 255, 255, 0.6)'
+                    : '0 0 50px rgba(14, 165, 233, 0.4)',
+                transform:
+                  voiceState === 'speaking'
+                    ? 'scale(1.14)'
+                    : voiceState === 'listening'
+                    ? 'scale(1.05)'
+                    : 'scale(1.0)',
+                transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                cursor: 'pointer',
+              }}
+            >
+              {/* Internal Fluid Core */}
+              <div
+                style={{
+                  width: '95px',
+                  height: '95px',
+                  borderRadius: '50%',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0) 70%)',
+                  filter: 'blur(5px)',
+                }}
+              />
+            </div>
+
+            {/* Voice Status Indicator */}
+            <div style={{ marginTop: '36px', textAlign: 'center' }}>
+              <div
+                style={{
+                  fontSize: '18px',
+                  fontWeight: 600,
+                  color:
+                    voiceState === 'listening'
+                      ? '#34d399'
+                      : voiceState === 'thinking'
+                      ? '#38bdf8'
+                      : voiceState === 'speaking'
+                      ? '#6ee7b7'
+                      : '#94a3b8',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {voiceState === 'listening' && 'Listening… Speak naturally'}
+                {voiceState === 'thinking' && 'Reasoning & formulating… (432 Hz)'}
+                {voiceState === 'speaking' && 'Speaking… Tap orb to interrupt'}
+                {voiceState === 'idle' && 'Paused · Tap orb to speak'}
+              </div>
+
+              {/* Real-Time Live Transcript Preview */}
+              {voiceTranscript && (
+                <div
+                  style={{
+                    marginTop: '16px',
+                    maxWidth: '560px',
+                    fontSize: '15px',
+                    color: '#e2e8f0',
+                    fontStyle: 'italic',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    padding: '10px 18px',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                  }}
+                >
+                  "{voiceTranscript}"
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Voice Controls Bottom Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined' && window.speechSynthesis) {
+                  window.speechSynthesis.cancel();
+                }
+                setVoiceState('listening');
+                startListening();
+              }}
+              style={{
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                color: '#e2e8f0',
+                padding: '12px 24px',
+                borderRadius: '9999px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span>⏸️</span> Interrupt / Speak
+            </button>
+
+            <button
+              onClick={stopVoiceMode}
+              style={{
+                background: '#ef4444',
+                border: 'none',
+                color: '#ffffff',
+                width: '56px',
+                height: '56px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                fontSize: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 20px rgba(239, 68, 68, 0.4)',
+              }}
+              title="End Voice Conversation"
+            >
+              📞
+            </button>
           </div>
         </div>
       )}
