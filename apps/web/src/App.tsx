@@ -1241,6 +1241,7 @@ export function App() {
             isSending={omegaLoading}
             onSendMessage={(msg) => sendMessage(msg)}
             onClearChat={() => setChatMessages([])}
+            onNavigateViewport={(mode) => setViewportMode(mode as any)}
           />
         </div>
       ) : viewportMode === 'v0' ? (

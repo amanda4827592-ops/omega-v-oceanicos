@@ -166,6 +166,7 @@ export interface GloberAgiCommandCenterProps {
   isSending?: boolean;
   onSendMessage?: (message: string, mode?: string, model?: string) => void;
   onClearChat?: () => void;
+  onNavigateViewport?: (mode: string) => void;
   className?: string;
 }
 
@@ -174,6 +175,7 @@ export function GloberAgiCommandCenter({
   isSending: externalIsSending,
   onSendMessage,
   onClearChat,
+  onNavigateViewport,
 }: GloberAgiCommandCenterProps) {
   // ── Layout State (Progressive Disclosure) ──
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
@@ -931,6 +933,72 @@ export function GloberAgiCommandCenter({
                   >
                     <span>{item.icon}</span>
                     <span>{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Ecosystem Organs (10 Sovereign Interfaces) */}
+            <div>
+              <div style={{ fontSize: '10px', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
+                Ecosystem Organs (10 Surfaces)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {[
+                  { id: 'v0', icon: '🎨', label: 'v0 Creation Mirror', tag: 'UI' },
+                  { id: 'trading', icon: '📈', label: 'XAU/USD AI Trader', tag: 'GOLD' },
+                  { id: 'watcher', icon: '👁️', label: 'WATCHER; 01 Corridor', tag: 'SENSORY' },
+                  { id: 'catalog', icon: '📚', label: 'Ecosystem Catalog', tag: 'DOCS' },
+                  { id: 'conversation', icon: '💬', label: 'Futuristic Chat Mode', tag: '432 Hz' },
+                  { id: 'work', icon: '⚙️', label: 'Work & Echoframe', tag: 'BUILD' },
+                  { id: 'evidence', icon: '🛡️', label: 'Evidence Workspace', tag: 'MERKLE' },
+                  { id: 'wealth', icon: '💰', label: 'Wealth Pipeline', tag: 'TITHE' },
+                  { id: 'ocean', icon: '💧', label: 'ΩVØØS Ocean Body', tag: 'CORE' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => onNavigateViewport && onNavigateViewport(item.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '5px 8px',
+                      borderRadius: '6px',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      border: '1px solid rgba(255, 255, 255, 0.04)',
+                      color: '#cbd5e1',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+                      e.currentTarget.style.color = '#38bdf8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
+                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.04)';
+                      e.currentTarget.style.color = '#cbd5e1';
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span>{item.icon}</span>
+                      <span>{item.label}</span>
+                    </span>
+                    <span
+                      style={{
+                        fontSize: '8px',
+                        padding: '1px 4px',
+                        borderRadius: '3px',
+                        background: 'rgba(56, 189, 248, 0.12)',
+                        color: '#38bdf8',
+                        fontFamily: theme.fontMono,
+                      }}
+                    >
+                      {item.tag}
+                    </span>
                   </button>
                 ))}
               </div>
