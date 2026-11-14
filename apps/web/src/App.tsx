@@ -409,6 +409,7 @@ export function App() {
             content: chatData.reply.content,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             organ: chatData.reply.metadata?.organ,
+            metadata: chatData.reply.metadata,
           },
         ]);
       }
@@ -1236,9 +1237,9 @@ export function App() {
           }}
         >
           <GloberAgiCommandCenter
-            onSendMessage={() => {
-              setViewportMode('conversation');
-            }}
+            chatMessages={chatMessages}
+            isSending={omegaLoading}
+            onSendMessage={(msg) => sendMessage(msg)}
           />
         </div>
       ) : viewportMode === 'v0' ? (
@@ -1960,57 +1961,59 @@ export function App() {
         </>
       )}
 
-      {/* Floating Quick Jump to Message Bar */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '28px',
-          zIndex: 9999,
-          display: 'flex',
-          gap: '10px',
-        }}
-      >
-        <button
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
-              const input = document.querySelector('input[placeholder*="Type your message"]') as HTMLInputElement;
-              if (input) {
-                input.focus();
-                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              }
-            }, 150);
-          }}
+      {/* Floating Quick Jump to Message Bar (Hidden in Glober AGI mode for calm clean focus) */}
+      {viewportMode !== 'glober' && (
+        <div
           style={{
-            padding: '10px 18px',
-            borderRadius: theme.radiusPill,
-            background: 'linear-gradient(135deg, #00f5a0 0%, #00d2ff 100%)',
-            border: 'none',
-            color: '#020d18',
-            fontFamily: theme.fontSans,
-            fontWeight: 700,
-            fontSize: '13px',
-            boxShadow: '0 4px 20px rgba(0, 245, 160, 0.45)',
-            cursor: 'pointer',
+            position: 'fixed',
+            bottom: '24px',
+            right: '28px',
+            zIndex: 9999,
             display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 24px rgba(0, 245, 160, 0.6)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 245, 160, 0.45)';
+            gap: '10px',
           }}
         >
-          <span>💬</span>
-          <span>Jump to Send Message</span>
-        </button>
-      </div>
+          <button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setTimeout(() => {
+                const input = document.querySelector('input[placeholder*="Type your message"]') as HTMLInputElement;
+                if (input) {
+                  input.focus();
+                  input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 150);
+            }}
+            style={{
+              padding: '10px 18px',
+              borderRadius: theme.radiusPill,
+              background: 'linear-gradient(135deg, #00f5a0 0%, #00d2ff 100%)',
+              border: 'none',
+              color: '#020d18',
+              fontFamily: theme.fontSans,
+              fontWeight: 700,
+              fontSize: '13px',
+              boxShadow: '0 4px 20px rgba(0, 245, 160, 0.45)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 24px rgba(0, 245, 160, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 245, 160, 0.45)';
+            }}
+          >
+            <span>💬</span>
+            <span>Jump to Send Message</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -64,11 +64,24 @@ export interface ToolExecutionLog {
 }
 
 export interface GloberAgiCommandCenterProps {
+  chatMessages?: Array<{
+    id: string;
+    sender: 'user' | 'aisoul' | 'system';
+    content: string;
+    timestamp: string;
+    organ?: string;
+    metadata?: any;
+  }>;
+  isSending?: boolean;
   onSendMessage?: (message: string, mode?: string, model?: string) => void;
   className?: string;
 }
 
-export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenterProps) {
+export function GloberAgiCommandCenter({
+  chatMessages,
+  isSending: externalIsSending,
+  onSendMessage,
+}: GloberAgiCommandCenterProps) {
   // ── Layout State (Progressive Disclosure) ──
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [rightPanelOpen, setRightPanelOpen] = useState(true);
@@ -83,6 +96,21 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
   const [isRecording, setIsRecording] = useState(false);
   const [activePlugins, setActivePlugins] = useState<string[]>(['web-search', 'memory']);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // ── Local Fallback Messages ──
+  const [localMessages, setLocalMessages] = useState<Array<{
+    id: string;
+    sender: 'user' | 'aisoul' | 'system';
+    content: string;
+    timestamp: string;
+    organ?: string;
+    metadata?: any;
+  }>>([]);
+
+  const messages = chatMessages && chatMessages.length > 0 ? chatMessages : localMessages;
+  const [internalIsSending, setInternalIsSending] = useState(false);
+  const isSending = externalIsSending ?? internalIsSending;
 
   // ── Auth0 & Tenant State ──
   const [authSession, setAuthSession] = useState<any>(null);
@@ -105,8 +133,14 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
   // ── Glober News & Goals State ──
   const [globerStatus, setGloberStatus] = useState<any>(null);
   const [newsSignals, setNewsSignals] = useState<any[]>([]);
-  const [isSending, setIsSending] = useState(false);
   const [lastExecutedEvidence, setLastExecutedEvidence] = useState<string | null>(null);
+
+  // Auto-scroll when messages update
+  useEffect(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages.length]);
 
   // ── Dynamic Contextual Greeting ──
   const getGreeting = () => {
@@ -232,16 +266,23 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
   // ── Handle Prompt Submit ──
   const handleSendPrompt = async (textToSend?: string) => {
     const query = (textToSend || promptText).trim();
-    if (!query) return;
+    if (!query || isSending) return;
 
-    setIsSending(true);
     setPromptText('');
 
     if (onSendMessage) {
       onSendMessage(query, activeSubMode, selectedModel);
-      setIsSending(false);
       return;
     }
+
+    setInternalIsSending(true);
+    const userMsg = {
+      id: `user-${Date.now()}`,
+      sender: 'user' as const,
+      content: query,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+    setLocalMessages((prev) => [...prev, userMsg]);
 
     try {
       const res = await apiRequest<any>('/v1/chat', {
@@ -254,13 +295,26 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
           model: selectedModel,
         }),
       });
-      if (res?.reply?.metadata?.evidenceHash) {
-        setLastExecutedEvidence(res.reply.metadata.evidenceHash);
+      if (res?.success && res.reply) {
+        setLocalMessages((prev) => [
+          ...prev,
+          {
+            id: res.reply.id || `ai-${Date.now()}`,
+            sender: 'aisoul',
+            content: res.reply.content,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            organ: res.reply.metadata?.organ,
+            metadata: res.reply.metadata,
+          },
+        ]);
+        if (res.reply.metadata?.evidenceHash) {
+          setLastExecutedEvidence(res.reply.metadata.evidenceHash);
+        }
       }
     } catch {
       await enqueueOfflineMessage(query);
     } finally {
-      setIsSending(false);
+      setInternalIsSending(false);
     }
   };
 
@@ -581,25 +635,65 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
             position: 'relative',
           }}
         >
-          {/* Contextual Dynamic Greeting */}
-          <div style={{ textAlign: 'center', marginBottom: '18px' }}>
-            <h2
+          {/* Contextual Dynamic Greeting / Stream Header */}
+          {messages.length === 0 ? (
+            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
+              <h2
+                style={{
+                  fontSize: 'clamp(24px, 3.5vw, 34px)',
+                  fontWeight: 800,
+                  letterSpacing: '-0.02em',
+                  margin: '0 0 4px',
+                  background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {getGreeting()}, Ω∞v OceanicOS
+              </h2>
+              <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
+                Live real-world tools, IoT sensors, financial telemetry, and desktop control in one operating organ.
+              </p>
+            </div>
+          ) : (
+            <div
               style={{
-                fontSize: 'clamp(24px, 3.5vw, 34px)',
-                fontWeight: 800,
-                letterSpacing: '-0.02em',
-                margin: '0 0 4px',
-                background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                width: '100%',
+                maxWidth: '720px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                background: 'rgba(8, 20, 28, 0.75)',
+                border: '1px solid rgba(105, 231, 185, 0.18)',
+                marginBottom: '14px',
+                fontSize: '11px',
+                color: '#94a3b8',
               }}
             >
-              {getGreeting()}, Ω∞v OceanicOS
-            </h2>
-            <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-              Live real-world tools, IoT sensors, financial telemetry, and desktop control in one operating organ.
-            </p>
-          </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ color: '#69e7b9', fontWeight: 700 }}>Ω∞v LIVING CONTINUUM</span>
+                <span>·</span>
+                <span>{messages.length} messages active</span>
+              </div>
+              <button
+                onClick={() => {
+                  setLocalMessages([]);
+                  setLastExecutedEvidence(null);
+                }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#64748b',
+                  cursor: 'pointer',
+                  fontSize: '11px',
+                }}
+              >
+                Reset Stream
+              </button>
+            </div>
+          )}
 
           {/* Mode Toggles: The Glober Switch */}
           <div
@@ -726,6 +820,113 @@ export function GloberAgiCommandCenter({ onSendMessage }: GloberAgiCommandCenter
               </button>
             ))}
           </div>
+
+          {/* ── CONVERSATION STREAM (Unified AGI Workspace) ── */}
+          {messages.length > 0 && (
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '720px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+                marginBottom: '16px',
+                maxHeight: '440px',
+                overflowY: 'auto',
+                paddingRight: '6px',
+              }}
+            >
+              {messages.map((m) => {
+                const isUser = m.sender === 'user';
+                return (
+                  <div
+                    key={m.id}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: isUser ? 'flex-end' : 'flex-start',
+                      width: '100%',
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: '85%',
+                        padding: '12px 16px',
+                        borderRadius: isUser ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                        background: isUser
+                          ? 'linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(2, 132, 199, 0.28) 100%)'
+                          : 'rgba(8, 20, 28, 0.94)',
+                        border: `1px solid ${isUser ? 'rgba(56, 189, 248, 0.35)' : 'rgba(105, 231, 185, 0.25)'}`,
+                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          marginBottom: '6px',
+                          fontSize: '10px',
+                          fontFamily: theme.fontMono,
+                        }}
+                      >
+                        <span style={{ fontWeight: 700, color: isUser ? '#38bdf8' : '#69e7b9' }}>
+                          {isUser ? '👤 ELION VAREL' : `💧 ${m.organ || m.metadata?.organ || 'Ω∞v GLOBER AI'}`}
+                        </span>
+                        <span style={{ color: '#64748b' }}>·</span>
+                        <span style={{ color: '#64748b' }}>{m.timestamp}</span>
+                        {!isUser && (
+                          <span
+                            style={{
+                              marginLeft: 'auto',
+                              color: '#a7f3d0',
+                              background: 'rgba(105, 231, 185, 0.12)',
+                              padding: '1px 6px',
+                              borderRadius: '4px',
+                            }}
+                          >
+                            432 Hz
+                          </span>
+                        )}
+                      </div>
+
+                      <div
+                        style={{
+                          fontSize: '13px',
+                          color: '#f1f5f9',
+                          lineHeight: 1.6,
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                        }}
+                      >
+                        {m.content}
+                      </div>
+
+                      {m.metadata?.evidenceHash && (
+                        <div
+                          style={{
+                            marginTop: '8px',
+                            paddingTop: '6px',
+                            borderTop: '1px dashed rgba(255, 255, 255, 0.08)',
+                            fontSize: '9px',
+                            fontFamily: theme.fontMono,
+                            color: '#64748b',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          <span style={{ color: '#10b981' }}>✓ ATTESTED:</span>
+                          <span style={{ color: '#94a3b8' }}>{m.metadata.evidenceHash.slice(0, 24)}…</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
 
           {/* LIVE TOOL EXECUTION STREAMING BAR */}
           {activeStreamingTool && (
