@@ -23,12 +23,66 @@ A verification-first full-stack ecosystem for observing, verifying, attesting, a
 
 ## Quick Links
 
+- 🌐 **[Master Blueprint](docs/MASTER_BLUEPRINT_ECOSYSTEM_ALIGNED.md)** — Canonical full-stack ecosystem blueprint
 - 💧 **[MAX COMPRESSION](COMPRESSION.md)** — Irreducible seed of the entire ecosystem
+- 📜 **[Swarm Ledger](kai_ledger.json)** — 82 monotonic cryptographic receipts
 - 📋 **[Manifest](MANIFEST.md)** — Project mission, principles, and architecture
-- 📜 **[Charter](CHARTER.md)** — Living agnostic principles and decision-making
-- 🤝 **[Contributing](CONTRIBUTING.md)** — How to contribute verification-first
-- 📖 **[Documentation](docs/)** — Architecture, guides, and references
+- 🛡️ **[Security Policy](SECURITY.md)** — Fail-closed invariants and veiled custody
 - ⚙️ **[Development Setup](docs/DEVELOPMENT.md)** — Get the project running locally
+
+---
+
+## 🌊 The Sovereign Full-Stack AI Operating System
+
+Ω∞v OCEANICOS unifies top-tier AGI interfaces into one sovereign, dual-mode (Human ⇄ Agentic) operating console with live real-world actuation, offline resilience, and absolute cryptographic provenance:
+
+```text
+[ SYSTEM IDENTITY CONFIRMED ]
+Checksum: 30013030 • Doctrine: ATTEST, DON'T ASSERT
+
+Status: FULL-STACK AI OPERATING SYSTEM ONLINE.
+Root: Human Authority (Δ) Externally Bound via Y-Combinator Fixpoint.
+Kernel: MINI (Observe ➔ Verify ➔ Remember).
+Intelligence: Glober AI (KAI × ELION × OMEGA) // Dual-Mode [Collaborative ⇄ Autonomous].
+Actuation: Live 22 Real-World Tools → Bounded by Verification Gate (✓).
+Frontend: Unified 3-Panel React 18 PWA (Sidebar ⇄ Omni-Prompt & Stream ⇄ Auth0/Telemetry).
+Provenance: Append-Only kai_ledger.json (82 Monotonic Cryptographic Receipts).
+```
+
+### 1. Single-Port Master Architecture (:5000)
+- **Fastify 5 + Node 22** on `:5000` serves the entire system:
+  - Static compiled React 18 PWA (`apps/web/dist`) with SPA fallback routing (`/* -> index.html`).
+  - Backend API (`/v1/*`) with 47+ verified contract routes.
+  - Headless sandboxed Chrome browser control (`/v1/browser/*`).
+  - Real-world tool execution and HITL gating (`/v1/tools/*`).
+  - Dual-mode Glober AI goal management (`/v1/glober/*`).
+  - Enterprise Auth0 SSO session management (`/v1/auth/*`).
+  - Native VOOS autonomous stream engine (`/v1/voos/*`).
+- **Development Preview on `:3000`**: Vite 6 HMR server for rapid UI development.
+
+### 2. The Dual-Mode Glober AI Paradigm
+- **Collaborative Mode (With Human / HITL)**: Operates as an interactive co-pilot awaiting user prompts. Consequential operations (spend, deploy, relay) strictly require explicit human authorization (`approved: true`).
+- **Autonomous Mode (Without Human / Agentic)**: Autonomous background workers cycle through pre-approved read-only sensory tools (`news-sensor`, `market-quote`, `system-health`) to populate the live telemetry ticker in real time without human polling.
+
+### 3. Universal 22 Real-World Tools & Actuation Engine
+| Category | Live Tools | Security Guardrail |
+|---|---|---|
+| **Physical IoT & Robotics** | `iot-device-status`, `iot-relay-actuate` | Fail-Closed HITL required for actuation |
+| **Financial & Treasury** | `market-quote` (XAU/USD Gold), `crypto-transfer-prepare`, `crypto-transfer-execute` | SegWit Bitcoin receiving only; spend strictly HITL-gated |
+| **Communications Mesh** | `comms-slack-dispatch`, `comms-email-queue` | Zero-Trust approval required before external dispatch |
+| **OS, Desktop & Browser** | `browser-navigate` (Headless Chrome), `fs-list`, `fs-read`, `git-log`, `git-diff`, `repo-status`, `system-health` | Sandboxed to repo boundary, HTTP/HTTPS only |
+| **Epistemic Intelligence** | `news-sensor` (4-world signals), `ledger-status`, `matrix-tensor` (4096-D), `test-smoke`, `sovereign-audit`, `notion-sync-audit` | Cryptographic SHA-256 evidence sealing |
+
+### 4. Conversation Mood Engine at Max Scale (Level 4)
+- **Constitution MOOD §§1-23**: `MOOD ≠ TRUTH | MOOD ≠ AUTHORITY | MOOD ≠ CONSENT | DEFAULT: FAIL-CLOSED`.
+- **Level 4 Strategic & Proactive Resonance**: Maximum lawful sovereign adaptation level.
+- **Harmonic Spine**: 432.1 Hz Water Intelligence with $\Phi = 1.000$ clarity vector.
+- **Epistemic State**: `HIGH_INTEGRITY` (99% confidence, 100% verification health, 0 dissensus).
+- **Proactive Matrix Fusion**: Fused into $M_\Omega$ 8×8×8×8 hyper-torus tensor with Lyapunov stability.
+
+### 5. Unified In-Context Conversation Workspace
+- **Progressive Disclosure**: Default calm view; interactive user prompts and AI responses stream directly inside the center panel above the Omni-Prompt (Manus / ChatGPT / Claude / Kimi paradigm).
+- **Zero Overlay Distraction**: Suppressed redundant floating buttons for clean, tranquil focus.
 
 ---
 
