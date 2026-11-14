@@ -19,15 +19,135 @@ describe('connector observation panel', () => {
     const fetchMock = installFetch();
     render(<ConnectorPanel />);
 
-    expect(screen.getByText(/Auth0 is not configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/Set VITE_AUTH0_DOMAIN/i)).toBeInTheDocument();
     expect(screen.getByLabelText('Connector registry')).toHaveTextContent(
-      'NOT_EXECUTED · no observation in this session',
+      'UNKNOWN · Auth0 is not configured; journal not loaded',
     );
     expect(screen.getByLabelText('Connector registry')).toHaveTextContent(
       'does not prove connectivity or service health',
     );
     expect(screen.queryByRole('button', { name: /approve this exact read/i })).not.toBeInTheDocument();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('loads the latest matching observation from the integrity-verified journal', async () => {
+    const fetchMock = installFetch({
+      '/api/v1/omega/connectors/observations': () =>
+        json({
+          success: true,
+          entries: [
+            {
+              connectorId: 'another.connector',
+              sequence: 10,
+              observation: {
+                status: 'DIVERGENT',
+                authorized: true,
+                executed: true,
+                observed: true,
+                expectedObservation: 'other',
+                evidence: 'sha256:other',
+                issues: [],
+                observedAt: '2026-11-13T00:00:00.000Z',
+                admission: { decision: 'ALLOW', admitted: true },
+              },
+            },
+            {
+              connectorId: 'github.read-repository',
+              sequence: 2,
+              observation: {
+                status: 'VERIFIED',
+                authorized: true,
+                executed: true,
+                observed: true,
+                expectedObservation: 'github repository metadata',
+                actualObservation: 'github:starofgodmayomi-droid/omega-v-oceanicos:metadata',
+                evidence: 'server-observed public repository metadata',
+                issues: [],
+                observedAt: '2026-11-14T00:00:00.000Z',
+                admission: { decision: 'ALLOW', admitted: true },
+              },
+            },
+          ],
+          total: 2,
+          truncated: false,
+          integrity: 'verified-local-hash-chain',
+          limitation: 'local hash-chain only',
+        }),
+    });
+    const auth = authenticatedUser();
+    render(<ConnectorPanel auth={auth} />);
+
+    expect(await screen.findByText(/Last recorded result: VERIFIED/)).toBeInTheDocument();
+    const historyCall = fetchMock.mock.calls.find(
+      ([url]) => url === '/api/v1/omega/connectors/observations',
+    );
+    expect(historyCall).toBeDefined();
+    const historyHeaders = new Headers((historyCall?.[1] as RequestInit).headers);
+    expect(historyHeaders.get('Authorization')).toBe('Bearer auth0-api-access-token');
+    expect(screen.getByLabelText('Connector registry')).toHaveTextContent(
+      'does not prove connectivity or service health',
+    );
+  });
+
+  it('keeps NOT_EXECUTED when the verified journal has no matching observation', async () => {
+    installFetch();
+    render(<ConnectorPanel auth={authenticatedUser()} />);
+
+    expect(await screen.findByText('NOT_EXECUTED · no recorded observation')).toBeInTheDocument();
+  });
+
+  it('does not claim NOT_EXECUTED when the returned journal window is truncated', async () => {
+    const entries = Array.from({ length: 200 }, (_, index) => ({
+      connectorId: 'another.connector',
+      sequence: index + 2,
+      observation: {
+        status: 'UNKNOWN',
+        authorized: false,
+        executed: false,
+        observed: false,
+        expectedObservation: 'other',
+        evidence: 'sha256:other',
+        issues: [],
+        observedAt: '2026-11-14T00:00:00.000Z',
+        admission: { decision: 'DENY', admitted: false },
+      },
+    }));
+    installFetch({
+      '/api/v1/omega/connectors/observations': () =>
+        json({
+          success: true,
+          entries,
+          total: 201,
+          truncated: true,
+          integrity: 'verified-local-hash-chain',
+          limitation: 'local hash-chain only',
+        }),
+    });
+    render(<ConnectorPanel auth={authenticatedUser()} />);
+
+    expect(
+      await screen.findByText('UNKNOWN · older journal entries are outside the returned window'),
+    ).toBeInTheDocument();
+  });
+
+  it('preserves UNKNOWN when the connector journal integrity is not verified', async () => {
+    installFetch({
+      '/api/v1/omega/connectors/observations': () =>
+        json({
+          success: true,
+          entries: [],
+          total: 0,
+          truncated: false,
+          integrity: 'degraded',
+          limitation: 'journal integrity unavailable',
+        }),
+    });
+    render(<ConnectorPanel auth={authenticatedUser()} />);
+
+    expect(await screen.findByText('UNKNOWN · last observation unavailable')).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'API returned an invalid or unverified connector journal',
+    );
   });
 
   it('starts Auth0 sign-in before making connector actions available', async () => {
@@ -86,7 +206,9 @@ describe('connector observation panel', () => {
 
     await user.click(screen.getByRole('button', { name: /run approved read/i }));
     expect(await screen.findByText('VERIFIED')).toBeInTheDocument();
-    expect(screen.getByLabelText('Connector observation status')).toHaveTextContent('Last result: VERIFIED');
+    expect(screen.getByLabelText('Connector observation status')).toHaveTextContent(
+      'Last recorded result: VERIFIED',
+    );
     const observeCall = fetchMock.mock.calls.find(([url]) => url === '/api/v1/omega/connectors/observe');
     expect(observeCall).toBeDefined();
     const observeInit = observeCall?.[1] as RequestInit;

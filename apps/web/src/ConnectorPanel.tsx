@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { apiFetch } from './api-client';
 
 const API_BASE_URL = (import.meta.env?.VITE_API_URL ?? '/api').replace(/\/$/, '');
@@ -24,6 +24,12 @@ interface Observation {
   issues: string[];
   observedAt: string;
   admission: { decision: string; admitted: boolean };
+}
+
+interface ObservationJournalEntry {
+  connectorId: string;
+  sequence: number;
+  observation: Observation;
 }
 
 interface ConnectorApproval {
@@ -93,6 +99,37 @@ function isObservation(value: unknown): value is Observation {
   );
 }
 
+function isObservationJournalResponse(
+  value: unknown,
+): value is {
+  success: true;
+  integrity: 'verified-local-hash-chain';
+  entries: ObservationJournalEntry[];
+  total: number;
+  truncated: boolean;
+} {
+  if (!isRecord(value) || value.success !== true || value.integrity !== 'verified-local-hash-chain') {
+    return false;
+  }
+  return (
+    Array.isArray(value.entries) &&
+    typeof value.total === 'number' &&
+    Number.isSafeInteger(value.total) &&
+    value.total >= value.entries.length &&
+    typeof value.truncated === 'boolean' &&
+    value.truncated === (value.total > value.entries.length) &&
+    value.entries.every(
+      (entry) =>
+        isRecord(entry) &&
+        typeof entry.connectorId === 'string' &&
+        typeof entry.sequence === 'number' &&
+        Number.isSafeInteger(entry.sequence) &&
+        entry.sequence > 0 &&
+        isObservation(entry.observation),
+    )
+  );
+}
+
 function explainError(error: string): string {
   if (error === 'CONNECTOR_POLICY_DENIED') {
     return 'Server policy denies this connector (CONNECTOR_POLICY_DENIED). Its exact declaration must be reviewed and allowlisted before approval.';
@@ -142,8 +179,88 @@ const buttonStyle: React.CSSProperties = {
 export function ConnectorPanel({ auth }: { auth?: ConnectorAuth }) {
   const [approval, setApproval] = useState<ConnectorApproval | null>(null);
   const [latest, setLatest] = useState<Observation | null>(null);
+  const [journalState, setJournalState] = useState<
+    'unloaded' | 'loading' | 'loaded' | 'incomplete' | 'error'
+  >('unloaded');
+  const [journalError, setJournalError] = useState<string | null>(null);
   const [busy, setBusy] = useState<'approve' | 'observe' | 'login' | 'logout' | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const getAccessTokenRef = useRef(auth?.getAccessToken);
+  const hasObservedInSession = useRef(false);
+  const isAuthLoading = auth?.isLoading ?? false;
+  const isAuthenticated = auth?.isAuthenticated ?? false;
+  getAccessTokenRef.current = auth?.getAccessToken;
+
+  useEffect(() => {
+    let cancelled = false;
+    hasObservedInSession.current = false;
+    setLatest(null);
+    setJournalError(null);
+    if (isAuthLoading || !isAuthenticated) {
+      setJournalState('unloaded');
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    setJournalState('loading');
+    const loadLatestObservation = async () => {
+      try {
+        const getAccessToken = getAccessTokenRef.current;
+        if (!getAccessToken) throw new Error('Auth0 access token provider is unavailable');
+        const token = await getAccessToken();
+        const response = await request('/v1/omega/connectors/observations', token);
+        if (!isObservationJournalResponse(response)) {
+          throw new Error('API returned an invalid or unverified connector journal');
+        }
+        const latestEntry = response.entries
+          .filter((entry) => entry.connectorId === CONNECTOR.id)
+          .reduce<ObservationJournalEntry | null>(
+            (latestEntry, entry) =>
+              !latestEntry || entry.sequence > latestEntry.sequence ? entry : latestEntry,
+            null,
+          );
+        if (!cancelled) {
+          if (!hasObservedInSession.current) setLatest(latestEntry?.observation ?? null);
+          setJournalState(!latestEntry && response.truncated ? 'incomplete' : 'loaded');
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setJournalError(err instanceof Error ? err.message : 'Connector journal could not be loaded');
+          setJournalState('error');
+        }
+      }
+    };
+    void loadLatestObservation();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthLoading, isAuthenticated]);
+
+  const registryStatusText = latest
+    ? `Last recorded result: ${latest.status} · ${latest.observedAt}`
+    : !auth
+      ? 'UNKNOWN · Auth0 is not configured; journal not loaded'
+      : isAuthLoading
+        ? 'Checking Auth0 sign-in…'
+        : !isAuthenticated
+          ? 'Sign in to load the last recorded observation'
+          : journalState === 'loading'
+            ? 'Loading last recorded observation…'
+            : journalState === 'loaded'
+              ? 'NOT_EXECUTED · no recorded observation'
+              : journalState === 'incomplete'
+                ? 'UNKNOWN · older journal entries are outside the returned window'
+                : journalState === 'error'
+                  ? 'UNKNOWN · last observation unavailable'
+                  : 'Sign in to load the last recorded observation';
+  const registryStatusColor = latest
+    ? STATUS_COLOR[latest.status]
+    : registryStatusText.startsWith('NOT_EXECUTED')
+      ? STATUS_COLOR.NOT_EXECUTED
+      : STATUS_COLOR.UNKNOWN;
+
   const registry = (
     <div
       aria-label="Connector registry"
@@ -154,13 +271,22 @@ export function ConnectorPanel({ auth }: { auth?: ConnectorAuth }) {
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
         <strong style={{ color: '#cbd5e1', fontSize: 11 }}>GitHub public repository metadata</strong>
-        <span role="status" aria-label="Connector observation status" style={{ color: latest ? STATUS_COLOR[latest.status] : STATUS_COLOR.NOT_EXECUTED, fontSize: 10 }}>
-          {latest ? `Last result: ${latest.status}` : 'NOT_EXECUTED · no observation in this session'}
+        <span
+          role="status"
+          aria-label="Connector observation status"
+          style={{ color: registryStatusColor, fontSize: 10 }}
+        >
+          {registryStatusText}
         </span>
       </div>
       <div style={{ color: '#64748b', fontSize: 10, marginTop: 6 }}>
         Server policy and approval are checked when requested. This declaration does not prove connectivity or service health.
       </div>
+      {journalError && (
+        <div role="alert" style={{ color: '#fca5a5', fontSize: 10, marginTop: 6 }}>
+          Journal read failed: {journalError}
+        </div>
+      )}
     </div>
   );
 
@@ -181,7 +307,6 @@ export function ConnectorPanel({ auth }: { auth?: ConnectorAuth }) {
     setBusy('approve');
     setError(null);
     setApproval(null);
-    setLatest(null);
     try {
       const token = await auth.getAccessToken();
       const result = await request(
@@ -217,7 +342,10 @@ export function ConnectorPanel({ auth }: { auth?: ConnectorAuth }) {
         }),
       });
       if (!isObservation(result)) throw new Error('API returned an invalid connector observation');
+      hasObservedInSession.current = true;
       setLatest(result);
+      setJournalState('loaded');
+      setJournalError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Connector observation failed');
     } finally {
@@ -242,6 +370,7 @@ export function ConnectorPanel({ auth }: { auth?: ConnectorAuth }) {
     setError(null);
     setApproval(null);
     setLatest(null);
+    hasObservedInSession.current = false;
     try {
       await auth.logout();
     } catch (err) {
