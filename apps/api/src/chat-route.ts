@@ -869,10 +869,12 @@ export function registerChatRoute(
       });
     }
 
-    const { organ, actionTriggered, staticReply, recallContext, evidenceHash: resolvedEvidenceHash } = await resolveOrganAndContext(
+    const explicitOrgan = typeof body.organ === 'string' && body.organ.trim() ? body.organ.trim() : undefined;
+    const { organ: detectedOrgan, actionTriggered, staticReply, recallContext, evidenceHash: resolvedEvidenceHash } = await resolveOrganAndContext(
       userMessage,
       deps
     );
+    const organ = explicitOrgan || detectedOrgan;
 
     let replyContent = staticReply;
 
@@ -998,10 +1000,12 @@ export function registerChatRoute(
       });
     }
 
-    const { organ, actionTriggered, staticReply, recallContext, evidenceHash: resolvedEvidenceHash } = await resolveOrganAndContext(
+    const explicitOrgan = typeof body.organ === 'string' && body.organ.trim() ? body.organ.trim() : undefined;
+    const { organ: detectedOrgan, actionTriggered, staticReply, recallContext, evidenceHash: resolvedEvidenceHash } = await resolveOrganAndContext(
       userMessage,
       deps
     );
+    const organ = explicitOrgan || detectedOrgan;
 
     // Set streaming headers — bypass Fastify buffering
     reply.raw.setHeader('Content-Type', 'text/event-stream');

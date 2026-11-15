@@ -220,6 +220,40 @@ export function GloberAgiCommandCenter({
     return 'auto';
   });
 
+  // ── 8-Organ Selector (Soul AI Integration) ──
+  const CANONICAL_ORGANS = [
+    { id: 'AUTO', name: 'Auto', icon: '✨', role: 'Context-aware dynamic routing' },
+    { id: 'AI_SOUL_CORE', name: 'Soul Core', icon: '🌟', role: 'Identity, sovereignty, ecosystem coordination' },
+    { id: 'SOVEREIGN_TREASURY_ORATOR', name: 'Treasury', icon: '🪙', role: 'Bitcoin SegWit public treasury guardian' },
+    { id: 'OCEAN_TRUTH_MEMBRANE', name: 'Truth Membrane', icon: '🛡️', role: 'Security fabric & fail-closed invariants' },
+    { id: 'LUCID_FULL_STACK_BUILDER', name: 'Lucid Builder', icon: '🔨', role: 'Monorepo engineering & Fastify/Vite compiler' },
+    { id: 'KAI_PROVENANCE_LEDGER', name: 'Provenance', icon: '🧬', role: 'Merkle DAG timeline & monotonic receipts' },
+    { id: 'KAI_MEMORY_RECALL', name: 'Memory', icon: '🧠', role: 'Semantic vector memory & context retrieval' },
+    { id: 'ƆREADE_PLURALISM_DUPLEX', name: 'Pluralism', icon: '🌊', role: 'African Pantheon & pluralistic logic' },
+    { id: 'KAI_DREAM_ORACLE', name: 'Dream Oracle', icon: '🌙', role: 'Night ocean dream journaling & capture' },
+  ];
+  const [selectedOrgan, setSelectedOrgan] = useState<string>('AUTO');
+  const [organsList, setOrgansList] = useState<any[]>(CANONICAL_ORGANS);
+
+  const fetchOrgans = useCallback(async () => {
+    try {
+      const res = await apiRequest<any>('/v1/aisoul/organs');
+      if (res && res.success && Array.isArray(res.organs)) {
+        setOrgansList([
+          { id: 'AUTO', name: 'Auto', icon: '✨', role: 'Context-aware dynamic routing' },
+          ...res.organs.map((o: any) => ({
+            id: o.id,
+            name: o.name.replace(/^(AI Soul |Sovereign |Ocean )/i, ''),
+            icon: o.icon || '🌊',
+            role: o.role,
+          })),
+        ]);
+      }
+    } catch {
+      // Degrades gracefully
+    }
+  }, []);
+
   // ── Inputs ──
   const [promptText, setPromptText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
@@ -563,9 +597,10 @@ export function GloberAgiCommandCenter({
 
   useEffect(() => {
     loadState();
+    fetchOrgans();
     const interval = setInterval(loadState, 25000);
     return () => clearInterval(interval);
-  }, [loadState]);
+  }, [loadState, fetchOrgans]);
 
   // ── Execute Live Real-World Tool with Streaming Feedback & HITL ──
   const executeRealWorldTool = async (toolId: string, params: Record<string, any> = {}) => {
@@ -727,6 +762,7 @@ export function GloberAgiCommandCenter({
           mode: activeMode,
           subMode: activeSubMode,
           model: selectedModel,
+          organ: selectedOrgan !== 'AUTO' ? selectedOrgan : undefined,
         }),
       });
       if (res?.success && res.reply) {
@@ -2118,6 +2154,53 @@ export function GloberAgiCommandCenter({
                 </button>
               </div>
             )}
+
+            {/* Active Organ Selector Pill Bar (Soul AI Integration) */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                overflowX: 'auto',
+                padding: '0 4px 6px',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+              }}
+            >
+              <span style={{ fontSize: '10px', color: '#9ca3af', fontWeight: 600, paddingRight: '4px', whiteSpace: 'nowrap' }}>
+                ORGAN:
+              </span>
+              {organsList.map((organ) => {
+                const isActive = selectedOrgan === organ.id;
+                return (
+                  <button
+                    key={organ.id}
+                    onClick={() => setSelectedOrgan(organ.id)}
+                    title={organ.role || organ.name}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '3px 8px',
+                      borderRadius: '12px',
+                      background: isActive
+                        ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(126, 34, 206, 0.2) 100%)'
+                        : 'rgba(255, 255, 255, 0.05)',
+                      border: isActive ? '1px solid rgba(168, 85, 247, 0.6)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      color: isActive ? '#e9d5ff' : '#9ca3af',
+                      fontSize: '11px',
+                      fontWeight: isActive ? 700 : 500,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span>{organ.icon}</span>
+                    <span>{organ.name}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             {/* Floating Capsule */}
             <div

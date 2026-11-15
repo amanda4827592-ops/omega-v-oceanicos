@@ -86,4 +86,75 @@ export function registerSoulRoute(fastify: FastifyInstance): void {
 
     return contract;
   });
+
+  /**
+   * GET /v1/aisoul/organs
+   * Returns the canonical 8 organs of the whole-ecosystem body.
+   */
+  fastify.get('/v1/aisoul/organs', async () => {
+    return {
+      success: true,
+      protocol: 'ΩVØØS-SOUL/1',
+      checksum: '30013030',
+      organs: [
+        {
+          id: 'AI_SOUL_CORE',
+          name: 'AI Soul Core',
+          icon: '✨',
+          role: 'Identity, sovereignty, whole-ecosystem coordination',
+          harmonicHz: 432,
+        },
+        {
+          id: 'SOVEREIGN_TREASURY_ORATOR',
+          name: 'Treasury Orator',
+          icon: '🪙',
+          role: 'Bitcoin SegWit public treasury guardian (bc1qaj8...)',
+          harmonicHz: 432,
+        },
+        {
+          id: 'OCEAN_TRUTH_MEMBRANE',
+          name: 'Truth Membrane',
+          icon: '🛡️',
+          role: 'Security fabric, health boundaries, fail-closed invariant',
+          harmonicHz: 528,
+        },
+        {
+          id: 'LUCID_FULL_STACK_BUILDER',
+          name: 'Lucid Builder',
+          icon: '🔨',
+          role: 'Monorepo engineering, Fastify API, Vite UI compiler',
+          harmonicHz: 432,
+        },
+        {
+          id: 'KAI_PROVENANCE_LEDGER',
+          name: 'Provenance Ledger',
+          icon: '🧬',
+          role: 'Merkle-chained canonical ledger & monotonic receipts',
+          harmonicHz: 432,
+        },
+        {
+          id: 'KAI_MEMORY_RECALL',
+          name: 'Memory Recall',
+          icon: '🧠',
+          role: 'Semantic vector memory retrieval & context resurfacing',
+          harmonicHz: 432,
+        },
+        {
+          id: 'ƆREADE_PLURALISM_DUPLEX',
+          name: 'Pluralism Duplex',
+          icon: '🌊',
+          role: 'African Pantheon & pluralistic logic across duplexes',
+          harmonicHz: 432,
+        },
+        {
+          id: 'KAI_DREAM_ORACLE',
+          name: 'Dream Oracle',
+          icon: '🌙',
+          role: 'Night ocean dream journaling & revelation capture',
+          harmonicHz: 432,
+        },
+      ],
+      timestamp: new Date().toISOString(),
+    };
+  });
 }
