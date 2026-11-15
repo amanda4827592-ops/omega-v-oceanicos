@@ -725,8 +725,10 @@ export const EQUATION_LAW_OBSERVATION: RepoSurfaceObservation = Object.freeze({
 });
 
 /**
- * Full-stack skills, in flow order. This is the water: one current, not eight
- * products. The list is a declaration. Reading the files is the observation.
+ * Every skill on the shelf, in flow order. The first eight are the original
+ * full-stack current. The rest continue that same water: one current over the
+ * whole shelf, not a second product. The list is a declaration. Reading the
+ * files is the observation.
  */
 export const FULL_STACK_WATER: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'water-companion', path: 'skills/oceanicos-full-stack-companion/SKILL.md', role: 'skill' as const }),
@@ -737,6 +739,17 @@ export const FULL_STACK_WATER: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'water-lucid', path: 'skills/lucid-full-stack/SKILL.md', role: 'skill' as const }),
   Object.freeze({ id: 'water-global-good', path: 'skills/omega-global-good-fullstack/SKILL.md', role: 'skill' as const }),
   Object.freeze({ id: 'water-computer', path: 'skills/full-stack-computer-mode/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-mirror', path: 'skills/omega-mirror-water-universal-body/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-reality', path: 'skills/omega-reality-first/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-framework', path: 'skills/oceanicos-framework/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-return', path: 'skills/lucid-continuum/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-os', path: 'skills/omega-v-os/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-navigator', path: 'skills/oceanicos-value-navigator/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-kai', path: 'skills/kai-companion/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-voice', path: 'skills/voice-bridge/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-pidgin', path: 'skills/oread-pidgin-harmonizer/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-kaixelion', path: 'skills/kaixelion-omega/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-kaixelion-x', path: 'skills/kaixelionxomega/SKILL.md', role: 'skill' as const }),
 ]);
 
 export type FullStackWaterReport = {

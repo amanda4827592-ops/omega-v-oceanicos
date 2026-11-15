@@ -34,7 +34,7 @@ Code removed from a change must still be explainable as a return to this equatio
 
 ## Outward ring
 
-`REPO_OUTWARD_RING` is the declared expansion: contract, kernel, API, web, CLI, docs, and `FULL_STACK_WATER`. The water is the eight full-stack skills in flow order, from the companion through computer mode. The list is not evidence. `pnpm compress:repo` observes the ring. `pnpm flow:water` observes only the skill current. Both leave `upgrade.execution` at `NOT_EXECUTED`.
+`REPO_OUTWARD_RING` is the declared expansion: contract, kernel, API, web, CLI, docs, and `FULL_STACK_WATER`. The water is the whole `skills/*/SKILL.md` shelf in one flow. The first eight stay in their original order, from the companion through computer mode. The rest of the shelf continues that current. The list is not evidence. `pnpm compress:repo` observes the ring. `pnpm flow:water` observes only the skill current. Both leave `upgrade.execution` at `NOT_EXECUTED`.
 
 A skill that also exists under `.claude/skills/` is a published twin. The water test fails if those bytes drift. A skill with no twin is not invented one.
 

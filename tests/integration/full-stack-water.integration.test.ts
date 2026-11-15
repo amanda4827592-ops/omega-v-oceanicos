@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
@@ -13,24 +13,32 @@ import {
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
-test('the full-stack water current is one bounded ordered flow', () => {
-  assert.equal(FULL_STACK_WATER.length, 8);
-  assert.ok(REPO_OUTWARD_RING.length <= MAX_EQUATION_SURFACES);
+const ORIGINAL_CURRENT = [
+  'water-companion',
+  'water-continuum',
+  'verified-upgrade-skill',
+  'water-spine',
+  'water-max-space',
+  'water-lucid',
+  'water-global-good',
+  'water-computer',
+] as const;
+
+const skillShelf = (): string[] =>
+  readdirSync(join(repoRoot, 'skills'))
+    .filter((name) => existsSync(join(repoRoot, 'skills', name, 'SKILL.md')))
+    .map((name) => `skills/${name}/SKILL.md`)
+    .sort();
+
+test('the full-stack water current is the whole skills shelf in one ordered flow', () => {
   const ids = FULL_STACK_WATER.map((surface) => surface.id);
+  assert.deepEqual(ids.slice(0, ORIGINAL_CURRENT.length), [...ORIGINAL_CURRENT]);
   assert.equal(new Set(ids).size, ids.length);
   assert.deepEqual(
-    ids,
-    [
-      'water-companion',
-      'water-continuum',
-      'verified-upgrade-skill',
-      'water-spine',
-      'water-max-space',
-      'water-lucid',
-      'water-global-good',
-      'water-computer',
-    ],
+    [...FULL_STACK_WATER.map((surface) => surface.path)].sort(),
+    skillShelf(),
   );
+  assert.ok(REPO_OUTWARD_RING.length <= MAX_EQUATION_SURFACES);
   for (const surface of FULL_STACK_WATER) {
     assert.equal(surface.role, 'skill');
     assert.match(surface.path, /^skills\/[a-z0-9-]+\/SKILL\.md$/);
@@ -88,7 +96,7 @@ test('a missing skill halts the current and selects no upgrade', () => {
     const report = compressFullStackWater(root);
     assert.equal(report.status, 'HALTED');
     assert.equal(report.halt?.verdict, 'UNKNOWN');
-    assert.equal(report.halt?.id, 'water-computer');
+    assert.equal(report.halt?.id, 'water-kaixelion-x');
     assert.equal(report.upgrade.execution, 'NOT_EXECUTED');
     assert.equal(report.upgrade.selected, null);
   } finally {
