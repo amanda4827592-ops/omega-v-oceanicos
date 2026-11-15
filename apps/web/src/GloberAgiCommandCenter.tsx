@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { theme } from './oceanicosTheme';
 import { enqueueOfflineMessage } from './offlineQueue';
 import { InAppChromeBrowser } from './InAppChromeBrowser';
+import { WaterP2PSessionView } from './WaterP2PSessionView';
 
 /* ── API helpers ── */
 const API_BASE_URL = (
@@ -493,6 +494,26 @@ export function GloberAgiCommandCenter({
       }
       setChromeInitialUrl(targetUrl);
       setChromeBrowserOpen(true);
+    }
+
+    // Auto-launch Water Protocol P2P Session on session prompts
+    if (
+      lower.includes('start session') ||
+      lower.includes('water session') ||
+      lower.includes('p2p session') ||
+      lower.includes('call alice') ||
+      lower.includes('p2p call')
+    ) {
+      try {
+        const res = await apiRequest<any>('/v1/water/room', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: authSession?.user?.id || 'usr_omega_sovereign_1111' }),
+        });
+        if (res?.success) {
+          setActiveWaterRoom(res.room);
+        }
+      } catch {}
     }
 
     setPromptText('');
@@ -1373,6 +1394,28 @@ export function GloberAgiCommandCenter({
                   paddingBottom: '24px',
                 }}
               >
+                {/* Active Water Protocol P2P Session View */}
+                {activeWaterRoom && (
+                  <WaterP2PSessionView
+                    roomId={activeWaterRoom.id}
+                    creatorId={authSession?.user?.id || 'usr_omega_sovereign_1111'}
+                    onEndSession={(digest) => {
+                      setActiveWaterRoom(null);
+                      if (digest) {
+                        setLocalMessages((prev) => [
+                          ...prev,
+                          {
+                            id: `water-end-${Date.now()}`,
+                            sender: 'system',
+                            content: `🔒 **Water Protocol Session Finalized**\n\n• **Session Digest**: \`${digest}\`\n• **Attestation**: \`Appended to KAI Merkle Ledger ✓\`\n• **Status**: \`P2P Tunnel safely closed\``,
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          },
+                        ]);
+                      }
+                    }}
+                  />
+                )}
+
                 {messages.map((m) => {
                   const isUser = m.sender === 'user';
                   return (
