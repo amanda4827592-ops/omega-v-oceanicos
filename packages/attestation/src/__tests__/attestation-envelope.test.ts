@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { generateKeyPairSync, verify as nodeVerify } from 'node:crypto';
-import { AttestationService } from '@omega-v/attestation';
-import { VerificationResult } from '@omega-v/types';
+import { describe, expect, it } from '../../../../tests/support/jest-compat.mjs';
+import { AttestationService } from '../../dist/index.js';
+import type { VerificationResult } from '@oceanicos/types';
 
 /**
  * The specification is a promise to people outside this repository. A
@@ -133,7 +134,7 @@ describe('attestation envelope specification v1', () => {
     const reference = readFileSync(join(root, 'docs/spec/verify_attestation.py'), 'utf8');
 
     expect(reference).toContain('SIGNED_FIELDS');
-    expect(reference).not.toContain('@omega-v');
+    expect(reference).not.toContain('@oceanicos');
     // sort_keys would break interoperability; the reference must not use it.
     expect(reference).not.toContain('sort_keys=True');
   });

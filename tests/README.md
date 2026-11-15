@@ -49,8 +49,17 @@ equivalent.
 Wired by `pnpm test:suites`: every `packages/mini/src/__tests__/*.test.ts`
 suite (admission bridge, change calculus, compiler, connector admission and
 observation, IR validator, KAI, KAI cycle, repo builder, repo verifier,
-transition, water flow, worker registry) and the root documentation guards
-that pass against the current tree.
+transition, water flow, worker registry), the `packages/attestation`
+suites (`attestation`, `attestation-envelope`,
+`attestation.constructor-branches`) and the root documentation guards that
+pass against the current tree. The attestation suites import the built
+`packages/attestation/dist`, like the mini suites, so `pnpm --filter
+@oceanicos/attestation build` must have run (`pnpm test` builds). The former
+`attestation.crossrealm-and-branches` suite is now
+`attestation.constructor-branches`: its `jest.mock('node:crypto', ...)` only
+existed because Jest's vm context made Node's crypto errors cross-realm, and
+`node:test` has one realm, so a genuine parse failure drives that branch with
+no mock — the mock was deleted, not replaced.
 
 Wired by `pnpm test:api`: the API suites that test the live surface —
 `persistence`, `persistence.failure-messages`, `persistence-reencrypt-route`,
@@ -116,12 +125,6 @@ runner; that job is what proves the artifact runs.
 - `pnpm test:integration` matches no tests, because this directory is empty.
   It passes rather than failing on an empty match, which is honest only for as
   long as this note stays next to it.
-- `packages/attestation/src/__tests__` (`attestation`, `attestation-envelope`,
-  `attestation.crossrealm-and-branches`) is not wired into `test:suites` yet.
-  The first two use the Jest globals the shim does not provide and the third
-  still relies on `jest.mock('node:crypto', ...)`, which has no `node:test`
-  equivalent — under native Node the error is same-realm and the mock is not
-  needed, so porting it means deleting the mock, not replacing it.
 
 ---
 

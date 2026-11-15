@@ -1,11 +1,12 @@
+import { beforeAll, describe, expect, it, afterEach } from '../../../../tests/support/jest-compat.mjs';
 import { createHmac, generateKeyPairSync } from 'node:crypto';
 import {
   AttestationService,
   InvalidSigningKeyError,
   MissingSigningKeyError,
   verifyEd25519,
-} from '../index';
-import { Attestation, VerificationResult } from '@omega-v/types';
+} from '../../dist/index.js';
+import type { Attestation, VerificationResult } from '@oceanicos/types';
 
 const verificationResult: VerificationResult = {
   id: 'ver-test-1',
