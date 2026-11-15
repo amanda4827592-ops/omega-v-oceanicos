@@ -36,4 +36,13 @@ describe('InferenceClient Local & Sovereign Generation', () => {
     const result = await client.generateCompletion('Verify KAI Merkle DAG ledger memory');
     expect(result.text).toContain('KAI Merkle DAG memory continuum verified');
   });
+
+  it('handles pullModel safely when local host is offline', async () => {
+    const client = new InferenceClient({ timeoutMs: 500, fallbackToStub: true });
+    const result = await client.pullModel('llama3.2:1b');
+    expect(result).toBeDefined();
+    expect(result.success).toBe(false);
+    expect(result.status).toBe('UNAVAILABLE');
+    expect(result.message).toContain('offline or unreachable');
+  });
 });

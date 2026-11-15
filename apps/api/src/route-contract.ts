@@ -115,6 +115,7 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/inference/status',
   'POST /v1/inference/analyze',
   'POST /v1/inference/generate',
+  'POST /v1/inference/pull',
   'GET /v1/omega/commands',
   'GET /v1/omega/workers',
   'GET /',

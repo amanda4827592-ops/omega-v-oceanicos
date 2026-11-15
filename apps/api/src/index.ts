@@ -1052,6 +1052,15 @@ export function createApp(
     return { success: true, result };
   });
 
+  fastify.post('/v1/inference/pull', async (request: any, reply) => {
+    const { model } = request.body || {};
+    if (!model || typeof model !== 'string') {
+      return jsonError(reply, 400, 'MISSING_MODEL_NAME', { detail: 'model name string is required' });
+    }
+    const result = await inferenceClient.pullModel(model);
+    return { success: result.success, result };
+  });
+
   fastify.get('/v1/memory/status', async () => ({
     success: true,
     memory: await vectorMemory.getStatus(),
@@ -1637,6 +1646,7 @@ export const STARTUP_BANNER = [
   '  GET    /v1/inference/status',
   '  POST   /v1/inference/analyze',
   '  POST   /v1/inference/generate',
+  '  POST   /v1/inference/pull',
   '  GET    /v1/memory/status',
   '  GET    /v1/memory/search',
   '  GET    /v1/memory/causal',

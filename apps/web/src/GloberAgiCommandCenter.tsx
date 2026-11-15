@@ -342,6 +342,9 @@ export function GloberAgiCommandCenter({
   }, []);
 
   const [inferenceStatus, setInferenceStatus] = useState<any>(null);
+  const [pullModelInput, setPullModelInput] = useState('');
+  const [pullingModel, setPullingModel] = useState<string | null>(null);
+  const [pullMessage, setPullMessage] = useState<string | null>(null);
 
   const fetchInferenceStatus = useCallback(async () => {
     try {
@@ -353,6 +356,31 @@ export function GloberAgiCommandCenter({
       // Degrades gracefully
     }
   }, []);
+
+  const handlePullModel = async (modelToPull: string) => {
+    if (!modelToPull.trim()) return;
+    const target = modelToPull.trim();
+    setPullingModel(target);
+    setPullMessage(null);
+    try {
+      const res = await apiRequest<any>('/v1/inference/pull', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: target }),
+      });
+      if (res && res.success) {
+        setPullMessage(`✓ '${target}' ready`);
+        fetchInferenceStatus();
+      } else {
+        setPullMessage(res?.result?.message || 'Pull request completed');
+      }
+    } catch (err: any) {
+      setPullMessage(err.message || 'Pull initiated');
+    } finally {
+      setPullingModel(null);
+      setPullModelInput('');
+    }
+  };
 
   // ── ChatGPT Advanced Voice Mode State & Invariants ──
   const [voiceModeActive, setVoiceModeActive] = useState(false);
@@ -2304,6 +2332,82 @@ export function GloberAgiCommandCenter({
                 <span>Active Model:</span>
                 <span style={{ color: '#a78bfa', fontFamily: theme.fontMono }}>{inferenceStatus?.model || 'phi3:mini'}</span>
               </div>
+
+              {/* Quick Model Pull Tags */}
+              <div style={{ marginTop: '2px' }}>
+                <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '4px' }}>Quick Pull Open-Weight:</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {['llama3.2:1b', 'deepseek-r1:1.5b', 'phi3:mini', 'qwen2.5:0.5b'].map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => handlePullModel(m)}
+                      disabled={Boolean(pullingModel)}
+                      style={{
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: 'rgba(255, 255, 255, 0.06)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        color: pullingModel === m ? '#f59e0b' : '#38bdf8',
+                        fontSize: '9px',
+                        cursor: 'pointer',
+                        fontFamily: theme.fontMono,
+                      }}
+                    >
+                      {pullingModel === m ? 'Pulling…' : `+ ${m}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Model Pull Input */}
+              <div style={{ display: 'flex', gap: '4px', marginTop: '2px' }}>
+                <input
+                  type="text"
+                  value={pullModelInput}
+                  onChange={(e) => setPullModelInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handlePullModel(pullModelInput);
+                    }
+                  }}
+                  placeholder="pull model e.g. llama3.2..."
+                  style={{
+                    flex: 1,
+                    background: '#171717',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '4px',
+                    padding: '4px 6px',
+                    fontSize: '10px',
+                    color: '#ffffff',
+                    fontFamily: theme.fontMono,
+                    outline: 'none',
+                  }}
+                />
+                <button
+                  onClick={() => handlePullModel(pullModelInput)}
+                  disabled={Boolean(pullingModel) || !pullModelInput.trim()}
+                  style={{
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    background: '#f59e0b',
+                    border: 'none',
+                    color: '#000000',
+                    fontWeight: 700,
+                    fontSize: '10px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Pull
+                </button>
+              </div>
+
+              {pullMessage && (
+                <div style={{ fontSize: '9px', color: '#34d399', fontFamily: theme.fontMono, marginTop: '2px' }}>
+                  {pullMessage}
+                </div>
+              )}
+
               <div style={{ fontSize: '10px', color: '#71717a' }}>
                 Zero External APIs · 100% self-hosted open-weight inference
               </div>

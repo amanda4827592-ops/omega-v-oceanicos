@@ -148,6 +148,53 @@ export class InferenceClient {
   }
 
   /**
+   * Pull/download an open-weight model directly to the local Ollama instance.
+   */
+  public async pullModel(modelName: string): Promise<{ success: boolean; status: string; message?: string }> {
+    const available = await this.isAvailable();
+    if (!available) {
+      return {
+        success: false,
+        status: 'UNAVAILABLE',
+        message: `Local inference host ${this.config.host} is offline or unreachable.`,
+      };
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120_000);
+    try {
+      const response = await fetch(`${this.config.host}/api/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: modelName, stream: false }),
+        signal: controller.signal,
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          status: 'SUCCESS',
+          message: `Model '${modelName}' pulled successfully to ${this.config.host}.`,
+        };
+      }
+
+      return {
+        success: false,
+        status: 'FAILED',
+        message: `Pull request failed with HTTP ${response.status}`,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        status: 'ERROR',
+        message: err.message || 'Unknown network error',
+      };
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  /**
    * Analyze a telemetry observation using the local model.
    * Returns a structured AI assessment with confidence scoring.
    *
