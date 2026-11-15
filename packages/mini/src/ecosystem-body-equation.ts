@@ -772,6 +772,20 @@ export function compressFullStackWater(root: string): FullStackWaterReport {
   });
 }
 
+/**
+ * Action and execution surfaces, in flow order. The list is a declaration.
+ * Reading the files is the observation. Folding them does not run them.
+ */
+export const EXECUTION_FLOW: readonly OutwardSurface[] = Object.freeze([
+  Object.freeze({ id: 'fixpoint', path: 'packages/mini/src/ecosystem-fixpoint.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'pipeline-kernel', path: 'packages/mini/src/pipeline.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'pipeline-api', path: 'apps/api/src/pipeline-route.ts', role: 'api' as const }),
+  Object.freeze({ id: 'execute-loop', path: 'apps/api/src/invisible-computer.ts', role: 'api' as const }),
+  Object.freeze({ id: 'execute-route', path: 'apps/api/src/execute-route.ts', role: 'api' as const }),
+  Object.freeze({ id: 'command-api', path: 'apps/api/src/omega.ts', role: 'api' as const }),
+  Object.freeze({ id: 'execute-panel', path: 'apps/web/src/InvisibleComputer.tsx', role: 'web' as const }),
+]);
+
 /** Paths this repository may expand outward. Admission is observation, not the list. */
 export const REPO_OUTWARD_RING: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'equation', path: 'ECOSYSTEM_BODY.md', role: 'contract' as const }),
@@ -784,6 +798,7 @@ export const REPO_OUTWARD_RING: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'single-body', path: 'packages/mini/src/single-body.ts', role: 'kernel' as const }),
   Object.freeze({ id: 'api-contract', path: 'apps/api/src/route-contract.ts', role: 'api' as const }),
   Object.freeze({ id: 'api', path: 'apps/api/src/index.ts', role: 'api' as const }),
+  ...EXECUTION_FLOW,
   Object.freeze({ id: 'web-body', path: 'apps/web/src/SingleBodyPanel.tsx', role: 'web' as const }),
   Object.freeze({ id: 'water-mirror', path: 'skills/omega-mirror-water-universal-body/SKILL.md', role: 'skill' as const }),
   Object.freeze({ id: 'water-flow', path: 'packages/mini/src/water-flow.ts', role: 'kernel' as const }),
