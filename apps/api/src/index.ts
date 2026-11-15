@@ -24,7 +24,7 @@ import { ObserverEngine } from '@oceanicos/observer';
 import { AttestationService } from '@oceanicos/attestation';
 import { InferenceClient } from '@oceanicos/inference';
 import { VectorMemory } from '@oceanicos/vector';
-import { PluralisticRealityMatrix, PluralismConvergenceMatrix, PluralisticDualityTensor, evaluateOmegaLambda, executeMatrixTransition, executeContinuumCompressionTransition, evaluateProactiveMoodMatrix, executeLucidLoop, evaluate8x8x8x8HyperTensor, OCEANIC_BODY_MEMBERS, EXPANDED_BODY_MEMBERS, LUCID_LOOP_PHASES } from '@oceanicos/pluralism';
+import { PluralisticRealityMatrix, PluralismConvergenceMatrix, PluralisticDualityTensor, evaluateOmegaLambda, executeMatrixTransition, executeContinuumCompressionTransition, evaluateProactiveMoodMatrix, executeLucidLoop, evaluate8x8x8x8HyperTensor, evaluateHyperTensor, evaluate6x6x6x6HexTensor, evaluate4x4x4x4SovereignTensor, OCEANIC_BODY_MEMBERS, EXPANDED_BODY_MEMBERS, LUCID_LOOP_PHASES } from '@oceanicos/pluralism';
 import { AutopilotMoodEngine } from '@oceanicos/mood';
 import { OceanicosKernel } from '@omega-v/kernel';
 import { evaluateAuthorization } from '@oceanicos/authorization';
@@ -1321,6 +1321,13 @@ export function createApp(
     const isEvidenceVerified = body.isEvidenceVerified !== undefined ? Boolean(body.isEvidenceVerified) : true;
     const receipt = executeContinuumCompressionTransition(attributedHuman, isEvidenceVerified);
     return { success: receipt.success, receipt };
+  });
+
+  fastify.get('/v1/pluralism/tensor/hyper', async (request: any) => {
+    const degreeParam = Number((request.query as any)?.degree) || 8;
+    const degree = (degreeParam === 4 || degreeParam === 6 ? degreeParam : 8) as (4 | 6 | 8);
+    const evaluation = evaluateHyperTensor(degree);
+    return { success: true, evaluation };
   });
 
   fastify.get('/v1/verification/contract', async () => {

@@ -132,6 +132,8 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/aisoul/organs',
   'GET /v1/aisoul/rooms',
   'POST /v1/aisoul/omnicos/transition',
+  'GET /v1/pluralism/tensor/hyper',
+  'POST /v1/truthos/finite-action/validate',
   'GET /',
   'GET /assets/*',
 ] as const;

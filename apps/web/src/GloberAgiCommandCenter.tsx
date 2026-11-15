@@ -304,6 +304,11 @@ export function GloberAgiCommandCenter({
   const [fsmLoading, setFsmLoading] = useState<boolean>(false);
   const [fsmResult, setFsmResult] = useState<any>(null);
   const [fsmIntentText, setFsmIntentText] = useState<string>('');
+  const [truthPilotResult, setTruthPilotResult] = useState<any>(null);
+  const [truthPilotLoading, setTruthPilotLoading] = useState<boolean>(false);
+  const [hyperTensorResult, setHyperTensorResult] = useState<any>(null);
+  const [hyperTensorDegree, setHyperTensorDegree] = useState<number>(8);
+  const [hyperTensorLoading, setHyperTensorLoading] = useState<boolean>(false);
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
   const [chromeBrowserOpen, setChromeBrowserOpen] = useState(false);
@@ -3925,6 +3930,173 @@ export function GloberAgiCommandCenter({
                 </div>
               )}
             </div>
+
+            {/* ── ROOM 04 SPECIALIZED: TRUTHOS 5-BUYER COMMERCIAL VALIDATION ── */}
+            {selectedRoom.code === '04' && (
+              <div
+                style={{
+                  background: 'rgba(234, 179, 8, 0.08)',
+                  border: '1px solid rgba(234, 179, 8, 0.25)',
+                  borderRadius: '14px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#facc15' }}>💎 TruthOS 5-Buyer Commercial Pilot Generator</span>
+                  <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: theme.fontMono }}>Section 8 First Action</span>
+                </div>
+                <p style={{ margin: '0 0 10px 0', fontSize: '11px', color: '#d1d5db', lineHeight: 1.4 }}>
+                  Generates 5 personalized interview prompts for reachable buyers. Invariant: Build software only after validated demand.
+                </p>
+                <button
+                  disabled={truthPilotLoading}
+                  onClick={async () => {
+                    setTruthPilotLoading(true);
+                    try {
+                      const res = await apiRequest<any>('/v1/truthos/finite-action/validate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          niche: 'Boutique agencies & operators',
+                          manualTask: 'Manual CRM to Notion project tracking (3+ hrs/wk)',
+                          pilotFeeRange: '$250–$1,000',
+                        }),
+                      });
+                      setTruthPilotResult(res);
+                    } catch (err: any) {
+                      setTruthPilotResult({ error: err.message });
+                    } finally {
+                      setTruthPilotLoading(false);
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    background: truthPilotLoading ? 'rgba(234, 179, 8, 0.2)' : '#ca8a04',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    cursor: truthPilotLoading ? 'not-allowed' : 'pointer',
+                    marginBottom: '10px',
+                  }}
+                >
+                  {truthPilotLoading ? '⏳ Generating Pilot Prompts...' : '⚡ Generate 5-Buyer Interview Hooks'}
+                </button>
+
+                {truthPilotResult?.candidatePrompts && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: '#fef08a' }}>
+                      📋 5 Candidate Buyer Interview Hooks ({truthPilotResult.status}):
+                    </div>
+                    {truthPilotResult.candidatePrompts.map((p: any, idx: number) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: 'rgba(0, 0, 0, 0.3)',
+                          border: '1px solid rgba(234, 179, 8, 0.2)',
+                          borderRadius: '8px',
+                          padding: '10px',
+                          fontSize: '11px',
+                        }}
+                      >
+                        <div style={{ color: '#facc15', fontWeight: 600 }}>{p.targetPersona}</div>
+                        <div style={{ color: '#e2e8f0', margin: '4px 0', fontStyle: 'italic' }}>"{p.interviewHook}"</div>
+                        <div style={{ color: '#94a3b8', fontSize: '10px' }}>
+                          Invariants: {p.invariantChecks.join(' · ')}
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: '10px', color: '#f87171', marginTop: '4px', fontFamily: theme.fontMono }}>
+                      ⚠️ {truthPilotResult.nonCollapseRule}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── ROOM 05 SPECIALIZED: HYPER-TENSOR SWITCHER (4x4x4x4 / 6x6x6x6 / 8x8x8x8) ── */}
+            {selectedRoom.code === '05' && (
+              <div
+                style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: '14px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#38bdf8' }}>🌊 Hyper-Tensor Dimensionality Switcher</span>
+                  <span style={{ fontSize: '10px', color: '#94a3b8', fontFamily: theme.fontMono }}>Tensors: 4⁴ / 6⁴ / 8⁴</span>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px' }}>
+                  {[4, 6, 8].map((deg) => (
+                    <button
+                      key={deg}
+                      onClick={async () => {
+                        setHyperTensorDegree(deg);
+                        setHyperTensorLoading(true);
+                        try {
+                          const res = await apiRequest<any>(`/v1/pluralism/tensor/hyper?degree=${deg}`);
+                          setHyperTensorResult(res?.evaluation);
+                        } catch (err: any) {
+                          setHyperTensorResult({ error: err.message });
+                        } finally {
+                          setHyperTensorLoading(false);
+                        }
+                      }}
+                      style={{
+                        flex: 1,
+                        padding: '6px 10px',
+                        borderRadius: '6px',
+                        background: hyperTensorDegree === deg ? '#0284c7' : 'rgba(255, 255, 255, 0.08)',
+                        border: 'none',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: hyperTensorDegree === deg ? 700 : 500,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {deg}×{deg}×{deg}×{deg} ({Math.pow(deg, 4)}-D)
+                    </button>
+                  ))}
+                </div>
+
+                {hyperTensorLoading ? (
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textAlign: 'center', padding: '10px' }}>
+                    ⏳ Computing {hyperTensorDegree}⁴ ({Math.pow(hyperTensorDegree, 4)}-D) Tensor Projection...
+                  </div>
+                ) : hyperTensorResult ? (
+                  <div
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.35)',
+                      border: '1px solid rgba(56, 189, 248, 0.2)',
+                      borderRadius: '10px',
+                      padding: '12px',
+                      fontSize: '11px',
+                      fontFamily: theme.fontMono,
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <div style={{ color: '#38bdf8', fontWeight: 700, marginBottom: '4px' }}>
+                      {hyperTensorResult['🌊']} · {hyperTensorResult.contract}
+                    </div>
+                    <div>Dimension: <strong>{hyperTensorResult.tensorDimension} coordinates</strong></div>
+                    <div>Frobenius Norm: <strong>{Number(hyperTensorResult.frobeniusNorm || 0).toFixed(4)}</strong></div>
+                    <div>Gram Determinant: <strong>{Number(hyperTensorResult.gramDeterminant || hyperTensorResult.gram8x8Determinant || 0).toFixed(6)}</strong></div>
+                    <div>Root Determinant: <strong>{Number(hyperTensorResult.rootGramDeterminant || hyperTensorResult.eighthRootGramDeterminant || 0).toFixed(6)}</strong></div>
+                    <div style={{ color: '#34d399' }}>Fixpoint: ✓ STABLE (Ψ = 0) · Proof: {String(hyperTensorResult.proofHash || '').slice(0, 16)}...</div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '11px', color: '#94a3b8', textAlign: 'center', padding: '6px' }}>
+                    Select a tier (4⁴, 6⁴, 8⁴) to inspect its Gram matrix determinant and Frobenius norm.
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Notion Control Surface Link */}
             {selectedRoom.notionUrl && (

@@ -457,4 +457,106 @@ export function registerSoulRoute(fastify: FastifyInstance, kaiLedger?: any): vo
       timestamp: now,
     };
   });
+
+  /**
+   * POST /v1/truthos/finite-action/validate
+   * Section 8 First Finite Action: Narrow workflow setup offer validation with 5 reachable potential buyers.
+   */
+  fastify.post('/v1/truthos/finite-action/validate', async (request: FastifyRequest<{ Body: any }>) => {
+    const body = (request.body || {}) as any;
+    const niche = (body.niche || 'Boutique agency owners & operators').trim();
+    const manualTask = (body.manualTask || 'Manual CRM data entry and Notion project tracking (3+ hrs/wk)').trim();
+    const pilotFee = (body.pilotFeeRange || '$250–$1,000').trim();
+    const actor = body.steward || 'did:omega:human:starofgodmayomi';
+    const now = new Date().toISOString();
+
+    const candidatePrompts = [
+      {
+        buyerId: 'BUYER_01_AGENCY_PRINCIPAL',
+        targetPersona: `${niche} — Founder / Managing Partner`,
+        interviewHook: `Hey! Doing a quick research pulse for agencies: how many hours a week does your team lose to ${manualTask}?`,
+        invariantChecks: [
+          'Verify if manual task consumes 3+ hours per week',
+          'Inspect current messy toolstack or spreadsheet workaround',
+          'Assess willingness to pay a pilot fee of ' + pilotFee + ' for a working automated setup',
+        ],
+      },
+      {
+        buyerId: 'BUYER_02_OPS_DIRECTOR',
+        targetPersona: `${niche} — Operations Director`,
+        interviewHook: `Quick question: what is the most painful point of friction between your project tracker and team reporting right now?`,
+        invariantChecks: [
+          'Measure operational delay in client updates',
+          'Document real financial/administrative pain of bottlenecks',
+          'Evaluate pilot acceptance criteria with zero disruption guarantee',
+        ],
+      },
+      {
+        buyerId: 'BUYER_03_GROWTH_LEAD',
+        targetPersona: `${niche} — Growth & Acquisition Lead`,
+        interviewHook: `Working on a local-first automation setup: when leads come in, is any part of your intake process still manual copy-paste?`,
+        invariantChecks: [
+          'Identify pipeline velocity drop-offs',
+          'Score buyer urgency (1-10 scale)',
+          'Test pilot pricing interest: ' + pilotFee,
+        ],
+      },
+      {
+        buyerId: 'BUYER_04_DELIVERY_MANAGER',
+        targetPersona: `${niche} — Client Delivery Lead`,
+        interviewHook: `Curious about your delivery workflow: does your team maintain duplicate status lists in Notion/Slack/email?`,
+        invariantChecks: [
+          'Calculate context-switching cost per week',
+          'Check willingness to review a 1-day automated pilot setup',
+          'Capture exact verbatim feature requests without speculation',
+        ],
+      },
+      {
+        buyerId: 'BUYER_05_TECHNICAL_FOUNDER',
+        targetPersona: `${niche} — Technical Studio Lead`,
+        interviewHook: `We are testing an offline-resilient, verified workflow engine: what tool integration consistently breaks on you?`,
+        invariantChecks: [
+          'Document API fragility & maintenance headaches',
+          'Verify requirement for private-by-default execution',
+          'Confirm deposit interest before building any custom code',
+        ],
+      },
+    ];
+
+    const dailyCommand = `INTENT: Validate narrow workflow setup with 5 target buyers | BUYER: ${niche} | EVIDENCE: Inbound demand & local script | NEXT Δ: Send 5 personalized interview prompts | RISK: Low (0.05) | TEST: Human steward approval | STATUS: VALIDATING | EARNED: $0`;
+
+    if (kaiLedger && typeof kaiLedger.append === 'function') {
+      try {
+        kaiLedger.append({
+          distinction: 'truthos:finite-action:validation',
+          subject: `offer:${niche.slice(0, 30)}`,
+          author: actor,
+          payload: { niche, manualTask, pilotFee, dailyCommand, status: 'VALIDATING' },
+        });
+      } catch {
+        // non-blocking
+      }
+    }
+
+    return {
+      success: true,
+      status: 'VALIDATING',
+      contract: 'Ω∞v-TRUTHOS-FINITE-ACTION-V1',
+      steward: actor,
+      niche,
+      manualTask,
+      pilotFeeRange: pilotFee,
+      dailyCommand,
+      interviewInvariants: [
+        '1. What repetitive manual task consumes 3+ hours per week?',
+        '2. What is the current messy workaround or toolstack?',
+        '3. What is the real urgency or financial pain of this inefficiency?',
+        '4. Would they pay a modest pilot fee (' + pilotFee + ') for a guaranteed working automated setup?',
+        '5. Human review required before sending outreach. Build software only after explicit demand.',
+      ],
+      nonCollapseRule: 'REVENUE PLAN ≠ EARNED CASH · ENTHUSIASM ≠ DEMAND PROOF · BUILD ONLY AFTER EXPLICIT CONSENT',
+      candidatePrompts,
+      timestamp: now,
+    };
+  });
 }
