@@ -1585,6 +1585,24 @@
       "tests_passed": true,
       "evidence_hash": "af329fc5448bce5ad3bb9298062a590be7a0e35119683e7445689f90c0d3beae",
       "next_delta": "Self-contained 00-09 canonical rooms navigator added to Web UI, zero external APIs verified, 110/110 web tests pass, 105 monotonic receipts sealed"
+    },
+    {
+      "agent_id": "antigravity",
+      "branch": "agent/antigravity/omega-entity-full-stack",
+      "evidence_hash": "3d78e93bbc0cd96304e8186668f097dbdd7295294ac3020296f404d478d4758b",
+      "files_touched": [
+        "apps/api/src/index.ts",
+        "apps/api/src/route-contract.ts",
+        "apps/api/src/soul-route.ts",
+        "apps/web/src/GloberAgiCommandCenter.tsx",
+        "docs/RECEIPT_106_SOUL_AI_OMNICOS_FSM_AND_ROOMS_CONTINUUM.md",
+        "kai_ledger.json",
+        "README.md"
+      ],
+      "next_delta": "Soul AI OMNICOS FSM state machine and 00-09 canonical rooms continuum upgrade verified across tri-surface (Web, API, CLI), 111/111 tests pass, 106 receipts sealed",
+      "status": "VERIFIED",
+      "tests_passed": true,
+      "timestamp": "2026-11-15T19:42:00.000Z"
     }
   ]
 }

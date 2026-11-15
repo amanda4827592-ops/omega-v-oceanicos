@@ -188,17 +188,122 @@ export function GloberAgiCommandCenter({
 
   // ── 00–09 Canonical Rooms (Notion Continuum) ──
   const CANONICAL_ROOMS = [
-    { code: '00', title: 'CANON', icon: '📜', desc: 'Invariants & Laws (V(Δ) = ⊤)' },
-    { code: '01', title: 'HUMAN ROOT', icon: '👤', desc: 'Lived source (ELION VAREL // 11:11)' },
-    { code: '02', title: 'AI SOUL', icon: '🧠', desc: '8 Organs & Command Routing' },
-    { code: '03', title: 'ECHOFRAME', icon: '🎨', desc: 'Creation, Voice & 432 Hz Resonance' },
-    { code: '04', title: 'TRUTHOS', icon: '💎', desc: '4-Quadrant Wealth & Tithes' },
-    { code: '05', title: 'OCEANICOS', icon: '🌊', desc: 'Constitutional Gate & Verification' },
-    { code: '06', title: 'EXECUTION', icon: '⚡', desc: 'Work Queue & Bounded Actions' },
-    { code: '07', title: 'EVIDENCE', icon: '🧬', desc: 'KAI Merkle DAG & Ledger Receipts' },
-    { code: '08', title: 'ARCHIVE', icon: '📚', desc: 'Preserved Lineage & History' },
-    { code: '09', title: '12 ORGANS', icon: '🏛️', desc: 'Domain Applications & Workspaces' },
+    {
+      code: '00',
+      title: 'CANON',
+      icon: '📜',
+      desc: 'Invariants & Laws (V(Δ) = ⊤)',
+      doctrine: 'Reality is the final court. Invariants take absolute conflict precedence.',
+      forwardEngineering: 'Constitutional gates & mathematical admission boundaries before mutations.',
+      reverseEngineering: 'Every claimed state must trace to an immutable axiom; zero ad-hoc overrides.',
+      nonCollapseLaws: ['ATTESTATION ≠ AUTHORIZATION', 'CAPABILITY ≠ AUTHORITY'],
+      notionUrl: 'https://app.notion.com/p/OCEANICOS-GRAPH-CONSTITUTION-EDGE-REGISTRY-3f249ca435a2819d801cc3ef5dd50609',
+    },
+    {
+      code: '01',
+      title: 'HUMAN ROOT',
+      icon: '👤',
+      desc: 'Lived source (ELION VAREL // 11:11)',
+      doctrine: 'The Human is the external root (Authority(x)). Software is a mirror, not a master.',
+      forwardEngineering: 'Human specifies intent Δ, spiritual values, moral boundaries, and consent.',
+      reverseEngineering: 'Every automated run must resolve back to a verified human root command.',
+      nonCollapseLaws: ['SIMULATION ≠ REALITY', 'MODEL OUTPUT ≠ CLAIM'],
+      notionUrl: 'https://app.notion.com/p/AI-SOUL-MASTER-COMMAND-CENTER-33949ca435a281a89c83ca074966bbfa',
+    },
+    {
+      code: '02',
+      title: 'AI SOUL',
+      icon: '🧠',
+      desc: '8 Organs & Command Routing',
+      doctrine: 'Doctrine, prompt routing, intelligence design, and bounded agent universe.',
+      forwardEngineering: 'AI Soul interprets intent, compiles ΩIR, and dispatches to bounded organs.',
+      reverseEngineering: 'Agent traces must show reasoning provenance and zero hallucinated authority.',
+      nonCollapseLaws: ['PLAN ≠ EXECUTION', 'PAGE ≠ TRUTH'],
+      notionUrl: 'https://app.notion.com/p/AI-SOUL-MASTER-COMMAND-CENTER-33949ca435a281a89c83ca074966bbfa',
+    },
+    {
+      code: '03',
+      title: 'ECHOFRAME',
+      icon: '🎨',
+      desc: 'Creation, Voice & 432 Hz Resonance',
+      doctrine: 'Creation, voice, distribution, media synthesis, and aesthetic resonance.',
+      forwardEngineering: 'Synthesizes clean UI components, audio frequencies, and media artifacts.',
+      reverseEngineering: 'Generated media requires provenance and recipient consent verification.',
+      nonCollapseLaws: ['CONTENT ≠ ENGAGEMENT', 'AUDIENCE ≠ REVENUE'],
+      notionUrl: 'https://app.notion.com/p/NOTION-ORGANIZATION-MAP-ECHOFRAME-OCEANICOS-41949ca435a28160bdf9cbc700ea2829',
+    },
+    {
+      code: '04',
+      title: 'TRUTHOS',
+      icon: '💎',
+      desc: '4-Quadrant Wealth & Tithes',
+      doctrine: 'Offers, commercial circulation, pricing hypotheses, and verifiable margins.',
+      forwardEngineering: 'Validates real problems with 5 reachable buyers before building any software.',
+      reverseEngineering: 'Bank/processor transaction receipts required before claiming earned cash.',
+      nonCollapseLaws: ['REVENUE PLAN ≠ EARNED CASH', 'POTENTIAL VALUE ≠ REVENUE', 'REVENUE ≠ PROFIT'],
+      notionUrl: 'https://app.notion.com/p/OCEANICOS-MOTION-Private-Wealth-Execution-Engine-4003080bdd5381598220ef09061f54b7',
+    },
+    {
+      code: '05',
+      title: 'OCEANICOS',
+      icon: '🌊',
+      desc: 'Constitutional Gate & Verification',
+      doctrine: 'System specifications, admission boundaries, and fail-closed runtime engine.',
+      forwardEngineering: 'Enforces the Max Equation Δ* = argmax [V(Δ) * Q_E / (R + C + ε)].',
+      reverseEngineering: 'Reconciles expected vs observed state; mismatch outputs UNKNOWN.',
+      nonCollapseLaws: ['CODE ≠ RUNTIME', 'CI ≠ REALITY'],
+      notionUrl: 'https://app.notion.com/p/OCEANICOS-NOTION-CANONICAL-REGISTRY-3f249ca435a28165a2e8e06f3f62d9c2',
+    },
+    {
+      code: '06',
+      title: 'EXECUTION',
+      icon: '⚡',
+      desc: 'Work Queue & Bounded Actions',
+      doctrine: 'Finite work queues, task admission, and idempotent execution sandboxes.',
+      forwardEngineering: 'Translates approved decisions into atomic, testable execution tasks.',
+      reverseEngineering: 'Logs exit codes, side effects, run IDs, and duplicate-action checks.',
+      nonCollapseLaws: ['ATTEMPT ≠ COMPLETION', 'QUEUE ≠ DELIVERY'],
+      notionUrl: 'https://app.notion.com/p/75b1967ffb1947fc8f5adb1298fe8f02',
+    },
+    {
+      code: '07',
+      title: 'EVIDENCE',
+      icon: '🧬',
+      desc: 'KAI Merkle DAG & Ledger Receipts',
+      doctrine: 'Append-only ledger, SHA-256 state hashes, and cryptographic proof of reality.',
+      forwardEngineering: 'Anchors every observed state change into an immutable Merkle timeline.',
+      reverseEngineering: 'Walks the DAG backwards to verify every link from cash back to intent.',
+      nonCollapseLaws: ['UNKNOWN ≠ SUCCESS', 'ASSERTION ≠ ATTESTATION'],
+      notionUrl: 'https://app.notion.com/p/ALL-NOTION-PAGES-WORKSPACE-AUDIT-RECONCILIATION-3f949ca435a2813d89a9d75d402f9b5b',
+    },
+    {
+      code: '08',
+      title: 'ARCHIVE',
+      icon: '📚',
+      desc: 'Preserved Lineage & History',
+      doctrine: 'Historical lineages, superseded drafts, and legacy milestones preserved.',
+      forwardEngineering: 'Ensures no historic state or learning is destroyed for cosmetic neatness.',
+      reverseEngineering: 'Provides permanent audit trail across all version branches and milestones.',
+      nonCollapseLaws: ['DELETION ≠ REFACTOR', 'OBSOLESCENCE ≠ FORGETTING'],
+      notionUrl: 'https://app.notion.com/p/v-NOTION-EXECUTIVE-CONTROL-PLANE-NOW-3f549ca435a2816a8ebcea9b95899cbc',
+    },
+    {
+      code: '09',
+      title: '12 ORGANS',
+      icon: '🏛️',
+      desc: 'Domain Applications & Workspaces',
+      doctrine: 'Specialized domain surfaces (Treasury, Trading, Health, Intelligence, Community).',
+      forwardEngineering: 'Binds specialized business domain capabilities to the sovereign core.',
+      reverseEngineering: 'Domain-specific telemetry matches whole-body continuum invariants.',
+      nonCollapseLaws: ['TOOL ≠ SOLUTION', 'FEATURE ≠ VALUE'],
+      notionUrl: 'https://app.notion.com/p/AI-SOUL-MASTER-COMMAND-CENTER-33949ca435a281a89c83ca074966bbfa',
+    },
   ];
+  const [selectedRoom, setSelectedRoom] = useState<any>(null);
+  const [showRoomModal, setShowRoomModal] = useState<boolean>(false);
+  const [fsmLoading, setFsmLoading] = useState<boolean>(false);
+  const [fsmResult, setFsmResult] = useState<any>(null);
+  const [fsmIntentText, setFsmIntentText] = useState<string>('');
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
   const [chromeBrowserOpen, setChromeBrowserOpen] = useState(false);
@@ -294,6 +399,7 @@ export function GloberAgiCommandCenter({
         setShowAuthOverlay(false);
         setChromeBrowserOpen(false);
         setShowTokenModal(false);
+        setShowRoomModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -1549,8 +1655,13 @@ export function GloberAgiCommandCenter({
                   {CANONICAL_ROOMS.map((room) => (
                     <button
                       key={room.code}
-                      onClick={() => setPromptText(`Explore Room ${room.code} — ${room.title}: ${room.desc}`)}
-                      title={`${room.code} ${room.title} — ${room.desc}`}
+                      onClick={() => {
+                        setSelectedRoom(room);
+                        setShowRoomModal(true);
+                        setFsmIntentText(promptText || room.forwardEngineering || room.desc);
+                        setFsmResult(null);
+                      }}
+                      title={`${room.code} ${room.title} — Click to inspect room & run OMNICOS FSM`}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -1578,6 +1689,7 @@ export function GloberAgiCommandCenter({
                         <span style={{ fontWeight: 600, color: '#a78bfa' }}>{room.code}</span>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{room.title}</span>
                       </span>
+                      <span style={{ fontSize: '10px', color: '#a78bfa', opacity: 0.8 }}>⚡</span>
                     </button>
                   ))}
                 </div>
@@ -3551,6 +3663,292 @@ export function GloberAgiCommandCenter({
                 <div style={{ marginTop: '2px', fontSize: '10px', color: '#71717a' }}>Veiled custody · 100% self-contained local ledger verification</div>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── CANONICAL ROOM & OMNICOS FSM MODAL ── */}
+      {showRoomModal && selectedRoom && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(3, 8, 14, 0.88)',
+            backdropFilter: 'blur(20px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9996,
+            padding: '20px',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowRoomModal(false);
+          }}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '680px',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '28px',
+              borderRadius: '20px',
+              background: '#12161f',
+              border: '1px solid rgba(167, 139, 250, 0.35)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.9)',
+              fontFamily: theme.fontSans,
+              color: '#ffffff',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '24px' }}>{selectedRoom.icon}</span>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#a78bfa', background: 'rgba(167, 139, 250, 0.15)', padding: '2px 6px', borderRadius: '4px' }}>
+                      ROOM {selectedRoom.code}
+                    </span>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 600 }}>{selectedRoom.title}</h3>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{selectedRoom.desc}</div>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowRoomModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '20px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Doctrine Banner */}
+            <div
+              style={{
+                background: 'rgba(167, 139, 250, 0.08)',
+                border: '1px solid rgba(167, 139, 250, 0.25)',
+                borderRadius: '12px',
+                padding: '12px 14px',
+                marginBottom: '16px',
+                fontSize: '12px',
+                lineHeight: 1.5,
+                color: '#e2e8f0',
+              }}
+            >
+              <div style={{ fontWeight: 700, color: '#c4b5fd', marginBottom: '4px' }}>🏛️ Room Doctrine & Meaning:</div>
+              {selectedRoom.doctrine || selectedRoom.desc}
+            </div>
+
+            {/* Dual Vectors: Forward & Reverse Engineering */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  background: 'rgba(16, 185, 129, 0.08)',
+                  border: '1px solid rgba(16, 185, 129, 0.25)',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  fontSize: '11px',
+                }}
+              >
+                <div style={{ color: '#34d399', fontWeight: 700, marginBottom: '4px' }}>➡️ Forward Engineering</div>
+                <div style={{ color: '#cbd5e1', lineHeight: 1.4 }}>{selectedRoom.forwardEngineering || 'Intent flows forward into bounded action and observed value.'}</div>
+              </div>
+              <div
+                style={{
+                  background: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: '12px',
+                  padding: '12px',
+                  fontSize: '11px',
+                }}
+              >
+                <div style={{ color: '#38bdf8', fontWeight: 700, marginBottom: '4px' }}>⬅️ Reverse Engineering</div>
+                <div style={{ color: '#cbd5e1', lineHeight: 1.4 }}>{selectedRoom.reverseEngineering || 'Claim flows backward through evidence to authority and original intent.'}</div>
+              </div>
+            </div>
+
+            {/* Non-Collapse Laws */}
+            {selectedRoom.nonCollapseLaws && (
+              <div style={{ marginBottom: '16px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {selectedRoom.nonCollapseLaws.map((law: string, idx: number) => (
+                  <span
+                    key={idx}
+                    style={{
+                      fontSize: '10px',
+                      fontFamily: theme.fontMono,
+                      background: 'rgba(255, 255, 255, 0.06)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
+                      padding: '3px 8px',
+                      borderRadius: '6px',
+                      color: '#f87171',
+                    }}
+                  >
+                    ⚠️ {law}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Interactive OMNICOS FSM Transition Stepper */}
+            <div
+              style={{
+                background: 'rgba(0, 0, 0, 0.35)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '14px',
+                padding: '16px',
+                marginBottom: '16px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#facc15' }}>⚡ OMNICOS FSM State Machine</span>
+                <span style={{ fontSize: '11px', color: '#94a3b8', fontFamily: theme.fontMono }}>4-Step Execution</span>
+              </div>
+
+              <input
+                type="text"
+                value={fsmIntentText}
+                onChange={(e) => setFsmIntentText(e.target.value)}
+                placeholder="Enter intent Δ to perceive, align, synchronize & evolve..."
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  background: 'rgba(255, 255, 255, 0.06)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  marginBottom: '10px',
+                  outline: 'none',
+                }}
+              />
+
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                <button
+                  disabled={fsmLoading}
+                  onClick={async () => {
+                    setFsmLoading(true);
+                    try {
+                      const payload = await apiRequest<any>('/v1/aisoul/omnicos/transition', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          intent: fsmIntentText || `Advance bounded continuum for Room ${selectedRoom.code}`,
+                          targetRoom: selectedRoom.code,
+                          targetOrgan: selectedOrgan,
+                          valueEstimate: 2.0,
+                          evidenceQuality: 0.95,
+                          riskEstimate: 0.1,
+                          costEstimate: 0.1,
+                        }),
+                      });
+                      setFsmResult(payload);
+                    } catch (err: any) {
+                      setFsmResult({ success: false, status: 'DIVERGENT', error: err.message });
+                    } finally {
+                      setFsmLoading(false);
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    background: fsmLoading ? 'rgba(167, 139, 250, 0.2)' : '#7c3aed',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    fontSize: '12px',
+                    cursor: fsmLoading ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {fsmLoading ? '⏳ Processing FSM Transition...' : '⚡ Step FSM State Machine'}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setPromptText(`Room ${selectedRoom.code} [${selectedRoom.title}]: ${fsmIntentText || selectedRoom.desc}`);
+                    setShowRoomModal(false);
+                  }}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    color: '#e2e8f0',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  💬 Use in Chat
+                </button>
+              </div>
+
+              {/* FSM Result Display */}
+              {fsmResult && (
+                <div
+                  style={{
+                    background: fsmResult.success ? 'rgba(16, 185, 129, 0.06)' : 'rgba(239, 68, 68, 0.06)',
+                    border: `1px solid ${fsmResult.success ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                    borderRadius: '10px',
+                    padding: '12px',
+                    fontSize: '11px',
+                    fontFamily: theme.fontMono,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontWeight: 700, color: fsmResult.success ? '#34d399' : '#f87171' }}>
+                      {fsmResult.success ? '✓ FSM TRANSITION VERIFIED' : '✗ FSM DIVERGENT / HALTED'}
+                    </span>
+                    <span style={{ color: '#94a3b8' }}>Status: {fsmResult.status}</span>
+                  </div>
+
+                  {fsmResult.fsm?.step1_perceive && (
+                    <div>1. KAI Shield: {fsmResult.fsm.step1_perceive.boundaryCheck} ({fsmResult.fsm.step1_perceive.verdict})</div>
+                  )}
+                  {fsmResult.fsm?.step2_connect && (
+                    <div>2. ELION: Routed to {fsmResult.fsm.step2_connect.targetOrgan} ({fsmResult.fsm.step2_connect.harmonicHz} Hz)</div>
+                  )}
+                  {fsmResult.fsm?.step3_synchronize && (
+                    <div>3. OMEGA Gate: SHA-256 match = {String(fsmResult.fsm.step3_synchronize.hashMatch)} ({fsmResult.fsm.step3_synchronize.status})</div>
+                  )}
+                  {fsmResult.fsm?.step4_evolve && (
+                    <div>
+                      4. KAI Ledger: Decision = <strong>{fsmResult.fsm.step4_evolve.decision}</strong> · Priority Score = <strong>{fsmResult.fsm.step4_evolve.priorityScore}</strong>
+                      <div style={{ color: '#a78bfa', marginTop: '2px' }}>Next Δ: {fsmResult.fsm.step4_evolve.next_delta}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Notion Control Surface Link */}
+            {selectedRoom.notionUrl && (
+              <a
+                href={selectedRoom.notionUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  padding: '10px',
+                  borderRadius: '10px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#94a3b8',
+                  fontSize: '12px',
+                  textDecoration: 'none',
+                }}
+              >
+                <span>🌐 Open in Notion Control Surface ↗</span>
+              </a>
+            )}
           </div>
         </div>
       )}

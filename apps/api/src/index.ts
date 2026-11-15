@@ -295,7 +295,7 @@ export function createApp(
   registerEcosystemRoute(fastify, authMode, Boolean(attestationSigningKey));
   registerEcosystemBodyRoute(fastify, authMode, Boolean(attestationSigningKey));
   registerNotionSurfacesRoute(fastify);
-  registerSoulRoute(fastify);
+  registerSoulRoute(fastify, kaiLedger);
   registerRealityRoute(fastify, authMode, () => Boolean(attestationSigningKey), () => Boolean(ledgerMemory.getTip()));
   const upgradeKernel = new UpgradeKernel(attestationSigningKey || 'omega-upgrade-secret');
   // ─── 🔥 LIVE MOOD ENGINE AT MAX SCALE (Level 4: Strategic & Proactive Resonance) ───
