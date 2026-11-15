@@ -27,6 +27,7 @@ import { WatcherCorridorPanel } from './WatcherCorridorPanel';
 import { V0CreationMirror } from './V0CreationMirror';
 import { GloberAgiCommandCenter } from './GloberAgiCommandCenter';
 import { CausalChainPanel } from './CausalChainPanel';
+import { enqueueOfflineMessage, syncOfflineQueue } from './offlineQueue';
 import {
   theme,
   statusColor,
@@ -377,6 +378,43 @@ export function App() {
     }
   };
 
+  // ── Auto-Sync Offline Dream Queue On Reconnect ──
+  useEffect(() => {
+    const handleOnline = async () => {
+      try {
+        const { syncedCount } = await syncOfflineQueue(
+          (path) => apiUrl(path),
+          (entry, reply) => {
+            if (reply?.reply) {
+              setChatMessages((prev) => [
+                ...prev,
+                {
+                  id: reply.reply.id || `ai-${Date.now()}`,
+                  sender: 'aisoul' as const,
+                  content: reply.reply.content,
+                  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                  organ: reply.reply.metadata?.organ || 'OFFLINE_RECONNECT_SYNC',
+                  metadata: reply.reply.metadata,
+                },
+              ]);
+            }
+          }
+        );
+        if (syncedCount > 0) {
+          console.log(`✓ Synchronized ${syncedCount} offline message(s) upon reconnect.`);
+        }
+      } catch {
+        /* ambient */
+      }
+    };
+
+    window.addEventListener('online', handleOnline);
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+      void handleOnline();
+    }
+    return () => window.removeEventListener('online', handleOnline);
+  }, []);
+
   const sendMessage = async (overrideText?: string) => {
     const text = (overrideText ?? omegaIntent).trim();
     if (!text || omegaLoading) return;
@@ -435,12 +473,13 @@ export function App() {
       }
     } catch (err: any) {
       setLastError(err.message);
+      await enqueueOfflineMessage(text);
       setChatMessages((prev) => [
         ...prev,
         {
-          id: `err-${Date.now()}`,
+          id: `offline-${Date.now()}`,
           sender: 'system' as const,
-          content: `Notice: ${err.message}`,
+          content: `📡 Offline Resilience: Message queued in local IndexedDB dream vault. Will auto-sync to KAI ledger on reconnect.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);

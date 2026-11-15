@@ -1247,6 +1247,21 @@
       "status": "VERIFIED",
       "tests_passed": true,
       "timestamp": "2026-11-15T00:07:25.836Z"
+    },
+    {
+      "agent_id": "antigravity",
+      "branch": "agent/antigravity/omega-entity-full-stack",
+      "evidence_hash": "67e6abdba2547a546d0c6745a18604539c56c617cfbcc59c4533675d3f19af46",
+      "files_touched": [
+        "apps/web/public/sw.js",
+        "apps/web/src/App.tsx",
+        "docs/RECEIPT_86_PWA_OFFLINE_PRECACHING_AND_AUTO_RECONNECT.md",
+        "kai_ledger.json"
+      ],
+      "next_delta": "Perpetually iterate the verified loop: Observe, Verify, Remember, Attest, Display, Return",
+      "status": "VERIFIED",
+      "tests_passed": true,
+      "timestamp": "2026-11-15T00:12:53.812Z"
     }
   ]
 }
