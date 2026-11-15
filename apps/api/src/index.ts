@@ -51,6 +51,8 @@ import { registerVoosRoute } from './voos-route.js';
 import { registerToolRunnerRoute } from './tool-runner-route.js';
 import { registerBrowserRoute } from './browser-route.js';
 import { registerAuth0Routes } from './auth0-route.js';
+import { registerTokensRoute } from './tokens-route.js';
+import { registerWaterProtocolRoute } from './water-protocol-route.js';
 import { registerGloberRoutes } from './glober-route.js';
 import { registerContinuumRoute, getContinuumEcosystemStatus } from './continuum-route.js';
 import { API_ROUTE_INVENTORY } from './route-contract.js';
@@ -621,6 +623,8 @@ export function createApp(
   registerToolRunnerRoute(fastify, kaiLedger);
   registerBrowserRoute(fastify, kaiLedger);
   registerAuth0Routes(fastify, kaiLedger);
+  registerTokensRoute(fastify, kaiLedger);
+  registerWaterProtocolRoute(fastify, kaiLedger);
   registerGloberRoutes(fastify, kaiLedger);
 
   // ─── Constitutional Authorization Gate (§6, §8, §9, §12) ─────────

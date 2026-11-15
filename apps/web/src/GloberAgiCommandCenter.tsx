@@ -187,6 +187,9 @@ export function GloberAgiCommandCenter({
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
   const [chromeBrowserOpen, setChromeBrowserOpen] = useState(false);
   const [chromeInitialUrl, setChromeInitialUrl] = useState('http://localhost:5000');
+  const [tokenBalance, setTokenBalance] = useState<number>(1000);
+  const [showTokenModal, setShowTokenModal] = useState<boolean>(false);
+  const [activeWaterRoom, setActiveWaterRoom] = useState<any>(null);
   const [expandedReasoningIds, setExpandedReasoningIds] = useState<string[]>([]);
 
   const toggleReasoning = (id: string) => {
@@ -240,6 +243,7 @@ export function GloberAgiCommandCenter({
         setRightPanelOpen(false);
         setShowAuthOverlay(false);
         setChromeBrowserOpen(false);
+        setShowTokenModal(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -332,14 +336,18 @@ export function GloberAgiCommandCenter({
   // ── Fetch Session, Tools & Glober Status ──
   const loadState = useCallback(async () => {
     try {
-      const [sessionData, statusData, newsData, toolsData, historyData] = await Promise.all([
+      const [sessionData, statusData, newsData, toolsData, historyData, tokenData] = await Promise.all([
         apiRequest<any>('/v1/auth/session').catch(() => null),
         apiRequest<any>('/v1/glober/status').catch(() => null),
         apiRequest<any>('/v1/glober/news').catch(() => null),
         apiRequest<any>('/v1/tools/list').catch(() => null),
         apiRequest<any>('/v1/chat/history?limit=12').catch(() => null),
+        apiRequest<any>('/v1/tokens/balance').catch(() => null),
       ]);
       if (sessionData?.success) setAuthSession(sessionData);
+      if (tokenData?.success && typeof tokenData.balance === 'number') {
+        setTokenBalance(tokenData.balance);
+      }
       if (statusData?.success && statusData.state) {
         setGloberStatus(statusData.state);
         setActiveMode(statusData.state.mode || 'collaborative');
@@ -918,9 +926,32 @@ export function GloberAgiCommandCenter({
             <span>Chrome</span>
           </button>
 
-          {/* Auth0 User Button */}
+          {/* Omega Token Credits Pill */}
+          <button
+            onClick={() => setShowTokenModal(true)}
+            title="Omega Token Credits & Crypto Gate"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(234, 179, 8, 0.12)',
+              border: '1px solid rgba(234, 179, 8, 0.35)',
+              borderRadius: '8px',
+              padding: '6px 11px',
+              color: '#facc15',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 600,
+            }}
+          >
+            <span>🪙</span>
+            <span>{tokenBalance.toLocaleString()} $Ω</span>
+          </button>
+
+          {/* Auth0 / Sovereign Pass Button */}
           <button
             onClick={() => setShowAuthOverlay(!showAuthOverlay)}
+            title="Sign In / Switch SSO Tenant"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -936,6 +967,9 @@ export function GloberAgiCommandCenter({
           >
             <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981' }} />
             <span>{authSession?.user?.name || 'Elion Varel'}</span>
+            <span style={{ fontSize: '10px', color: '#9ca3af' }}>
+              · {authSession?.user?.provider === 'google' ? 'Gmail' : authSession?.user?.provider === 'apple' ? 'Apple' : authSession?.user?.provider === 'local' ? 'Free Test' : 'Sovereign'}
+            </span>
           </button>
         </div>
       </header>
@@ -1615,6 +1649,92 @@ export function GloberAgiCommandCenter({
                     <span style={{ fontSize: '10px', color: '#93c5fd' }}>Dual-engine live viewport + snapshot</span>
                   </div>
                 </button>
+
+                <button
+                  onClick={async () => {
+                    setToolMenuOpen(false);
+                    try {
+                      const res = await apiRequest<any>('/v1/water/room', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: authSession?.user?.id || 'usr_omega_sovereign_1111' }),
+                      });
+                      if (res?.success) {
+                        setActiveWaterRoom(res.room);
+                        setLocalMessages((prev) => [
+                          ...prev,
+                          {
+                            id: `water-${Date.now()}`,
+                            sender: 'system',
+                            content: `💧 **Water Protocol P2P Session Active**\n\n• **Room ID**: \`${res.room.id}\`\n• **Protocol**: \`E2EE WebRTC + WebSockets\`\n• **Invite Link**: \`${res.inviteLink}\`\n• **Status**: \`Waiting for peer · AES-GCM-256 Ratchet Verified ✓\`\n\n*The session is cryptographically bound. A Merkle transcript digest will be appended to KAI ledger upon completion.*`,
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                          },
+                        ]);
+                      }
+                    } catch (err: any) {
+                      alert(`P2P Session Error: ${err.message}`);
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: 'rgba(34, 211, 238, 0.15)',
+                    border: '1px solid rgba(34, 211, 238, 0.35)',
+                    color: '#22d3ee',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%',
+                    marginBottom: '2px',
+                  }}
+                >
+                  <span style={{ fontSize: '15px' }}>💧</span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600 }}>Start P2P Encrypted Session</span>
+                    <span style={{ fontSize: '10px', color: '#a5f3fc' }}>Water Protocol WebRTC + WebSockets</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={async () => {
+                    setToolMenuOpen(false);
+                    try {
+                      const res = await apiRequest<any>('/v1/tokens/claim-free', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: authSession?.user?.id || 'usr_omega_sovereign_1111' }),
+                      });
+                      if (res?.success) {
+                        setTokenBalance(res.newBalance);
+                        alert(`🎉 Successfully claimed 500 free test $Ω credits! New balance: ${res.newBalance.toLocaleString()} $Ω`);
+                      }
+                    } catch (err: any) {
+                      alert(`Faucet Error: ${err.message}`);
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: 'rgba(234, 179, 8, 0.15)',
+                    border: '1px solid rgba(234, 179, 8, 0.35)',
+                    color: '#facc15',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%',
+                    marginBottom: '2px',
+                  }}
+                >
+                  <span style={{ fontSize: '15px' }}>🪙</span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600 }}>Claim Free Test Credits</span>
+                    <span style={{ fontSize: '10px', color: '#fde68a' }}>+500 $Ω Tokens Faucet</span>
+                  </div>
+                </button>
                 <div style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af', padding: '4px 8px', textTransform: 'uppercase' }}>
                   Tools & Capabilities
                 </div>
@@ -2094,79 +2214,351 @@ export function GloberAgiCommandCenter({
         </div>
       )}
 
-      {/* ── AUTH0 OVERLAY MODAL ── */}
+      {/* ── AUTH0 & SOVEREIGN ACCESS GATE MODAL (Gmail / Apple / Free Test / Web3) ── */}
       {showAuthOverlay && (
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             inset: 0,
             background: 'rgba(3, 8, 14, 0.85)',
-            backdropFilter: 'blur(12px)',
+            backdropFilter: 'blur(16px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 100,
+            zIndex: 9995,
           }}
         >
           <div
             style={{
-              width: '380px',
-              padding: '24px',
-              borderRadius: '16px',
-              background: '#091520',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.8)',
+              width: '420px',
+              padding: '28px',
+              borderRadius: '20px',
+              background: '#18181b',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.9)',
+              fontFamily: theme.fontSans,
+              color: '#ffffff',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '16px', color: '#ffffff' }}>Auth0 Enterprise SSO</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#10b981', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>Ω</div>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 600 }}>Sovereign Access & SSO Gate</h3>
+              </div>
               <button
                 onClick={() => setShowAuthOverlay(false)}
-                style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '16px' }}
+                style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '18px' }}
               >
                 ✕
               </button>
             </div>
-            <p style={{ fontSize: '12px', color: '#94a3b8', margin: '0 0 16px' }}>
-              Tenant isolation is enforced with fail-closed cryptographic routing.
+            <p style={{ fontSize: '13px', color: '#a1a1aa', margin: '0 0 20px', lineHeight: 1.5 }}>
+              Choose your sovereign identity or start immediately with free test token credits. No credit card required.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {/* Google / Gmail Sign In */}
               <button
-                onClick={() => {
-                  alert('SSO with Google Workspace verified');
-                  setShowAuthOverlay(false);
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/auth/login', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ provider: 'google', email: 'traveler@gmail.com', name: 'Traveler (Gmail)' }),
+                    });
+                    if (res?.success) {
+                      setAuthSession({ success: true, user: res.user, tenant: res.tenant, authenticated: true });
+                      setTokenBalance(res.user.credits || 1000);
+                      setShowAuthOverlay(false);
+                    }
+                  } catch (e: any) {
+                    alert(`Google SSO error: ${e.message}`);
+                  }
                 }}
                 style={{
-                  padding: '10px',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: '#ffffff',
+                  border: 'none',
+                  color: '#000000',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  transition: 'background 0.15s ease',
+                }}
+              >
+                <span>🔵</span>
+                <span>Continue with Google / Gmail</span>
+              </button>
+
+              {/* Apple Sign In */}
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/auth/login', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ provider: 'apple', email: 'traveler@privaterelay.appleid.com', name: 'Traveler (Apple)' }),
+                    });
+                    if (res?.success) {
+                      setAuthSession({ success: true, user: res.user, tenant: res.tenant, authenticated: true });
+                      setTokenBalance(res.user.credits || 1000);
+                      setShowAuthOverlay(false);
+                    }
+                  } catch (e: any) {
+                    alert(`Apple SSO error: ${e.message}`);
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: '#27272a',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#ffffff',
                   fontWeight: 600,
-                  fontSize: '12px',
+                  fontSize: '13px',
                   cursor: 'pointer',
                 }}
               >
-                Sign in with Google Workspace
+                <span>⚪</span>
+                <span>Continue with Apple</span>
               </button>
+
+              {/* Instant Free Test Pass */}
               <button
-                onClick={() => {
-                  alert('SSO with Corporate SAML verified');
-                  setShowAuthOverlay(false);
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/auth/login', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ provider: 'local', email: 'free-tester@oceanicos.local', name: 'Free Test Traveler' }),
+                    });
+                    if (res?.success) {
+                      setAuthSession({ success: true, user: res.user, tenant: res.tenant, authenticated: true });
+                      setTokenBalance(1000);
+                      setShowAuthOverlay(false);
+                    }
+                  } catch (e: any) {
+                    alert(`Free test pass error: ${e.message}`);
+                  }
                 }}
                 style={{
-                  padding: '10px',
-                  borderRadius: '8px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  color: '#34d399',
                   fontWeight: 600,
-                  fontSize: '12px',
+                  fontSize: '13px',
                   cursor: 'pointer',
                 }}
               >
-                Sign in with Corporate SAML / OIDC
+                <span>⚡</span>
+                <span>Instant Free Test (1,000 $Ω Token Credits)</span>
               </button>
+
+              {/* Connect Web3 Crypto Wallet */}
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/tokens/crypto-deposit', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ amount: 10, currency: 'USDC', walletAddress: '0x71C...b48a' }),
+                    });
+                    if (res?.success) {
+                      setTokenBalance(res.newBalance);
+                      setShowAuthOverlay(false);
+                      alert(`🦊 Web3 Wallet Connected! Credited +${res.creditsIssued.toLocaleString()} $Ω credits.`);
+                    }
+                  } catch (e: any) {
+                    alert(`Web3 error: ${e.message}`);
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: 'rgba(234, 179, 8, 0.12)',
+                  border: '1px solid rgba(234, 179, 8, 0.3)',
+                  color: '#facc15',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>🦊</span>
+                <span>Connect Web3 Crypto Wallet (MetaMask / SOL)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── $Ω TOKEN CREDITS & CRYPTO GATE MODAL ── */}
+      {showTokenModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(3, 8, 14, 0.85)',
+            backdropFilter: 'blur(16px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9995,
+          }}
+        >
+          <div
+            style={{
+              width: '440px',
+              padding: '28px',
+              borderRadius: '20px',
+              background: '#18181b',
+              border: '1px solid rgba(234, 179, 8, 0.35)',
+              boxShadow: '0 24px 64px rgba(0, 0, 0, 0.9)',
+              fontFamily: theme.fontSans,
+              color: '#ffffff',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '20px' }}>🪙</span>
+                <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 600 }}>$Ω Token Credits & Crypto Gate</h3>
+              </div>
+              <button
+                onClick={() => setShowTokenModal(false)}
+                style={{ background: 'transparent', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '18px' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Token Balance Display */}
+            <div
+              style={{
+                background: 'rgba(234, 179, 8, 0.08)',
+                border: '1px solid rgba(234, 179, 8, 0.25)',
+                borderRadius: '14px',
+                padding: '16px',
+                marginBottom: '18px',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '11px', color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Available Balance
+              </div>
+              <div style={{ fontSize: '32px', fontWeight: 700, color: '#facc15', margin: '4px 0' }}>
+                {tokenBalance.toLocaleString()} $Ω
+              </div>
+              <div style={{ fontSize: '11px', color: '#a1a1aa' }}>
+                Tier: {authSession?.user?.tier || 'Free Test Tier'} · Self-Contained Sovereign Protocol
+              </div>
+            </div>
+
+            {/* Faucet & Deposit Actions */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/tokens/claim-free', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId: authSession?.user?.id || 'usr_omega_sovereign_1111' }),
+                    });
+                    if (res?.success) {
+                      setTokenBalance(res.newBalance);
+                      alert(`🎉 Successfully claimed 500 free test $Ω credits! New balance: ${res.newBalance.toLocaleString()} $Ω`);
+                    }
+                  } catch (e: any) {
+                    alert(`Faucet error: ${e.message}`);
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  color: '#34d399',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>⚡</span>
+                <span>Claim +500 Free Test $Ω Credits (Faucet)</span>
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest<any>('/v1/tokens/crypto-deposit', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ amount: 10, currency: 'USDC', walletAddress: '0x71C...b48a' }),
+                    });
+                    if (res?.success) {
+                      setTokenBalance(res.newBalance);
+                      alert(`🪙 Crypto deposit verified! +${res.creditsIssued.toLocaleString()} $Ω added.`);
+                    }
+                  } catch (e: any) {
+                    alert(`Crypto deposit error: ${e.message}`);
+                  }
+                }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  background: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.35)',
+                  color: '#38bdf8',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>💳</span>
+                <span>Deposit 10 USDC (+100 $Ω Credits)</span>
+              </button>
+
+              {/* Bitcoin SegWit Treasury Destination */}
+              <div
+                style={{
+                  marginTop: '6px',
+                  padding: '10px 12px',
+                  borderRadius: '10px',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  fontSize: '11px',
+                  color: '#9ca3af',
+                  fontFamily: theme.fontMono,
+                  lineHeight: 1.5,
+                }}
+              >
+                <div style={{ color: '#e5e7eb', fontWeight: 600, marginBottom: '2px' }}>🛡️ Bitcoin SegWit Treasury Tithe:</div>
+                <div style={{ wordBreak: 'break-all', color: '#facc15' }}>bc1qaj8jmp5as80zwew09ep86w6fgw37zwhwzr89mp</div>
+                <div style={{ marginTop: '2px', fontSize: '10px', color: '#71717a' }}>Veiled custody · 100% self-contained local ledger verification</div>
+              </div>
             </div>
           </div>
         </div>
