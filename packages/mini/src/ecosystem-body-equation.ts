@@ -798,9 +798,15 @@ export const REPO_OUTWARD_RING: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'api-contract', path: 'apps/api/src/route-contract.ts', role: 'api' as const }),
   Object.freeze({ id: 'api', path: 'apps/api/src/index.ts', role: 'api' as const }),
   Object.freeze({ id: 'web-body', path: 'apps/web/src/SingleBodyPanel.tsx', role: 'web' as const }),
+  Object.freeze({ id: 'water-mirror', path: 'skills/omega-mirror-water-universal-body/SKILL.md', role: 'skill' as const }),
+  Object.freeze({ id: 'water-flow', path: 'packages/mini/src/water-flow.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'water-panel', path: 'apps/web/src/WaterFlowPanel.tsx', role: 'web' as const }),
   Object.freeze({ id: 'cli', path: 'bin/oceanicos.mjs', role: 'cli' as const }),
   Object.freeze({ id: 'equation-cli', path: 'scripts/compress-repo-equation.ts', role: 'cli' as const }),
   Object.freeze({ id: 'equation-doc', path: 'docs/ECOSYSTEM-BODY-EQUATION.md', role: 'docs' as const }),
   Object.freeze({ id: 'body-doc', path: 'docs/SINGLE-BODY-4X4X4X4.md', role: 'docs' as const }),
-  ...FULL_STACK_WATER,
+  // The mirror skill is already anchored with the water runtime above.
+  ...FULL_STACK_WATER.filter(
+    (surface) => surface.path !== 'skills/omega-mirror-water-universal-body/SKILL.md',
+  ),
 ]);
