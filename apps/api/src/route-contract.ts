@@ -125,6 +125,8 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/wealth/category/:category',
   'GET /v1/wealth/summary',
   'POST /v1/wealth/reset',
+  'GET /v1/singularity/status',
+  'POST /v1/singularity/century-seal',
   'GET /',
   'GET /assets/*',
 ] as const;

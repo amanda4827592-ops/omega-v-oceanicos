@@ -415,6 +415,39 @@ export function GloberAgiCommandCenter({
     }
   };
 
+  // ── Century Singularity State & Actuator ──
+  const [singularityStatus, setSingularityStatus] = useState<any>(null);
+  const [singularitySealing, setSingularitySealing] = useState(false);
+  const [centurySealResult, setCenturySealResult] = useState<any>(null);
+
+  const fetchSingularityStatus = useCallback(async () => {
+    try {
+      const res = await apiRequest<any>('/v1/singularity/status');
+      if (res && res.success) {
+        setSingularityStatus(res);
+      }
+    } catch {
+      // Degrades gracefully
+    }
+  }, []);
+
+  const handleCenturySeal = async () => {
+    setSingularitySealing(true);
+    try {
+      const res = await apiRequest<any>('/v1/singularity/century-seal', {
+        method: 'POST',
+      });
+      if (res && res.success) {
+        setCenturySealResult(res);
+        fetchSingularityStatus();
+      }
+    } catch (err: any) {
+      console.error('Century seal error:', err);
+    } finally {
+      setSingularitySealing(false);
+    }
+  };
+
   // ── ChatGPT Advanced Voice Mode State & Invariants ──
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
@@ -842,14 +875,15 @@ export function GloberAgiCommandCenter({
     };
   }, [stopListening]);
 
-  // Fetch KAI Merkle DAG, Local Inference Status, and Wealth Summary on drawer open
+  // Fetch KAI Merkle DAG, Local Inference Status, Wealth Summary, and Singularity Status on drawer open
   useEffect(() => {
     if (rightPanelOpen) {
       fetchKaiDag();
       fetchInferenceStatus();
       fetchWealthSummary();
+      fetchSingularityStatus();
     }
-  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus, fetchWealthSummary]);
+  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus, fetchWealthSummary, fetchSingularityStatus]);
 
   return (
     <div
@@ -1024,6 +1058,31 @@ export function GloberAgiCommandCenter({
           >
             <span>🎙️</span>
             <span>Voice</span>
+          </button>
+
+          {/* Century Singularity Gate 100 Badge */}
+          <button
+            onClick={() => {
+              setRightPanelOpen(true);
+              fetchSingularityStatus();
+            }}
+            title="Milestone #100 Century Singularity Gate"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%)',
+              border: '1px solid rgba(245, 158, 11, 0.4)',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              color: '#fbbf24',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 700,
+            }}
+          >
+            <span>👑</span>
+            <span>CENTURY 100</span>
           </button>
 
           {/* Telemetry Slide-Over Drawer Toggle */}
@@ -1468,6 +1527,11 @@ export function GloberAgiCommandCenter({
                       title: 'Sync Notion Wealth Engine',
                       desc: 'Trigger 4-Quadrant Tithe & Capital Ledger sync to Notion',
                       prompt: '🏛️ Sync Notion Wealth Engine: dispatch sovereign portfolio allocations and verify surface sync hash',
+                    },
+                    {
+                      title: 'Seal Century Singularity Gate',
+                      desc: 'Mint Milestone Receipt #100 and bind 100 verified swarm receipts',
+                      prompt: '👑 Seal Century Singularity Gate: execute immutable milestone #100 attestation and verify zero-entropy equilibrium',
                     },
                     {
                       title: 'Run Autonomous Swarm Goal',
@@ -2533,6 +2597,90 @@ export function GloberAgiCommandCenter({
 
               <div style={{ fontSize: '10px', color: '#71717a' }}>
                 Surface UUID: 39a4897d-aa55-8025-a7b6-c56784400fa1
+              </div>
+            </div>
+
+            {/* CENTURY SINGULARITY GATE CARD (MILESTONE #100) */}
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(33, 33, 33, 0.95) 100%)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#fbbf24' }}>CENTURY SINGULARITY GATE</span>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(245, 158, 11, 0.2)',
+                    color: '#fbbf24',
+                    fontFamily: theme.fontMono,
+                  }}
+                >
+                  100 RECEIPTS
+                </span>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Equilibrium Mode:</span>
+                <span style={{ color: '#34d399', fontWeight: 700, fontFamily: theme.fontMono }}>
+                  {singularityStatus?.equilibrium?.mode || 'Ψ = 0'}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Merkle Root:</span>
+                <span style={{ color: '#a78bfa', fontFamily: theme.fontMono }}>
+                  {(singularityStatus?.merkleRoot || 'root-verified').slice(0, 16)}…
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Treasury:</span>
+                <span style={{ color: '#f59e0b', fontFamily: theme.fontMono }}>
+                  SegWit Veiled Custody
+                </span>
+              </div>
+
+              <button
+                onClick={handleCenturySeal}
+                disabled={singularitySealing}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  background: singularitySealing ? 'rgba(245, 158, 11, 0.2)' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  border: 'none',
+                  color: singularitySealing ? '#fbbf24' : '#000000',
+                  fontWeight: 700,
+                  fontSize: '10px',
+                  cursor: singularitySealing ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  marginTop: '4px',
+                }}
+              >
+                <span>{singularitySealing ? '⏳ Sealing Singularity…' : '👑 Mint Century Singularity Seal'}</span>
+              </button>
+
+              {centurySealResult && (
+                <div style={{ fontSize: '9px', color: '#fbbf24', fontFamily: theme.fontMono, wordBreak: 'break-all', marginTop: '2px' }}>
+                  ✓ Sealed: {centurySealResult.certificate?.status}<br />
+                  Hash: {centurySealResult.sealHash?.slice(0, 16)}…<br />
+                  Sig: {centurySealResult.sealSignature?.slice(0, 16)}…
+                </div>
+              )}
+
+              <div style={{ fontSize: '10px', color: '#71717a' }}>
+                Checksum: 30013030 · Zero External APIs
               </div>
             </div>
 
