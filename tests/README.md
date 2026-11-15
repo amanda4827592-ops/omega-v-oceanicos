@@ -52,9 +52,10 @@ observation, IR validator, KAI, KAI cycle, repo builder, repo verifier,
 transition, water flow, worker registry) and the root documentation guards
 that pass against the current tree.
 
-Wired by `pnpm test:api`: the API suites that still test the live surface —
-`persistence`, `jobs`, `mesh-validation`, `route-inventory`, `api.pipeline`,
-`ecosystem-body` and `scene` (102 tests). They run from the built
+Wired by `pnpm test:api`: the API suites that test the live surface —
+`persistence`, `persistence.failure-messages`, `persistence-reencrypt-route`,
+`jobs`, `mesh-validation`, `route-inventory`, `api.pipeline`, `ecosystem-body`,
+`scene`, `documentation` and `test-suite-inventory` (117 tests). They run from the built
 `apps/api/dist` (the API is ESM with `.js`-suffixed source imports, so it is
 executed the way it ships, not through a transpiler), which means
 `pnpm --filter api build` must run first — `pnpm test` already builds.
@@ -71,28 +72,41 @@ problem: `brand` (docs/BRAND.md publishes an older palette than
 `portable-scripts` (root `test:coverage` still shells out to `rm -rf` /
 `mkdir -p`, and the smoke test names `dist/server.js` where `scripts/smoke-api.cjs`
 runs `dist/index.js`), `roadmap-claims`, and `node-support` (CI claims the
-suites no longer make). `apps/api/src/__tests__/documentation.test.ts` reports
-the same kind of drift: its route and environment checks no longer find what
-`apps/api/README.md` documents.
+suites no longer make). `apps/api/src/__tests__/documentation.test.ts` now
+passes against the live contract: the API README documents all 75 routes in
+`src/route-contract.ts`, advertises none that the server does not serve, and
+still lists the environment variables operators need.
 
-Nine more API suites stay unwired because they test endpoints the API no
-longer serves: `api.dissensus`, `api.loop`, `api.memory`, `api.prefix`,
-`api.validation`, `api.attestation-ttl`, `api.ed25519`,
-`api.ed25519-legacy-key` and `api.revocation-mismatch` all drive
-`/complete-loop`, `/act`, `/dissensus`, `/log` or `/rules`, none of which is in
-`src/route-contract.ts` or registered by `createApp` (they 404 on a live
-server). They also built their HTTP server by passing the Fastify instance to
-`node:http`'s `createServer` as if it were an options object, so no request was
-ever answered. Rewriting them against the `/v1` surface is a separate change;
-until then they are not evidence of anything.
+Sixteen API suites were deleted rather than rewritten, because their subject
+no longer exists: `api.test`, `api.loop`, `api.validation`, `api.memory`,
+`api.memory-integrity-degraded`, `api.attestation-ttl`, `api.dissensus`,
+`api.ed25519`, `api.ed25519-legacy-key`, `api.revocation-mismatch`,
+`api.state-attestation-tamper`, `api.observability-encrypted`, `api.prefix`,
+`api.auth-mode`, `api.route-catch-genuine-errors` and `jobs.api` all drove
+`/complete-loop`, `/act`, `/dissensus`, `/rules`, `/log`, `/state`,
+`/observability` or `/attest/verify` — none of which is in
+`src/route-contract.ts` or registered by `createApp` (all 404 on a live
+server) — and passed the Fastify instance to `node:http`'s `createServer` as an
+options object, so no request was ever answered. Their live replacements
+already exist: the `/v1` surface, auth, revocation, SSE and CORS are covered by
+`api-cors-auth`, `revocation-persistence` and `max_compress_stack`; the deleted
+cross-realm suite's error-message coverage is kept by
+`persistence.failure-messages`, and `persistence-reencrypt-route` covers the
+rotation route end to end.
+
+`apps/api/src/__tests__/test-suite-inventory.test.ts` now fails if a suite in
+that directory is not listed in the root `test:api` script (or if the script
+names a file that no longer exists), so unwired coverage cannot accumulate
+silently again.
 
 ## What is verified beyond the suite
 
 The CI `docker` job builds the image and exercises a running container: it
-must refuse to start without `OMEGA_SIGNING_KEY`, then serve `/health`,
-`/rules`, `/complete-loop`, `/log`, the same routes under `/api`, and the web
-client at `/`. Passing tests proved the code runs under a test runner; that
-job is what proves the artifact runs.
+must refuse to start without `OMEGA_SIGNING_KEY`, then serves `/health`, the
+bearer-bound `/v1` reads (`/v1/block/tip`, `/v1/kernel/capabilities`), an
+unsigned `/v1/cycle`, and a `/v1/pipeline` admission under
+`OMEGA_AUTH_MODE=required`. Passing tests prove the code runs under a test
+runner; that job is what proves the artifact runs.
 
 ## Known gaps
 
@@ -102,6 +116,12 @@ job is what proves the artifact runs.
 - `pnpm test:integration` matches no tests, because this directory is empty.
   It passes rather than failing on an empty match, which is honest only for as
   long as this note stays next to it.
+- `packages/attestation/src/__tests__` (`attestation`, `attestation-envelope`,
+  `attestation.crossrealm-and-branches`) is not wired into `test:suites` yet.
+  The first two use the Jest globals the shim does not provide and the third
+  still relies on `jest.mock('node:crypto', ...)`, which has no `node:test`
+  equivalent — under native Node the error is same-realm and the mock is not
+  needed, so porting it means deleting the mock, not replacing it.
 
 ---
 

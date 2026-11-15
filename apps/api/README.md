@@ -124,8 +124,16 @@ unverified.
 ```text
 GET  /health
 GET  /v1/kernel/capabilities
-GET  /v1/mood
+GET  /v1/ecosystem/body
+POST /v1/ecosystem/body/expand
 GET  /v1/ecosystem/status
+GET  /v1/mood
+POST /v1/mood/codex
+POST /v1/mood/codex/proposal
+GET  /v1/navigator/evidence
+GET  /v1/reality/status
+GET  /v1/dependencies
+POST  /v1/pipeline
 POST /v1/attest
 POST /v1/cycle
 GET  /v1/block/tip
@@ -135,6 +143,7 @@ POST /v1/miner/stop
 GET  /v1/miner/status
 GET  /v1/mesh/nodes
 GET  /v1/mesh/simulate
+GET  /v1/mesh/validate
 POST /v1/auth/keypair
 POST /v1/block/sign
 POST /v1/block/verify-signature
@@ -143,6 +152,68 @@ GET  /v1/value-navigator/proposals/:proposalId
 POST /v1/value-navigator/proposals
 POST /v1/value-navigator/proposals/:proposalId/observe
 ```
+
+`GET /v1/ecosystem/body` carries the compressed single-body projection and a
+local compress→expand proof; `POST /v1/ecosystem/body/expand` returns the
+records for a supplied compression and answers `400 DIGEST_MISMATCH` when the
+digest does not recompute. Coordinates are a declared projection, not inferred
+truth. See [SINGLE-BODY-4X4X4X4](../../docs/SINGLE-BODY-4X4X4X4.md).
+
+## Omega command surface
+
+The bounded command lifecycle: a command is proposed, admitted, approved, then
+executed; observation and reality verification are separate transitions and
+never happen implicitly.
+
+```text
+POST  /v1/omega/commands
+GET   /v1/omega/commands
+GET   /v1/omega/commands/:id
+GET   /v1/omega/commands/:id/provenance
+GET   /v1/omega/commands/:id/safety-boundary
+POST  /v1/omega/commands/:id/admit
+POST  /v1/omega/commands/:id/approve
+POST  /v1/omega/commands/:id/execute
+POST  /v1/omega/commands/:id/lease-execute
+POST  /v1/omega/commands/:id/observe
+POST  /v1/omega/commands/:id/verify-reality
+POST  /v1/omega/commands/:id/reconciliation
+GET   /v1/omega/events
+GET   /v1/omega/divergences
+POST  /v1/omega/coordination/evidence
+POST  /v1/omega/connectors/observe
+GET   /v1/omega/connectors/observations
+POST  /v1/omega/oreade/drop
+POST  /v1/omega/oreade/proposal
+GET   /v1/omega/workers
+POST  /v1/omega/workers/register
+POST  /v1/omega/workers/:workerId/heartbeat
+POST  /v1/omega/workers/:workerId/lease
+POST  /v1/omega/workers/:workerId/lease/:leaseId/release
+```
+
+A stored command state is not an execution: `execute` is a separate authorized
+transition, and `verify-reality` compares the observed result against the
+declared expectation rather than trusting the caller's report.
+
+## Invisible Online Computer routes
+
+```text
+POST  /api/execute
+POST  /execute
+GET   /api/kai/memory
+GET   /kai/memory
+GET   /api/kai/memory/:id/replay
+GET   /kai/memory/:id/replay
+GET   /api/kai/memory/audit
+GET   /kai/memory/audit
+```
+
+`/api/execute` (and the Vite-proxy alias `/execute`) runs KAI observe → ELION
+execute → OMEGA verify → KAI remember. Replay recomputes SHA-256 over the
+retained evidence text and answers `VERIFIED`, `DIVERGENT`, or `UNKNOWN`; the
+audit route applies the same rule to the whole ledger and counts rows beyond
+its bound as `not_audited` rather than assuming them good.
 
 Value Navigator proposals always remain `decision: REVIEW`,
 `authorized: false`, and `NOT_EXECUTED`. Observations are supplied by the
@@ -156,9 +227,14 @@ mode. See [the repository contract](../../skills/oceanicos-value-navigator/refer
 ## Static client
 
 Set `OMEGA_WEB_DIST` to a built `apps/web` directory to serve the SPA from the
-same Fastify origin. `/` serves `index.html`, `/assets/*` serves built assets,
-and eligible non-API GET paths fall back to `index.html` for client-side
-routing. API/module paths remain JSON 404s when unmatched.
+same Fastify origin. `GET /` serves `index.html`, `GET /assets/*` serves built
+assets, and eligible non-API GET paths fall back to `index.html` for
+client-side routing. API/module paths remain JSON 404s when unmatched.
+
+```text
+GET  /
+GET  /assets/*
+```
 
 ```text
 OMEGA_WEB_DIST=apps/web/dist

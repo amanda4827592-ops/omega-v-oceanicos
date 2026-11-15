@@ -7,8 +7,11 @@
  *    PEM drives a genuine failure through Node's native crypto bindings
  *    (createPrivateKey/createPublicKey), and under Jest that failure is never
  *    `instanceof` this test file's own `Error`. See the cross-realm note
- *    below, and apps/api/src/__tests__/persistence.crossrealm-errors.test.ts
- *    for the same phenomenon documented against fs/crypto in persistence.ts.
+ *    below — and note that apps/api/src/__tests__/persistence.failure-messages.test.ts
+ *    now covers the same fs/crypto phenomenon under native `node:test`, where
+ *    every Error is same-realm and no mock is needed. This file is still
+ *    unwired for the same reason it was written: `jest.mock` has no
+ *    `node:test` counterpart.
  *  - the constructor's old-API `keyVersion || '1'` fallback (line 191) — every
  *    existing old-API test passes an explicit version.
  *  - the constructor's Ed25519 `signingKey ?? process.env[ED25519_KEY_ENV]`
