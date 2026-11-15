@@ -159,19 +159,28 @@ Defined in `apps/web/src/tokens.css`:
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--omega-abyss` | `#071312` | page background |
-| `--omega-abyss-raised` | `#0b1d1a` | panels |
-| `--omega-abyss-edge` | `#1b3b35` | borders, dividers |
-| `--omega-current` | `#8ce8c8` | primary signal, the mark |
-| `--omega-current-bright` | `#69e7b9` | active state |
-| `--omega-current-dim` | `#609187` | secondary text |
-| `--omega-foam` | `#ebfaf4` | primary text |
-| `--omega-foam-muted` | `#c8e9df` | supporting text |
-| `--omega-verified` | `#69e7b9` | verified verdict |
-| `--omega-dissent` | `#ed9986` | dissenting verdict |
-| `--omega-unknown` | `#547b74` | unknown verdict |
+| `--omega-abyss` | `#020617` | page background |
+| `--omega-abyss-raised` | `#0b1329` | panels |
+| `--omega-abyss-edge` | `rgba(6, 182, 212, 0.2)` | borders, dividers |
+| `--omega-current` | `#22d3ee` | primary signal, the mark |
+| `--omega-current-bright` | `#06b6d4` | active state |
+| `--omega-current-dim` | `#0891b2` | secondary text |
+| `--omega-foam` | `#e2e8f0` | primary text |
+| `--omega-foam-muted` | `#94a3b8` | supporting text |
+| `--omega-verified` | `#06b6d4` | verified verdict |
+| `--omega-dissent` | `#ef4444` | dissenting verdict |
+| `--omega-unknown` | `#64748b` | unknown verdict |
+| `--omega-violet` | `#7c3aed` | architecture and depth accents |
+| `--omega-warning` | `#f59e0b` | warning state |
+| `--omega-glass` | `rgba(15, 23, 42, 0.65)` | translucent panel surface |
+| `--omega-shadow` | `0 18px 70px rgba(2, 6, 23, 0.46)` | panel elevation |
 
 **Semantic verdict colors are reserved.** They communicate system state, not decoration.
+
+`apps/web/src/App.css` still carries colour literals outside this token set.
+That debt is stated against a ceiling rather than paid down in one diff:
+**124 distinct colours across 198 uses**, checked by `tests/__tests__/brand.test.ts`
+so it may be paid down freely but may not quietly grow.
 
 ## 11. Mark
 

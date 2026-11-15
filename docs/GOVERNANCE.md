@@ -35,23 +35,46 @@ credential.
 **Every other write.** These accept requests from anyone who can reach the
 port, regardless of how the three variables are configured:
 
-- `POST /observe`
-- `POST /verify`
-- `POST /attest`
-- `POST /attest/verify`
-- `POST /act`
-- `POST /learn`
-- `POST /recompile`
-- `POST /complete-loop`
-- `POST /dissensus`
-- `POST /os/admit`
-- `POST /mini/cycle`
-- `POST /mini/total`
+- `POST /v1/ecosystem/body/expand` (read-gated, below)
+- `POST /v1/mood/codex`
+- `POST /v1/mood/codex/proposal`
+- `POST /v1/attest`
+- `POST /v1/cycle`
 - `POST /v1/pipeline`
+- `POST /v1/value-navigator/proposals`
+- `POST /v1/value-navigator/proposals/:proposalId/observe`
+- `POST /v1/omega/commands`
+- `POST /v1/omega/commands/:id/admit`
+- `POST /v1/omega/commands/:id/execute`
+- `POST /v1/omega/commands/:id/lease-execute`
+- `POST /v1/omega/commands/:id/observe`
+- `POST /v1/omega/commands/:id/reconciliation`
+- `POST /v1/omega/commands/:id/verify-reality`
+- `POST /v1/omega/connectors/observe`
+- `POST /v1/omega/coordination/evidence`
+- `POST /v1/omega/oreade/drop`
+- `POST /v1/omega/oreade/proposal`
+- `POST /v1/omega/workers/register`
+- `POST /v1/omega/workers/:workerId/heartbeat`
+- `POST /v1/omega/workers/:workerId/lease`
+- `POST /v1/omega/workers/:workerId/lease/:leaseId/release`
+- `POST /api/execute`
+- `POST /execute`
+- `POST /v1/miner/start`
+- `POST /v1/miner/stop`
+- `POST /v1/auth/keypair`
+- `POST /v1/block/sign`
+- `POST /v1/block/verify-signature`
 
-A caller who can reach the service can write into the append-only chain,
-authorize actions, and record learnings. `POST /attest/verify` is read-shaped
-but is listed here because it is a `POST` and takes no token.
+`POST /v1/ecosystem/body/expand` is the one exception: it carries the read
+gate (so `OMEGA_READ_TOKEN`, when set, applies) because it expands a declared
+projection rather than writing state. It is still a `POST` and takes no
+authority beyond that.
+
+A caller who can reach the service can run the loop, record memory, register
+workers, and drive the Ω command lifecycle up to its own gates. The command
+lifecycle keeps `DENY` and `REVIEW` from executing, and approval only advances
+a command to `AUTHORIZED`; none of that is authentication.
 
 This is defensible for a service intended to sit behind a gateway that
 authenticates before it. It is indefensible as an assumption nobody wrote
@@ -63,13 +86,14 @@ network you do not control.**
 Authorization is not the only control, and these hold with every variable
 unset:
 
-- `/act` refuses an attestation whose signature does not verify (**403**)
-- `/act` refuses an attestation with no recorded runtime lineage (**404**)
-- `/act` refuses an attestation that verified negative (**409**)
-- `/act` refuses a `dissensusId` that was never recorded (**404**)
 - `/attest/revoke` refuses to revoke twice (**409**) or to revoke something
   never recorded (**404**)
-- the attestation service refuses to start without `OMEGA_SIGNING_KEY`
+- `/v1/pipeline` and `/v1/omega/connectors/observe` refuse caller-supplied
+  authority fields with **400** and do not run
+- `/v1/omega/commands/:id/verify-reality` refuses a client-supplied verdict
+  with **400**
+- the attestation service refuses to start without `OMEGA_SIGNING_KEY`, and
+  an unconfigured resolver returns **403** rather than admitting
 
 An open write surface is not the same as an unconstrained one. What a caller
 cannot do is make the system attest to something it did not verify.
@@ -84,10 +108,6 @@ authentication, and the allowlist is the only thing standing behind it.
 Recording that these do not exist is the point. A governance document listing
 only the controls that are present would describe a stricter system than the
 one that runs.
-
-## Symbolic scene simulation
-
-`POST /scene/simulate` is a bounded, unauthenticated local simulation route. It accepts only a bounded seed and step count, emits deterministic trace evidence under `scene-equation.v1`, and always reports `verified:false`. The route, SDK method, CLI command, and dashboard control expose the same boundary: symbolic narrative states are simulation data, not scientific, cosmological, consciousness, sentience, deployment, or external-execution proof.
 
 ## Portable runtime smoke evidence
 

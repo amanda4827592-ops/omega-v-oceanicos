@@ -65,9 +65,12 @@ describe('roadmap Phase 2 claims have evidence', () => {
       'packages/remember/src/index.ts',
       'export class Remember'
     ),
+    // The suite that used to anchor this was deleted with the old MiniKernel
+    // API. This is the wired test that drives the current kernel's cycle
+    // directly, with no HTTP server and no UI in the path.
     'MiniKernel runs one cycle without API/UI': fileContains(
-      'packages/mini/src/__tests__/mini.test.ts',
-      'MiniKernel'
+      'tests/integration/max_compress_stack.e2e.test.ts',
+      'MiniKernel executes full end-to-end cycle cleanly'
     ),
     'MINI is the documented default mental model everywhere': allContain(
       KERNEL_DOCS,

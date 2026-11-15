@@ -19,12 +19,17 @@ import { join } from 'node:path';
  */
 describe('governance describes the real surface', () => {
   const root = process.cwd();
-  const source = readFileSync(join(root, 'apps/api/src/index.ts'), 'utf8');
+  // The live surface is the published contract, not a scan of one file:
+  // route registration moved to route modules, so `app.get(`/`app.post(`
+  // in index.ts matched nothing and this guard silently checked an empty
+  // surface. documentation.test.ts already holds the contract to the
+  // registered routes, so the contract is the right subject here too.
+  const contract = readFileSync(join(root, 'apps/api/src/route-contract.ts'), 'utf8');
   const governance = readFileSync(join(root, 'docs/GOVERNANCE.md'), 'utf8');
 
-  const routes = Array.from(source.matchAll(/app\.(get|post)\('([^']+)'/g)).map((match) => ({
-    method: match[1].toUpperCase(),
-    path: match[2],
+  const routes = Array.from(contract.matchAll(/'((GET|POST) (\/[^']*))'/g)).map((match) => ({
+    method: match[2],
+    path: match[3],
   }));
 
   const writes = routes.filter((route) => route.method === 'POST');
@@ -36,6 +41,7 @@ describe('governance describes the real surface', () => {
     '/attest/revoke',
     '/persistence/acknowledge',
     '/persistence/reencrypt',
+    '/v1/omega/commands/:id/approve',
     '/jobs',
     '/jobs/:jobId/claim',
     '/jobs/:jobId/complete',

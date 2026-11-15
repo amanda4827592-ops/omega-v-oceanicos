@@ -68,20 +68,41 @@ Wired by `pnpm test:api`: the API suites that test the live surface —
 `apps/api/dist` (the API is ESM with `.js`-suffixed source imports, so it is
 executed the way it ships, not through a transpiler), which means
 `pnpm --filter api build` must run first — `pnpm test` already builds.
-`route-contract.ts`, `scene.ts` and `server.ts` are in the api tsconfig
-`include` so those modules are built and type-checked too; `scene.ts` had
+`apps/api/src/route-contract.ts`, `apps/api/src/scene.ts` and
+`apps/api/src/server.ts` are in the api tsconfig `include` so those modules
+are built and type-checked too; `apps/api/src/scene.ts` had
 never been compiled or run, and fixing that exposed two real defects (a
 runtime validator imported as a type, and a retired `@omega-v/types` package
 name) that this suite now covers.
 
-Still not wired, each reporting pre-existing drift rather than a runner
-problem: `brand` (docs/BRAND.md publishes an older palette than
-`apps/web/src/tokens.css`), `docs-claims` (packages/apps without READMEs),
-`governance` (admin-gated writes the governance doc does not list),
-`portable-scripts` (root `test:coverage` still shells out to `rm -rf` /
-`mkdir -p`, and the smoke test names `dist/server.js` where `scripts/smoke-api.cjs`
-runs `dist/index.js`), `roadmap-claims`, and `node-support` (CI claims the
-suites no longer make). `apps/api/src/__tests__/documentation.test.ts` now
+Five guards that had been unwired because of pre-existing drift now pass and
+run in `test:suites`, with the drift corrected rather than the guard
+weakened:
+
+- `brand` — `docs/BRAND.md` now publishes the palette `tokens.css` actually
+  defines (including the two non-hex tokens), and the literal-colour debt is
+  stated as the current 124 distinct / 198 uses, which the test holds as a
+  ceiling.
+- `docs-claims` — `packages/kai`, `packages/elion` and `packages/omega` have
+  READMEs, `packages/README.md` names the loop organs and `oreade`, and the
+  `tests/README.md` claims now use paths that exist.
+- `governance` — the guard reads the live `API_ROUTE_INVENTORY` instead of
+  scanning `index.ts` for `app.get(` (registration moved into route modules,
+  so that scan matched nothing), and `docs/GOVERNANCE.md` lists the 30
+  un-gated writes that exist now.
+- `portable-scripts` — root `test:coverage` uses `scripts/rimraf.cjs` +
+  `scripts/mkdir.cjs` instead of `rm -rf` / `mkdir -p`, and the guard asserts
+  the entry point `scripts/smoke-api.cjs` really spawns (`dist/index.js`).
+- `roadmap-claims` — the Phase 2 anchors point at current evidence
+  (`max_compress_stack.e2e.test.ts` for the kernel cycle), and the API README
+  states the kernel relationship the "default mental model everywhere" row
+  claims.
+
+Still not wired: `node-support` — its docker job exists, but
+`.github/workflows/verify.yml` does not host the encrypted local-ledger
+restart smoke the guard requires (it prepares the volume and removes the
+container, but never runs the create → restart → decrypt sequence), so the CI
+claim is still unproven. That needs a real job, not a documentation fix. `apps/api/src/__tests__/documentation.test.ts` now
 passes against the live contract: the API README documents all 75 routes in
 `src/route-contract.ts`, advertises none that the server does not serve, and
 still lists the environment variables operators need.

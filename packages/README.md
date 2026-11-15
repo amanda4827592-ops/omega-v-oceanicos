@@ -73,6 +73,19 @@ packages/
 
 Apps (`apps/api`, `apps/web`) are interface expansions (`+ API`, `+ Web`).
 
+## Loop organs (Invisible Online Computer)
+
+The loop's logic lives in three workspace packages, one per organ:
+
+| Package                                          | Role                                                                 |
+| ------------------------------------------------ | -------------------------------------------------------------------- |
+| `packages/kai/` (`@oceanicos/kai`)               | 👁 Observe — shield patterns, intent scan, memory/contract shapes    |
+| `packages/elion/` (`@oceanicos/elion`)           | Execute — authority bounding, one bounded answer, local composer     |
+| `packages/omega/` (`@oceanicos/omega`)           | ✓ Verify — `sha256Hex`, `verifyOmega`, `replayVerdict`, fixpoint law |
+
+`apps/api` imports them by name for `POST /api/execute` and the KAI memory
+replay/audit endpoints. `ECOSYSTEM_BODY.md` maps each organ to its file.
+
 ## Continuum Subsystems
 
 Extended subsystem modules for the Ω∞v Oceanicos ecosystem:
@@ -115,6 +128,7 @@ Extended subsystem modules for the Ω∞v Oceanicos ecosystem:
 | `@omega-v/notary`       | Notary Verification Engine                |
 | `@omega-v/oracle`       | Trusted Oracle Engine                     |
 | `@omega-v/orchestrator` | Pipeline Orchestrator Engine              |
+| `@omega-v/oreade`       | Oreade Intent-to-Value Engine             |
 | `@omega-v/pipeline`     | Verification Pipeline Engine              |
 | `@omega-v/policy`       | Policy Evaluation Engine                  |
 | `@omega-v/registry`     | Component Registry Engine                 |

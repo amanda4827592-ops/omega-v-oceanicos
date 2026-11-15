@@ -2,6 +2,10 @@
 
 Fastify HTTP runtime for Ω∞v | OCEANICOS.
 
+The API is one interface to the MINI kernel: `POST /v1/cycle`, the miner
+routes and the block routes call `MiniKernel.runCycle()` and return the block
+it appends. The kernel runs the cycle; this service only exposes it over HTTP.
+
 The executable contract is the current `createApp` surface. Persistence,
 local jobs, readiness, attestation revocations, and optional static-client
 serving are supported modules and are registered by `createApp`. The supported

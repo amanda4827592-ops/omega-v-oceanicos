@@ -66,8 +66,11 @@ describe('package scripts are portable', () => {
       string
     >;
     expect(scripts['smoke:api']).toBe('pnpm build && node scripts/smoke-api.cjs');
+    // The API's entry point is dist/index.js (see apps/api/package.json
+    // "main"); the smoke test was naming dist/server.js, which does not
+    // exist. Assert the file the script actually spawns.
     expect(readFileSync(join(root, 'scripts/smoke-api.cjs'), 'utf8')).toContain(
-      "spawn(process.execPath, ['dist/server.js']"
+      "spawn(process.execPath, ['dist/index.js']"
     );
   });
 
