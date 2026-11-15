@@ -38,7 +38,10 @@ const continuumKernel = new OceanicosKernel('omega-continuum-secret');
 
 export async function getContinuumEcosystemStatus(): Promise<ContinuumEcosystemStatus> {
   const timestamp = new Date().toISOString();
-  const continuumDir = join(process.cwd(), 'continuum', 'packages');
+  let continuumDir = join(process.cwd(), 'continuum', 'packages');
+  if (!existsSync(continuumDir)) {
+    continuumDir = join(process.cwd(), '..', '..', 'continuum', 'packages');
+  }
 
   let packageNames: string[] = [];
   if (existsSync(continuumDir)) {
