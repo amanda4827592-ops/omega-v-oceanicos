@@ -55,6 +55,7 @@ import { registerTokensRoute } from './tokens-route.js';
 import { registerWaterProtocolRoute } from './water-protocol-route.js';
 import { registerGloberRoutes } from './glober-route.js';
 import { registerContinuumRoute, getContinuumEcosystemStatus } from './continuum-route.js';
+import { registerSimulationRoute } from './simulation-route.js';
 import { API_ROUTE_INVENTORY } from './route-contract.js';
 import { OceanicosKernel as UpgradeKernel } from '@oceanicos/mini';
 import { OmegaCommandStore, registerOmegaWorkerRoutes, type OmegaCommandAdmissionEvidenceResolver } from './omega.js';
@@ -627,6 +628,7 @@ export function createApp(
   registerTokensRoute(fastify, kaiLedger);
   registerWaterProtocolRoute(fastify, kaiLedger);
   registerGloberRoutes(fastify, kaiLedger);
+  registerSimulationRoute(fastify, kaiLedger, inferenceClient, { signingKey: resolvedOptions.attestationSigningKey });
 
   // ─── Constitutional Authorization Gate (§6, §8, §9, §12) ─────────
   fastify.post('/v1/authorization/evaluate', async (request: any) => {
@@ -1765,6 +1767,8 @@ export const STARTUP_BANNER = [
   '  POST   /v1/inference/pull',
   '  GET    /v1/singularity/status',
   '  POST   /v1/singularity/century-seal',
+  '  GET    /v1/simulation/status',
+  '  POST   /v1/simulation/collapse-wavefunction',
   '  GET    /v1/memory/status',
   '  GET    /v1/memory/search',
   '  GET    /v1/memory/causal',

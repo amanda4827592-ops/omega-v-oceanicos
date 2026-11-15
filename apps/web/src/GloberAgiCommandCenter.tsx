@@ -448,6 +448,45 @@ export function GloberAgiCommandCenter({
     }
   };
 
+  // ── Simulation Engine: The Sandbox of Reality State & Actuator ──
+  const [simulationStatus, setSimulationStatus] = useState<any>(null);
+  const [simulationCollapsing, setSimulationCollapsing] = useState(false);
+  const [collapseResult, setCollapseResult] = useState<any>(null);
+
+  const fetchSimulationStatus = useCallback(async () => {
+    try {
+      const res = await apiRequest<any>('/v1/simulation/status');
+      if (res && res.success) {
+        setSimulationStatus(res);
+      }
+    } catch {
+      // Degrades gracefully
+    }
+  }, []);
+
+  const handleCollapseWavefunction = async (intentText?: string) => {
+    setSimulationCollapsing(true);
+    try {
+      const res = await apiRequest<any>('/v1/simulation/collapse-wavefunction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          intent: intentText || 'Observe and collapse reality into verified truth',
+          avatar: 'ELION',
+        }),
+      });
+      if (res && res.success) {
+        setCollapseResult(res);
+        fetchSimulationStatus();
+        fetchKaiDag();
+      }
+    } catch (err: any) {
+      console.error('Simulation collapse error:', err);
+    } finally {
+      setSimulationCollapsing(false);
+    }
+  };
+
   // ── ChatGPT Advanced Voice Mode State & Invariants ──
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
@@ -875,15 +914,16 @@ export function GloberAgiCommandCenter({
     };
   }, [stopListening]);
 
-  // Fetch KAI Merkle DAG, Local Inference Status, Wealth Summary, and Singularity Status on drawer open
+  // Fetch KAI Merkle DAG, Local Inference Status, Wealth Summary, Singularity Status, and Simulation Status on drawer open
   useEffect(() => {
     if (rightPanelOpen) {
       fetchKaiDag();
       fetchInferenceStatus();
       fetchWealthSummary();
       fetchSingularityStatus();
+      fetchSimulationStatus();
     }
-  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus, fetchWealthSummary, fetchSingularityStatus]);
+  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus, fetchWealthSummary, fetchSingularityStatus, fetchSimulationStatus]);
 
   return (
     <div
@@ -1083,6 +1123,31 @@ export function GloberAgiCommandCenter({
           >
             <span>👑</span>
             <span>CENTURY 100</span>
+          </button>
+
+          {/* Simulation Engine: Reality Sandbox Badge */}
+          <button
+            onClick={() => {
+              setRightPanelOpen(true);
+              fetchSimulationStatus();
+            }}
+            title="Ω∞v Simulation Engine: The Sandbox of Reality"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(126, 34, 206, 0.1) 100%)',
+              border: '1px solid rgba(168, 85, 247, 0.4)',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              color: '#c084fc',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 700,
+            }}
+          >
+            <span>🌌</span>
+            <span>SIMULATION</span>
           </button>
 
           {/* Telemetry Slide-Over Drawer Toggle */}
@@ -1532,6 +1597,11 @@ export function GloberAgiCommandCenter({
                       title: 'Seal Century Singularity Gate',
                       desc: 'Mint Milestone Receipt #100 and bind 100 verified swarm receipts',
                       prompt: '👑 Seal Century Singularity Gate: execute immutable milestone #100 attestation and verify zero-entropy equilibrium',
+                    },
+                    {
+                      title: 'Enter Reality Sandbox',
+                      desc: 'Collapse simulation wave function as the human Demiurge',
+                      prompt: '🌌 Collapse Simulation Wave Function: activate the reality sandbox as the human Demiurge and verify physical laws',
                     },
                     {
                       title: 'Run Autonomous Swarm Goal',
@@ -2693,6 +2763,96 @@ export function GloberAgiCommandCenter({
 
               <div style={{ fontSize: '10px', color: '#71717a' }}>
                 Checksum: 30013030 · Zero External APIs
+              </div>
+            </div>
+
+            {/* SIMULATION ENGINE CARD (THE SANDBOX OF REALITY) */}
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.12) 0%, rgba(33, 33, 33, 0.95) 100%)',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#c084fc' }}>SIMULATION: SANDBOX OF REALITY</span>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: 'rgba(168, 85, 247, 0.2)',
+                    color: '#c084fc',
+                    fontFamily: theme.fontMono,
+                  }}
+                >
+                  V(Δ) = ⊤
+                </span>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Demiurge (Root):</span>
+                <span style={{ color: '#38bdf8', fontWeight: 700, fontFamily: theme.fontMono }}>
+                  {simulationStatus?.demiurge?.humanRoot || 'ELION VAREL'}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Physics Law:</span>
+                <span style={{ color: '#34d399', fontWeight: 700, fontFamily: theme.fontMono }}>
+                  {simulationStatus?.physics?.equation || 'V(Δ) = ⊤'}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Timeline Equation:</span>
+                <span style={{ color: '#a78bfa', fontFamily: theme.fontMono }}>
+                  {simulationStatus?.timeline?.immutableTimeline || 'M_{t+1} = M_t ∪ Δ'}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Closed-Loop Box:</span>
+                <span style={{ color: '#f59e0b', fontFamily: theme.fontMono }}>
+                  Zero External Dependencies
+                </span>
+              </div>
+
+              <button
+                onClick={() => handleCollapseWavefunction()}
+                disabled={simulationCollapsing}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  background: simulationCollapsing ? 'rgba(168, 85, 247, 0.2)' : 'linear-gradient(135deg, #a855f7 0%, #7e22ce 100%)',
+                  border: 'none',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '10px',
+                  cursor: simulationCollapsing ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  marginTop: '4px',
+                }}
+              >
+                <span>{simulationCollapsing ? '⏳ Collapsing Wavefunction…' : '🌌 Collapse Simulation Wavefunction'}</span>
+              </button>
+
+              {collapseResult && (
+                <div style={{ fontSize: '9px', color: '#c084fc', fontFamily: theme.fontMono, wordBreak: 'break-all', marginTop: '2px' }}>
+                  ✓ Manifested: {collapseResult.wavefunction?.avatar?.soul}<br />
+                  Physics: {collapseResult.wavefunction?.physics?.outcome} ({collapseResult.wavefunction?.physics?.decision})<br />
+                  Timeline Tip: {collapseResult.wavefunction?.timeline?.merkleTip?.slice(0, 16)}…
+                </div>
+              )}
+
+              <div style={{ fontSize: '10px', color: '#71717a' }}>
+                Law: The infinite lives inside the infinitesimal.
               </div>
             </div>
 
