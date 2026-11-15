@@ -9,6 +9,7 @@ import {
   EQUATION_LAW_OBSERVATION,
   MAX_EQUATION_SURFACES,
   REPO_OUTWARD_RING,
+  EXECUTION_FLOW,
   compressRepoEquation,
   compressRepoTowardUpgrade,
   expandRepoEquation,
@@ -174,4 +175,35 @@ test('this checkout remembers the water runtime and does not execute the upgrade
   assert.equal(compression.upgrade.execution, 'NOT_EXECUTED');
   assert.equal(compression.upgrade.selected?.kind, 'review-verified-repo');
   assert.equal(compression.upgrade.selected?.evidenceHash, compression.body?.digest);
+});
+
+test('the execution current is remembered and not run', () => {
+  const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
+  assert.equal(EXECUTION_FLOW.length, 7);
+  const ids = EXECUTION_FLOW.map((surface) => surface.id);
+  assert.deepEqual(ids, [
+    'fixpoint',
+    'pipeline-kernel',
+    'pipeline-api',
+    'execute-loop',
+    'execute-route',
+    'command-api',
+    'execute-panel',
+  ]);
+  for (const surface of EXECUTION_FLOW) {
+    assert.equal(REPO_OUTWARD_RING.filter((entry) => entry.path === surface.path).length, 1);
+  }
+  const observed = observeOutwardFiles(repoRoot, EXECUTION_FLOW);
+  const compression = compressRepoEquation(observed.surfaces);
+  assert.equal(compression.status, 'COMPRESSED');
+  assert.equal(compression.body?.memory.length, EXECUTION_FLOW.length);
+  assert.equal(compression.body?.memory.map((entry) => entry.id).join(','), ids.join(','));
+  const expanded = expandRepoEquation(compression.body);
+  assert.equal(expanded.status, 'EXPANDED');
+  assert.equal(expanded.entries?.length, EXECUTION_FLOW.length);
+  const reconciled = reconcileOutwardExpansion(repoRoot, expanded);
+  assert.equal(reconciled.status, 'VERIFIED');
+  assert.equal(reconciled.compared, EXECUTION_FLOW.length);
+  assert.equal(compression.upgrade.execution, 'NOT_EXECUTED');
+  assert.equal(compression.upgrade.selected?.kind, 'review-verified-repo');
 });
