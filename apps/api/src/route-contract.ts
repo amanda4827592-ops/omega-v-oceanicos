@@ -118,6 +118,13 @@ export const API_ROUTE_INVENTORY = [
   'POST /v1/inference/pull',
   'GET /v1/omega/commands',
   'GET /v1/omega/workers',
+  'GET /v1/wealth/ledger',
+  'POST /v1/wealth/dispatch',
+  'POST /v1/wealth/sync',
+  'POST /v1/wealth/notion-sync',
+  'GET /v1/wealth/category/:category',
+  'GET /v1/wealth/summary',
+  'POST /v1/wealth/reset',
   'GET /',
   'GET /assets/*',
 ] as const;

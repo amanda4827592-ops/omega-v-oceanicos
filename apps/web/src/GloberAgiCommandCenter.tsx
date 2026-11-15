@@ -382,6 +382,39 @@ export function GloberAgiCommandCenter({
     }
   };
 
+  // ── Sovereign Wealth Engine State & Notion Surface Sync ──
+  const [wealthSyncing, setWealthSyncing] = useState(false);
+  const [wealthSyncResult, setWealthSyncResult] = useState<any>(null);
+  const [wealthSummary, setWealthSummary] = useState<any>(null);
+
+  const fetchWealthSummary = useCallback(async () => {
+    try {
+      const res = await apiRequest<any>('/v1/wealth/summary');
+      if (res && res.success) {
+        setWealthSummary(res);
+      }
+    } catch {
+      // Degrades gracefully
+    }
+  }, []);
+
+  const handleNotionWealthSync = async () => {
+    setWealthSyncing(true);
+    try {
+      const res = await apiRequest<any>('/v1/wealth/notion-sync', {
+        method: 'POST',
+      });
+      if (res && res.success) {
+        setWealthSyncResult(res);
+        fetchWealthSummary();
+      }
+    } catch (err: any) {
+      console.error('Notion wealth sync error:', err);
+    } finally {
+      setWealthSyncing(false);
+    }
+  };
+
   // ── ChatGPT Advanced Voice Mode State & Invariants ──
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
@@ -809,13 +842,14 @@ export function GloberAgiCommandCenter({
     };
   }, [stopListening]);
 
-  // Fetch KAI Merkle DAG & Local Inference Status on drawer open
+  // Fetch KAI Merkle DAG, Local Inference Status, and Wealth Summary on drawer open
   useEffect(() => {
     if (rightPanelOpen) {
       fetchKaiDag();
       fetchInferenceStatus();
+      fetchWealthSummary();
     }
-  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus]);
+  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus, fetchWealthSummary]);
 
   return (
     <div
@@ -1429,6 +1463,11 @@ export function GloberAgiCommandCenter({
                       title: 'Inspect 11:11 Sovereign Treasury',
                       desc: 'Check Bitcoin SegWit address and Merkle receipts',
                       prompt: '🛡️ Verify Treasury: check sovereign Bitcoin receiving address',
+                    },
+                    {
+                      title: 'Sync Notion Wealth Engine',
+                      desc: 'Trigger 4-Quadrant Tithe & Capital Ledger sync to Notion',
+                      prompt: '🏛️ Sync Notion Wealth Engine: dispatch sovereign portfolio allocations and verify surface sync hash',
                     },
                     {
                       title: 'Run Autonomous Swarm Goal',
@@ -2410,6 +2449,90 @@ export function GloberAgiCommandCenter({
 
               <div style={{ fontSize: '10px', color: '#71717a' }}>
                 Zero External APIs · 100% self-hosted open-weight inference
+              </div>
+            </div>
+
+            {/* SOVEREIGN WEALTH & NOTION ENGINE CARD */}
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '10px',
+                background: '#212121',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#10b981' }}>SOVEREIGN WEALTH & NOTION</span>
+                <button
+                  onClick={fetchWealthSummary}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                    padding: '2px 4px',
+                  }}
+                  title="Refresh Wealth Summary"
+                >
+                  ↻
+                </button>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Total Allocated:</span>
+                <span style={{ color: '#34d399', fontWeight: 700, fontFamily: theme.fontMono }}>
+                  ${(wealthSummary?.ledger?.totalAllocated ?? 0).toFixed(2)}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Tithe (10%):</span>
+                <span style={{ color: '#a78bfa', fontFamily: theme.fontMono }}>
+                  ${(wealthSummary?.ledger?.totalTithe ?? 0).toFixed(2)}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Actions Dispatched:</span>
+                <span style={{ color: '#93c5fd', fontFamily: theme.fontMono }}>
+                  {wealthSummary?.ledger?.allocationCount ?? 0}
+                </span>
+              </div>
+
+              <button
+                onClick={handleNotionWealthSync}
+                disabled={wealthSyncing}
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  background: wealthSyncing ? 'rgba(16, 185, 129, 0.2)' : '#10b981',
+                  border: 'none',
+                  color: wealthSyncing ? '#34d399' : '#000000',
+                  fontWeight: 700,
+                  fontSize: '10px',
+                  cursor: wealthSyncing ? 'default' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '6px',
+                  marginTop: '4px',
+                }}
+              >
+                <span>{wealthSyncing ? '⏳ Syncing Surface…' : '🏛️ Sync Notion Wealth Engine'}</span>
+              </button>
+
+              {wealthSyncResult && (
+                <div style={{ fontSize: '9px', color: '#34d399', fontFamily: theme.fontMono, wordBreak: 'break-all', marginTop: '2px' }}>
+                  ✓ Synced: {wealthSyncResult.surface?.name || 'OCEANICOS MOTION'}<br />
+                  Hash: {wealthSyncResult.syncHash?.slice(0, 16)}…
+                </div>
+              )}
+
+              <div style={{ fontSize: '10px', color: '#71717a' }}>
+                Surface UUID: 39a4897d-aa55-8025-a7b6-c56784400fa1
               </div>
             </div>
 
