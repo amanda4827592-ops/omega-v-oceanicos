@@ -889,28 +889,30 @@ export function App() {
         flexDirection: 'column',
       }}
     >
-      {/* Ambient status bar */}
-      <AmbientBar
-        connected={streamConnected}
-        restActive={restActive}
-        reconnectAttempt={reconnectAttempt}
-        simulationMode={simulationMode}
-        identityActive={!!keyPair}
-        realityStatus={tip?.evidence?.status ?? null}
-        epochsRemembered={history.length}
-        miningActive={minerActive}
-        mood={moodData ? {
-          status: moodData.moodEngine?.status || moodData.status,
-          uncertainty: moodData.moodEngine?.uncertainty ?? 0.1,
-          context: moodData.moodEngine?.context,
-          decision: moodData.moodMatrix?.decision,
-        } : null}
-        latestTransition={latestTransition ? {
-          epoch: latestTransition.step?.nextState?.epoch,
-          hash: latestTransition.hash,
-          outcome: latestTransition.step?.verification?.outcome,
-        } : null}
-      />
+      {/* Ambient status bar (Rendered in specialized ecosystem views) */}
+      {viewportMode !== 'glober' && (
+        <AmbientBar
+          connected={streamConnected}
+          restActive={restActive}
+          reconnectAttempt={reconnectAttempt}
+          simulationMode={simulationMode}
+          identityActive={!!keyPair}
+          realityStatus={tip?.evidence?.status ?? null}
+          epochsRemembered={history.length}
+          miningActive={minerActive}
+          mood={moodData ? {
+            status: moodData.moodEngine?.status || moodData.status,
+            uncertainty: moodData.moodEngine?.uncertainty ?? 0.1,
+            context: moodData.moodEngine?.context,
+            decision: moodData.moodMatrix?.decision,
+          } : null}
+          latestTransition={latestTransition ? {
+            epoch: latestTransition.step?.nextState?.epoch,
+            hash: latestTransition.hash,
+            outcome: latestTransition.step?.verification?.outcome,
+          } : null}
+        />
+      )}
 
       {/* Error toast */}
       {lastError && (
@@ -945,20 +947,21 @@ export function App() {
         </div>
       )}
 
-      {/* Viewport Mode Switcher — OceanicOS Tri-Workspace Floating Dock */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '16px 20px 0',
-          position: 'sticky',
-          top: '8px',
-          zIndex: 30,
-        }}
-      >
+      {/* Viewport Mode Switcher — OceanicOS Tri-Workspace Floating Dock (In Non-Glober Modes) */}
+      {viewportMode !== 'glober' && (
         <div
-          className="oceanic-dock"
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '16px 20px 0',
+            position: 'sticky',
+            top: '8px',
+            zIndex: 30,
+          }}
+        >
+          <div
+            className="oceanic-dock"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -979,10 +982,10 @@ export function App() {
             style={{
               padding: '8px 18px',
               borderRadius: '9999px',
-              border: viewportMode === 'glober' ? '1px solid rgba(56, 189, 248, 0.7)' : '1px solid transparent',
-              background: viewportMode === 'glober' ? 'linear-gradient(180deg, rgba(56, 189, 248, 0.28) 0%, rgba(56, 189, 248, 0.12) 100%)' : 'transparent',
-              color: viewportMode === 'glober' ? '#38bdf8' : theme.textMuted,
-              boxShadow: viewportMode === 'glober' ? '0 0 20px rgba(56, 189, 248, 0.4), inset 0 1px 0 rgba(56, 189, 248, 0.4)' : 'none',
+              border: '1px solid rgba(56, 189, 248, 0.4)',
+              background: 'rgba(56, 189, 248, 0.1)',
+              color: '#38bdf8',
+              boxShadow: 'none',
               fontFamily: theme.fontSans,
               fontSize: '12.5px',
               fontWeight: 700,
@@ -994,10 +997,7 @@ export function App() {
             }}
           >
             <span>🌐</span>
-            <span>Glober AGI</span>
-            {viewportMode === 'glober' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#38bdf8', boxShadow: '0 0 6px #38bdf8' }} />
-            )}
+            <span>← Return to Glober AGI</span>
           </button>
           <button
             onClick={() => setViewportMode('v0')}
@@ -1264,15 +1264,17 @@ export function App() {
           </button>
         </div>
       </div>
+      )}
 
       {viewportMode === 'glober' ? (
         <div
           style={{
-            maxWidth: '1440px',
             width: '100%',
-            margin: '0 auto',
-            padding: '16px 20px 60px',
-            flex: 1,
+            height: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+            background: '#212121',
           }}
         >
           <GloberAgiCommandCenter

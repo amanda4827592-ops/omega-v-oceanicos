@@ -177,9 +177,12 @@ export function GloberAgiCommandCenter({
   onClearChat,
   onNavigateViewport,
 }: GloberAgiCommandCenterProps) {
-  // ── Layout State (Progressive Disclosure) ──
+  // ── Layout State (ChatGPT Clean Progressive Disclosure) ──
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [toolsAccordionOpen, setToolsAccordionOpen] = useState(false);
+  const [organsAccordionOpen, setOrgansAccordionOpen] = useState(false);
+  const [modelMenuOpen, setModelMenuOpen] = useState(false);
 
   // ── Mode & Model Toggles (The Glober Switch) ──
   const [activeMode, setActiveMode] = useState<'collaborative' | 'autonomous'>('collaborative');
@@ -610,166 +613,235 @@ export function GloberAgiCommandCenter({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        minHeight: '760px',
-        background: 'linear-gradient(135deg, rgba(6, 15, 23, 0.98) 0%, rgba(3, 8, 14, 0.99) 100%)',
-        borderRadius: '18px',
-        border: '1px solid rgba(105, 231, 185, 0.16)',
-        boxShadow: '0 16px 48px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-        backdropFilter: 'blur(20px)',
+        height: '100%',
+        minHeight: '100vh',
+        background: '#212121',
         overflow: 'hidden',
-        color: '#e2e8f0',
+        color: '#ececec',
         fontFamily: theme.fontSans,
         position: 'relative',
       }}
     >
-      {/* ── TOP HEADER: Status, Mode, and Panel Toggles ── */}
+      {/* ── TOP HEADER: ChatGPT Clean Header ── */}
       <header
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '12px 18px',
-          borderBottom: '1px solid rgba(105, 231, 185, 0.12)',
-          background: 'rgba(4, 12, 18, 0.85)',
-          fontSize: '12px',
+          height: '52px',
+          padding: '0 16px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#212121',
+          fontSize: '13px',
+          zIndex: 40,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
           <button
             onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-            title="Toggle Workspace Sidebar"
+            title="Toggle Sidebar"
             style={{
-              background: leftSidebarOpen ? 'rgba(105, 231, 185, 0.12)' : 'transparent',
-              border: '1px solid rgba(105, 231, 185, 0.25)',
-              borderRadius: '6px',
-              padding: '5px 9px',
-              color: leftSidebarOpen ? '#69e7b9' : '#94a3b8',
+              background: 'transparent',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '6px 8px',
+              color: '#d1d5db',
               cursor: 'pointer',
-              fontSize: '12px',
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            ☰ Tools & Workspace
+            ☰
           </button>
 
-          <span style={{ fontWeight: 700, color: '#38bdf8', letterSpacing: '0.04em' }}>
-            Ω∞v GLOBER AI
-          </span>
+          {/* Model Selector Pill Dropdown */}
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setModelMenuOpen(!modelMenuOpen)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                background: modelMenuOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '6px 10px',
+                color: '#ffffff',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer',
+                transition: 'background 0.15s ease',
+              }}
+            >
+              <span>Ω∞v OceanicOS</span>
+              <span style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'capitalize' }}>
+                · {selectedModel}
+              </span>
+              <span style={{ fontSize: '10px', color: '#9ca3af' }}>▾</span>
+            </button>
+
+            {modelMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '42px',
+                  left: '0',
+                  background: '#2f2f2f',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '12px',
+                  boxShadow: '0 12px 32px rgba(0, 0, 0, 0.5)',
+                  zIndex: 60,
+                  width: '260px',
+                  padding: '6px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '2px',
+                }}
+              >
+                {[
+                  { id: 'auto', name: 'Auto (Hybrid)', desc: 'Smart balanced multimodal reasoning' },
+                  { id: 'fast', name: 'Fast (Low-Latency)', desc: 'Instant conversational speed' },
+                  { id: 'expert', name: 'Expert (Deep)', desc: 'Extended mathematical & code proof' },
+                  { id: 'heavy', name: 'Heavy (Singularity)', desc: '4x4 Whole-ecosystem matrix' },
+                  { id: 'sonnet', name: 'Sonnet (Frontier)', desc: 'Claude 3.5 frontier logic' },
+                  { id: 'gemini', name: 'Gemini (Multimodal)', desc: 'Gemini 1.5 Pro deep context' },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      setSelectedModel(m.id as any);
+                      setModelMenuOpen(false);
+                    }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      background: selectedModel === m.id ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                      border: 'none',
+                      color: selectedModel === m.id ? '#ffffff' : '#d1d5db',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      width: '100%',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                      <span style={{ fontWeight: 600, fontSize: '13px' }}>{m.name}</span>
+                      {selectedModel === m.id && <span style={{ color: '#10b981' }}>✓</span>}
+                    </div>
+                    <span style={{ fontSize: '11px', color: '#9ca3af' }}>{m.desc}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Submode indicator */}
           <span
             style={{
               padding: '2px 8px',
               borderRadius: '9999px',
-              fontSize: '10px',
-              fontWeight: 700,
-              background: activeMode === 'autonomous' ? 'rgba(234, 179, 8, 0.15)' : 'rgba(56, 189, 248, 0.15)',
-              color: activeMode === 'autonomous' ? '#eab308' : '#38bdf8',
-              border: `1px solid ${activeMode === 'autonomous' ? 'rgba(234, 179, 8, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`,
+              fontSize: '11px',
+              fontWeight: 500,
+              background: 'rgba(255, 255, 255, 0.06)',
+              color: '#9ca3af',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              textTransform: 'capitalize',
             }}
           >
-            {activeMode === 'autonomous' ? '⚡ AUTONOMOUS (AGENTIC)' : '🤝 COLLABORATIVE (HITL)'}
+            {activeSubMode}
           </span>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Auth0 SSO Tenant Pill */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {/* Advanced Voice Mode Button (ChatGPT Parity) */}
+          <button
+            onClick={() => startVoiceMode()}
+            title="ChatGPT Parity: Advanced Voice Mode"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              color: '#e5e7eb',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 500,
+            }}
+          >
+            <span>🎙️</span>
+            <span>Voice</span>
+          </button>
+
+          {/* Telemetry Slide-Over Drawer Toggle */}
+          <button
+            onClick={() => setRightPanelOpen(!rightPanelOpen)}
+            title="Toggle Sensory & Telemetry Drawer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: rightPanelOpen ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.06)',
+              border: `1px solid ${rightPanelOpen ? 'rgba(56, 189, 248, 0.3)' : 'rgba(255, 255, 255, 0.1)'}`,
+              borderRadius: '8px',
+              padding: '6px 12px',
+              color: rightPanelOpen ? '#38bdf8' : '#e5e7eb',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 500,
+            }}
+          >
+            <span>📊</span>
+            <span>Telemetry</span>
+          </button>
+
+          {/* Auth0 User Button */}
           <button
             onClick={() => setShowAuthOverlay(!showAuthOverlay)}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              background: 'rgba(105, 231, 185, 0.08)',
-              border: '1px solid rgba(105, 231, 185, 0.2)',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              color: '#a7f3d0',
-              cursor: 'pointer',
-              fontSize: '11px',
-            }}
-          >
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-            <span>{authSession?.user?.name || 'Elion Varel'} (Auth0)</span>
-          </button>
-
-          {/* Conversation Mood Pill (Level 4: Max Scale) */}
-          <button
-            onClick={() => handleSendPrompt('upgrade conversation mood at max scale')}
-            title="Conversation Mood: Level 4 Max Scale (Proactive 432.1 Hz Resonance)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(168, 85, 247, 0.12)',
-              border: '1px solid rgba(168, 85, 247, 0.35)',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              color: '#d8b4fe',
-              cursor: 'pointer',
-              fontSize: '11px',
-              fontFamily: theme.fontMono,
-            }}
-          >
-            <span>🎭</span>
-            <span>MOOD: LVL 4 MAX</span>
-          </button>
-
-          {/* ChatGPT Parity: Advanced Voice Mode Button */}
-          <button
-            onClick={() => startVoiceMode()}
-            title="ChatGPT Parity: Advanced Voice Mode (Natural 2-Way Hands-Free Speech)"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 182, 212, 0.22) 100%)',
-              border: '1px solid rgba(52, 211, 153, 0.45)',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              color: '#6ee7b7',
-              cursor: 'pointer',
-              fontSize: '11px',
-              fontWeight: 700,
-            }}
-          >
-            <span style={{ fontSize: '13px' }}>🎙️</span>
-            <span>Voice Mode</span>
-          </button>
-
-          <button
-            onClick={() => setRightPanelOpen(!rightPanelOpen)}
-            title="Toggle Sensory & Telemetry Panel"
-            style={{
-              background: rightPanelOpen ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
-              borderRadius: '6px',
-              padding: '5px 9px',
-              color: rightPanelOpen ? '#38bdf8' : '#94a3b8',
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              color: '#ffffff',
               cursor: 'pointer',
               fontSize: '12px',
             }}
           >
-            📰 Telemetry & Logs ◨
+            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981' }} />
+            <span>{authSession?.user?.name || 'Elion Varel'}</span>
           </button>
         </div>
       </header>
 
-      {/* ── 3-PANEL BODY ── */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* ── LEFT SIDEBAR (Workspace, Real-World Tool Registry & Provenance) ── */}
+      {/* ── MAIN WORKSPACE: Sidebar + Canvas ── */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {/* ── LEFT SIDEBAR (ChatGPT Style) ── */}
         {leftSidebarOpen && (
           <aside
             style={{
-              width: '280px',
+              width: '260px',
               minWidth: '260px',
-              borderRight: '1px solid rgba(105, 231, 185, 0.1)',
-              background: 'rgba(5, 12, 18, 0.95)',
+              borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+              background: '#171717',
               display: 'flex',
               flexDirection: 'column',
-              padding: '16px 12px',
-              gap: '14px',
+              padding: '12px 10px',
+              gap: '10px',
               overflowY: 'auto',
+              zIndex: 20,
             }}
           >
-            {/* New Task Action */}
+            {/* New Chat Button */}
             <button
               onClick={() => {
                 setPromptText('');
@@ -780,62 +852,63 @@ export function GloberAgiCommandCenter({
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                padding: '9px',
+                justifyContent: 'space-between',
+                padding: '10px 14px',
                 borderRadius: '8px',
-                background: 'linear-gradient(135deg, rgba(105, 231, 185, 0.2) 0%, rgba(56, 189, 248, 0.15) 100%)',
-                border: '1px solid rgba(105, 231, 185, 0.35)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '12px',
+                fontWeight: 500,
+                fontSize: '13px',
                 cursor: 'pointer',
+                transition: 'background 0.15s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)')}
             >
-              <span>+</span> New Chat / Task
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '15px' }}>+</span>
+                <span>New chat</span>
+              </span>
+              <span style={{ fontSize: '11px', color: '#6b7280' }}>⌘K</span>
             </button>
 
-            {/* Recent Conversations (ChatGPT Parity) */}
+            {/* Recent Chats Section */}
             {recentChats.length > 0 && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Recent Chats
-                  </span>
-                  <span style={{ fontSize: '9px', color: '#64748b' }}>{recentChats.length}</span>
+              <div style={{ marginTop: '4px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.04em', padding: '6px 8px 4px' }}>
+                  Recent
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '140px', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', maxHeight: '160px', overflowY: 'auto' }}>
                   {recentChats.map((c) => (
                     <div
                       key={c.id}
                       onClick={() => setPromptText(c.fullPrompt)}
                       title={c.fullPrompt}
                       style={{
-                        padding: '6px 8px',
-                        borderRadius: '6px',
-                        background: 'rgba(255, 255, 255, 0.02)',
-                        border: '1px solid rgba(255, 255, 255, 0.04)',
-                        fontSize: '11px',
-                        color: '#cbd5e1',
+                        padding: '8px 10px',
+                        borderRadius: '8px',
+                        fontSize: '13px',
+                        color: '#d1d5db',
                         cursor: 'pointer',
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '6px',
+                        gap: '8px',
                         transition: 'background 0.15s ease',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(105, 231, 185, 0.08)';
-                        e.currentTarget.style.borderColor = 'rgba(105, 231, 185, 0.2)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.color = '#ffffff';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.04)';
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#d1d5db';
                       }}
                     >
-                      <span style={{ color: '#64748b', fontSize: '10px' }}>💬</span>
+                      <span style={{ color: '#6b7280', fontSize: '12px' }}>💬</span>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.title}</span>
                     </div>
                   ))}
@@ -843,783 +916,669 @@ export function GloberAgiCommandCenter({
               </div>
             )}
 
-            {/* LIVE REAL-WORLD TOOL REGISTRY */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  Live Tool Registry ({toolsList.length || 22})
-                </span>
-                <span style={{ fontSize: '9px', color: '#10b981', fontFamily: theme.fontMono }}>ALL ONLINE ✓</span>
-              </div>
+            {/* Collapsible Accordion: Real-World Tools (22) */}
+            <div style={{ marginTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '8px' }}>
+              <button
+                onClick={() => setToolsAccordionOpen(!toolsAccordionOpen)}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '6px 8px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#9ca3af',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  borderRadius: '6px',
+                }}
+              >
+                <span>⚡ Real-World Tools ({toolsList.length || 22})</span>
+                <span style={{ fontSize: '10px' }}>{toolsAccordionOpen ? '▾' : '▸'}</span>
+              </button>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '280px', overflowY: 'auto' }}>
-                {toolsList.map((t) => (
-                  <div
-                    key={t.id}
-                    onClick={() => executeRealWorldTool(t.id)}
-                    style={{
-                      padding: '7px 9px',
-                      borderRadius: '6px',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid rgba(255, 255, 255, 0.05)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.08)';
-                      e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.25)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '11px', color: '#f1f5f9', fontWeight: 600 }}>{t.name}</span>
-                      <span
-                        style={{
-                          fontSize: '8.5px',
-                          padding: '1px 5px',
-                          borderRadius: '4px',
-                          background: t.risk.includes('actuation') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                          color: t.risk.includes('actuation') ? '#f87171' : '#34d399',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {t.risk.includes('actuation') ? 'HITL' : 'READ'}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: '9.5px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {t.description}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Navigation Section */}
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px' }}>
-                Workspace & Library
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {[
-                  { icon: '🔍', label: 'Search' },
-                  { icon: '📚', label: 'Library' },
-                  { icon: '📁', label: 'Projects' },
-                  { icon: '📄', label: 'Artifacts' },
-                  { icon: '⚙️', label: 'Automations' },
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '6px 8px',
-                      borderRadius: '6px',
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#94a3b8',
-                      fontSize: '11px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.color = '#69e7b9')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#94a3b8')}
-                  >
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Ecosystem Organs (10 Sovereign Interfaces) */}
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#38bdf8', textTransform: 'uppercase', marginBottom: '6px', letterSpacing: '0.04em' }}>
-                Ecosystem Organs (10 Surfaces)
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {[
-                  { id: 'v0', icon: '🎨', label: 'v0 Creation Mirror', tag: 'UI' },
-                  { id: 'trading', icon: '📈', label: 'XAU/USD AI Trader', tag: 'GOLD' },
-                  { id: 'watcher', icon: '👁️', label: 'WATCHER; 01 Corridor', tag: 'SENSORY' },
-                  { id: 'catalog', icon: '📚', label: 'Ecosystem Catalog', tag: 'DOCS' },
-                  { id: 'conversation', icon: '💬', label: 'Futuristic Chat Mode', tag: '432 Hz' },
-                  { id: 'work', icon: '⚙️', label: 'Work & Echoframe', tag: 'BUILD' },
-                  { id: 'evidence', icon: '🛡️', label: 'Evidence Workspace', tag: 'MERKLE' },
-                  { id: 'wealth', icon: '💰', label: 'Wealth Pipeline', tag: 'TITHE' },
-                  { id: 'ocean', icon: '💧', label: 'ΩVØØS Ocean Body', tag: 'CORE' },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => onNavigateViewport && onNavigateViewport(item.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '5px 8px',
-                      borderRadius: '6px',
-                      background: 'rgba(255, 255, 255, 0.02)',
-                      border: '1px solid rgba(255, 255, 255, 0.04)',
-                      color: '#cbd5e1',
-                      fontSize: '11px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.15s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(56, 189, 248, 0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(56, 189, 248, 0.3)';
-                      e.currentTarget.style.color = '#38bdf8';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.02)';
-                      e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.04)';
-                      e.currentTarget.style.color = '#cbd5e1';
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>{item.icon}</span>
-                      <span>{item.label}</span>
-                    </span>
-                    <span
+              {toolsAccordionOpen && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                  {toolsList.map((t) => (
+                    <div
+                      key={t.id}
+                      onClick={() => executeRealWorldTool(t.id)}
                       style={{
-                        fontSize: '8px',
-                        padding: '1px 4px',
-                        borderRadius: '3px',
-                        background: 'rgba(56, 189, 248, 0.12)',
-                        color: '#38bdf8',
-                        fontFamily: theme.fontMono,
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid rgba(255, 255, 255, 0.04)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2px',
+                        cursor: 'pointer',
                       }}
                     >
-                      {item.tag}
-                    </span>
-                  </button>
-                ))}
-              </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontSize: '11px', color: '#e5e7eb', fontWeight: 500 }}>{t.name}</span>
+                        <span
+                          style={{
+                            fontSize: '9px',
+                            padding: '1px 4px',
+                            borderRadius: '3px',
+                            background: t.risk.includes('actuation') ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+                            color: t.risk.includes('actuation') ? '#f87171' : '#34d399',
+                          }}
+                        >
+                          {t.risk.includes('actuation') ? 'HITL' : 'READ'}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '10px', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {t.description}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Live Integrations */}
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px' }}>
-                External Gateways
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '10.5px' }}>
-                <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>🐙</span> GitHub: omega-v-oceanicos
-                </span>
-                <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>🏛️</span> Notion: OCEANICOS MOTION
-                </span>
-                <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>⚡</span> Industrial IoT MQTT Broker
-                </span>
-                <span style={{ color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>🪙</span> SegWit Bitcoin Treasury
-                </span>
-              </div>
+            {/* Collapsible Accordion: Ecosystem Organs (10) */}
+            <div style={{ marginTop: '4px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '8px' }}>
+              <button
+                onClick={() => setOrgansAccordionOpen(!organsAccordionOpen)}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '6px 8px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#9ca3af',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  borderRadius: '6px',
+                }}
+              >
+                <span>🏛️ Ecosystem Organs (10)</span>
+                <span style={{ fontSize: '10px' }}>{organsAccordionOpen ? '▾' : '▸'}</span>
+              </button>
+
+              {organsAccordionOpen && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '6px', maxHeight: '180px', overflowY: 'auto' }}>
+                  {[
+                    { id: 'v0', icon: '🎨', label: 'v0 Creation Mirror', tag: 'UI' },
+                    { id: 'trading', icon: '📈', label: 'XAU/USD AI Trader', tag: 'GOLD' },
+                    { id: 'watcher', icon: '👁️', label: 'WATCHER; 01 Corridor', tag: 'SENSORY' },
+                    { id: 'wealth', icon: '💰', label: 'Wealth Action Panel', tag: 'TITHE' },
+                    { id: 'ocean', icon: '💧', label: 'ΩVØØS Ocean Body', tag: 'CORE' },
+                    { id: 'catalog', icon: '📚', label: 'Ecosystem Catalog', tag: 'DOCS' },
+                    { id: 'work', icon: '⚙️', label: 'Work & Echoframe', tag: 'BUILD' },
+                    { id: 'evidence', icon: '🛡️', label: 'Evidence Workspace', tag: 'MERKLE' },
+                    { id: 'conversation', icon: '💬', label: 'Futuristic Chat Mode', tag: '432 Hz' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => onNavigateViewport && onNavigateViewport(item.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#d1d5db',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.color = '#ffffff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#d1d5db';
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span>{item.icon}</span>
+                        <span>{item.label}</span>
+                      </span>
+                      <span style={{ fontSize: '9px', color: '#6b7280' }}>{item.tag}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Bottom Profile & Quota */}
-            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px' }}>
-                <span style={{ color: '#64748b' }}>Credits</span>
-                <span style={{ color: '#10b981', fontWeight: 700, fontFamily: theme.fontMono }}>
-                  {authSession?.user?.credits?.toLocaleString() || '999,999'}
-                </span>
-              </div>
-              <div style={{ fontSize: '10px', color: '#475569', marginTop: '2px' }}>
-                Tier: {authSession?.user?.tier || 'V1111 Singularity Enterprise'}
+            {/* Bottom Profile & Offline Indicator */}
+            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#2f2f2f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: '#ffffff' }}>
+                  EV
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#ffffff' }}>Elion Varel</span>
+                  <span style={{ fontSize: '10px', color: '#10b981' }}>✓ Sovereign Root</span>
+                </div>
               </div>
             </div>
           </aside>
         )}
 
-        {/* ── CENTER: THE SOVEREIGN COMMAND CENTER ── */}
+        {/* ── CENTER CHAT CANVAS (Pure ChatGPT Aesthetic) ── */}
         <main
           style={{
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: '24px 20px 40px',
-            overflowY: 'auto',
+            height: 'calc(100vh - 52px)',
             position: 'relative',
+            overflow: 'hidden',
+            background: '#212121',
           }}
         >
-          {/* Contextual Dynamic Greeting / Stream Header */}
-          {messages.length === 0 ? (
-            <div style={{ textAlign: 'center', marginBottom: '18px' }}>
-              <h2
-                style={{
-                  fontSize: 'clamp(24px, 3.5vw, 34px)',
-                  fontWeight: 800,
-                  letterSpacing: '-0.02em',
-                  margin: '0 0 4px',
-                  background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #38bdf8 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                {getGreeting()}, Ω∞v OceanicOS
-              </h2>
-              <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>
-                Live real-world tools, IoT sensors, financial telemetry, and desktop control in one operating organ.
-              </p>
-            </div>
-          ) : (
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '720px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                background: 'rgba(8, 20, 28, 0.75)',
-                border: '1px solid rgba(105, 231, 185, 0.18)',
-                marginBottom: '14px',
-                fontSize: '11px',
-                color: '#94a3b8',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ color: '#69e7b9', fontWeight: 700 }}>Ω∞v LIVING CONTINUUM</span>
-                <span>·</span>
-                <span>{messages.length} messages active</span>
-              </div>
-              <button
-                onClick={() => {
-                  setLocalMessages([]);
-                  setLastExecutedEvidence(null);
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#64748b',
-                  cursor: 'pointer',
-                  fontSize: '11px',
-                }}
-              >
-                Reset Stream
-              </button>
-            </div>
-          )}
-
-          {/* Mode Toggles: The Glober Switch */}
+          {/* Scrollable Conversation Thread */}
           <div
             style={{
+              flex: 1,
+              width: '100%',
+              overflowY: 'auto',
               display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: '6px',
-              padding: '5px',
-              borderRadius: '12px',
-              background: 'rgba(10, 25, 35, 0.75)',
-              border: '1px solid rgba(105, 231, 185, 0.18)',
-              marginBottom: '16px',
-            }}
-          >
-            <button
-              onClick={() => handleModeSwitch('collaborative', 'chat')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeSubMode === 'chat' ? 'rgba(56, 189, 248, 0.25)' : 'transparent',
-                color: activeSubMode === 'chat' ? '#38bdf8' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
-              💬 Chat
-            </button>
-            <button
-              onClick={() => handleModeSwitch('collaborative', 'cowork')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeSubMode === 'cowork' ? 'rgba(105, 231, 185, 0.25)' : 'transparent',
-                color: activeSubMode === 'cowork' ? '#69e7b9' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
-              🤝 Cowork (HITL)
-            </button>
-
-            <div style={{ width: '1px', background: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
-
-            <button
-              onClick={() => handleModeSwitch('autonomous', 'swarm')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeSubMode === 'swarm' ? 'rgba(234, 179, 8, 0.25)' : 'transparent',
-                color: activeSubMode === 'swarm' ? '#eab308' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
-              ⚡ Swarm
-            </button>
-            <button
-              onClick={() => handleModeSwitch('autonomous', 'goal')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeSubMode === 'goal' ? 'rgba(244, 63, 94, 0.25)' : 'transparent',
-                color: activeSubMode === 'goal' ? '#f43f5e' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
-              🎯 Goal
-            </button>
-            <button
-              onClick={() => handleModeSwitch('autonomous', 'computer')}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                background: activeSubMode === 'computer' ? 'rgba(168, 85, 247, 0.25)' : 'transparent',
-                color: activeSubMode === 'computer' ? '#c084fc' : '#94a3b8',
-                fontWeight: 700,
-                fontSize: '12px',
-                cursor: 'pointer',
-              }}
-            >
-              🖥️ Computer
-            </button>
-          </div>
-
-          {/* Model Selector Bar */}
-          <div
-            style={{
-              display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              gap: '6px',
-              marginBottom: '16px',
-              fontSize: '11px',
-              color: '#64748b',
+              padding: '20px 16px',
             }}
           >
-            <span>Model:</span>
-            {(['fast', 'auto', 'expert', 'heavy', 'sonnet', 'gemini'] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setSelectedModel(m)}
+            {messages.length === 0 ? (
+              /* Empty State: The Infinite in the Infinitesimal */
+              <div
                 style={{
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                  border: `1px solid ${selectedModel === m ? 'rgba(56, 189, 248, 0.4)' : 'rgba(255, 255, 255, 0.08)'}`,
-                  background: selectedModel === m ? 'rgba(56, 189, 248, 0.15)' : 'transparent',
-                  color: selectedModel === m ? '#38bdf8' : '#94a3b8',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: '50vh',
+                  textAlign: 'center',
+                  maxWidth: '720px',
+                  width: '100%',
                 }}
               >
-                {m}
-              </button>
-            ))}
-          </div>
+                {/* Central Oceanic Spark Glyph */}
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(56, 189, 248, 0.15) 60%, transparent 100%)',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    boxShadow: '0 0 24px rgba(16, 185, 129, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '22px',
+                    color: '#6ee7b7',
+                    marginBottom: '16px',
+                  }}
+                >
+                  Ω
+                </div>
 
-          {/* ── CONVERSATION STREAM (Unified AGI Workspace) ── */}
-          {messages.length > 0 && (
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '720px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                marginBottom: '16px',
-                maxHeight: '440px',
-                overflowY: 'auto',
-                paddingRight: '6px',
-              }}
-            >
-              {messages.map((m) => {
-                const isUser = m.sender === 'user';
-                return (
-                  <div
-                    key={m.id}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: isUser ? 'flex-end' : 'flex-start',
-                      width: '100%',
-                    }}
-                  >
-                    <div
+                <h1
+                  style={{
+                    fontSize: '26px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    margin: '0 0 6px',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  What can I help with today?
+                </h1>
+
+                <p
+                  style={{
+                    fontSize: '13px',
+                    color: '#94a3b8',
+                    fontStyle: 'italic',
+                    margin: '0 0 28px',
+                  }}
+                >
+                  "The infinite lives inside the infinitesimal."
+                </p>
+
+                {/* 4 Clean Prompt Suggestion Cards (ChatGPT Parity) */}
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                    gap: '10px',
+                    width: '100%',
+                    maxWidth: '680px',
+                  }}
+                >
+                  {[
+                    {
+                      title: 'Verify XAU/USD Gold Continuum',
+                      desc: 'Inspect real-time gold price, RSI, and liquidity',
+                      prompt: 'Inspect real-time XAU/USD gold price and continuum trading telemetry',
+                    },
+                    {
+                      title: 'Inspect 11:11 Sovereign Treasury',
+                      desc: 'Check Bitcoin SegWit address and Merkle receipts',
+                      prompt: '🛡️ Verify Treasury: check sovereign Bitcoin receiving address',
+                    },
+                    {
+                      title: 'Run Autonomous Swarm Goal',
+                      desc: 'Launch background VOOS agent loop on :8088',
+                      prompt: 'Launch autonomous VOOS background swarm cycle to audit system invariants',
+                    },
+                    {
+                      title: 'Synthesize 432 Hz Ocean Wave',
+                      desc: 'Generate biomimetic water memory tensor pulse',
+                      prompt: '🌊 Compress: execute whole-ecosystem 4x4 matrix compression',
+                    },
+                  ].map((card, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSendPrompt(card.prompt)}
                       style={{
-                        maxWidth: '85%',
-                        padding: '12px 16px',
-                        borderRadius: isUser ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
-                        background: isUser
-                          ? 'linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(2, 132, 199, 0.28) 100%)'
-                          : 'rgba(8, 20, 28, 0.94)',
-                        border: `1px solid ${isUser ? 'rgba(56, 189, 248, 0.35)' : 'rgba(105, 231, 185, 0.25)'}`,
-                        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
+                        padding: '14px 16px',
+                        borderRadius: '12px',
+                        background: '#2f2f2f',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#383838';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.18)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#2f2f2f';
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                       }}
                     >
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          marginBottom: '6px',
-                          fontSize: '10px',
-                          fontFamily: theme.fontMono,
-                        }}
-                      >
-                        <span style={{ fontWeight: 700, color: isUser ? '#38bdf8' : '#69e7b9' }}>
-                          {isUser ? '👤 ELION VAREL' : `💧 ${m.organ || m.metadata?.organ || 'Ω∞v GLOBER AI'}`}
-                        </span>
-                        <span style={{ color: '#64748b' }}>·</span>
-                        <span style={{ color: '#64748b' }}>{m.timestamp}</span>
-                        {!isUser && (
-                          <span
-                            style={{
-                              marginLeft: 'auto',
-                              color: '#a7f3d0',
-                              background: 'rgba(105, 231, 185, 0.12)',
-                              padding: '1px 6px',
-                              borderRadius: '4px',
-                            }}
-                          >
-                            432 Hz
-                          </span>
-                        )}
-                      </div>
-
-                      <div
-                        style={{
-                          fontSize: '13px',
-                          color: '#f1f5f9',
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        {renderMessageContent(m.content)}
-                      </div>
-
-                      {m.metadata?.evidenceHash && (
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#f3f4f6' }}>{card.title}</span>
+                      <span style={{ fontSize: '11px', color: '#9ca3af' }}>{card.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              /* Conversation Messages Column (Centered 768px) */
+              <div
+                style={{
+                  width: '100%',
+                  maxWidth: '768px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '24px',
+                  paddingBottom: '24px',
+                }}
+              >
+                {messages.map((m) => {
+                  const isUser = m.sender === 'user';
+                  return (
+                    <div
+                      key={m.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: isUser ? 'flex-end' : 'flex-start',
+                        width: '100%',
+                      }}
+                    >
+                      {isUser ? (
                         <div
                           style={{
-                            marginTop: '8px',
-                            paddingTop: '6px',
-                            borderTop: '1px dashed rgba(255, 255, 255, 0.08)',
-                            fontSize: '9px',
-                            fontFamily: theme.fontMono,
-                            color: '#64748b',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
+                            maxWidth: '75%',
+                            padding: '12px 18px',
+                            borderRadius: '22px 22px 4px 22px',
+                            background: '#2f2f2f',
+                            color: '#ffffff',
+                            fontSize: '15px',
+                            lineHeight: 1.5,
+                            wordBreak: 'break-word',
                           }}
                         >
-                          <span style={{ color: '#10b981' }}>✓ ATTESTED:</span>
-                          <span style={{ color: '#94a3b8' }}>{m.metadata.evidenceHash.slice(0, 24)}…</span>
+                          {m.content}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            width: '100%',
+                          }}
+                        >
+                          {/* Assistant Header */}
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              marginBottom: '6px',
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: '24px',
+                                height: '24px',
+                                borderRadius: '50%',
+                                background: '#10b981',
+                                color: '#000000',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                              }}
+                            >
+                              Ω
+                            </div>
+                            <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>
+                              Ω∞v OceanicOS
+                            </span>
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                color: '#6ee7b7',
+                                background: 'rgba(16, 185, 129, 0.1)',
+                                padding: '1px 6px',
+                                borderRadius: '4px',
+                              }}
+                            >
+                              432 Hz
+                            </span>
+                            <span style={{ fontSize: '11px', color: '#6b7280' }}>
+                              {m.timestamp}
+                            </span>
+                          </div>
+
+                          {/* Message Body */}
+                          <div
+                            style={{
+                              fontSize: '15px',
+                              lineHeight: 1.65,
+                              color: '#d1d5db',
+                              paddingLeft: '32px',
+                            }}
+                          >
+                            {renderMessageContent(m.content)}
+                          </div>
+
+                          {/* Cryptographic Attestation Footer */}
+                          {m.metadata?.evidenceHash && (
+                            <div
+                              style={{
+                                marginTop: '8px',
+                                paddingLeft: '32px',
+                                fontSize: '10px',
+                                fontFamily: theme.fontMono,
+                                color: '#6b7280',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                              }}
+                            >
+                              <span style={{ color: '#10b981' }}>✓ ATTESTED:</span>
+                              <span>{m.metadata.evidenceHash.slice(0, 24)}…</span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
-                  </div>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+          </div>
 
-          {/* LIVE TOOL EXECUTION STREAMING BAR */}
-          {activeStreamingTool && (
-            <div
-              style={{
-                width: '100%',
-                maxWidth: '720px',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                background:
-                  activeStreamingTool.status === 'hitl'
-                    ? 'rgba(239, 68, 68, 0.15)'
-                    : activeStreamingTool.status === 'done'
-                    ? 'rgba(16, 185, 129, 0.15)'
-                    : 'rgba(56, 189, 248, 0.15)',
-                border: `1px solid ${
-                  activeStreamingTool.status === 'hitl'
-                    ? 'rgba(239, 68, 68, 0.4)'
-                    : activeStreamingTool.status === 'done'
-                    ? 'rgba(16, 185, 129, 0.4)'
-                    : 'rgba(56, 189, 248, 0.4)'
-                }`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                marginBottom: '14px',
-                fontSize: '12px',
-                fontFamily: theme.fontMono,
-              }}
-            >
-              <span style={{ fontSize: '14px' }}>
-                {activeStreamingTool.status === 'hitl' ? '🔒' : activeStreamingTool.status === 'done' ? '✓' : '⚡'}
-              </span>
-              <span style={{ color: '#ffffff', fontWeight: 600 }}>[{activeStreamingTool.toolId}]</span>
-              <span style={{ color: '#cbd5e1' }}>{activeStreamingTool.step}</span>
-            </div>
-          )}
-
-          {/* Omni-Prompt Card */}
+          {/* ── BOTTOM PROMPT CAPSULE (The Iconic Floating Pill) ── */}
           <div
             style={{
               width: '100%',
-              maxWidth: '720px',
-              background: 'rgba(8, 20, 28, 0.92)',
-              border: '1px solid rgba(105, 231, 185, 0.28)',
-              borderRadius: '16px',
-              padding: '16px',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0 16px rgba(105, 231, 185, 0.03)',
-              marginBottom: '18px',
+              maxWidth: '768px',
+              padding: '0 16px 20px',
+              position: 'sticky',
+              bottom: 0,
+              background: 'linear-gradient(180deg, transparent 0%, #212121 20%)',
+              zIndex: 30,
             }}
           >
-            <textarea
-              value={promptText}
-              onChange={(e) => setPromptText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendPrompt();
-                }
-              }}
-              rows={3}
-              placeholder={
-                activeMode === 'autonomous'
-                  ? 'Define an autonomous persistent goal for Glober AI to achieve in the background…'
-                  : 'Ask anything, execute real-world tools, inspect IoT sensors, or browse the web…'
-              }
-              style={{
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: '#f8fafc',
-                fontSize: '14px',
-                fontFamily: theme.fontSans,
-                resize: 'none',
-                lineHeight: 1.5,
-              }}
-            />
+            {/* Live Tool Execution Pill (when active) */}
+            {activeStreamingTool && (
+              <div
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  background: '#2f2f2f',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '8px',
+                  fontSize: '12px',
+                  fontFamily: theme.fontMono,
+                }}
+              >
+                <span>⚡</span>
+                <span style={{ color: '#38bdf8', fontWeight: 600 }}>[{activeStreamingTool.toolId}]</span>
+                <span style={{ color: '#cbd5e1' }}>{activeStreamingTool.step}</span>
+              </div>
+            )}
 
-            {/* Input Footer: Plugins, Multi-modal upload, Voice, Send */}
+            {/* Floating Capsule */}
             <div
               style={{
+                background: '#2f2f2f',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '26px',
+                padding: '10px 14px 10px 18px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.25)',
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingTop: '10px',
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                marginTop: '10px',
-                flexWrap: 'wrap',
+                flexDirection: 'column',
                 gap: '8px',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={() => alert('File queued to multi-modal context')}
-                />
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  title="Upload File or Image"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '6px 10px',
-                    color: '#94a3b8',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                  }}
-                >
-                  📎 +
-                </button>
+              <textarea
+                value={promptText}
+                onChange={(e) => setPromptText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendPrompt();
+                  }
+                }}
+                rows={1}
+                placeholder="Message Ω∞v OceanicOS..."
+                style={{
+                  width: '100%',
+                  background: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: '#ffffff',
+                  fontSize: '15px',
+                  fontFamily: theme.fontSans,
+                  resize: 'none',
+                  lineHeight: 1.5,
+                  minHeight: '26px',
+                  maxHeight: '160px',
+                }}
+              />
 
-                <button
-                  onClick={() => (voiceModeActive ? stopVoiceMode() : startVoiceMode())}
-                  title="Toggle ChatGPT Parity Advanced Voice Mode"
-                  style={{
-                    background: voiceModeActive
-                      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)'
-                      : 'rgba(255, 255, 255, 0.05)',
-                    border: `1px solid ${voiceModeActive ? '#10b981' : 'rgba(255, 255, 255, 0.1)'}`,
-                    borderRadius: '8px',
-                    padding: '6px 12px',
-                    color: voiceModeActive ? '#6ee7b7' : '#94a3b8',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: voiceModeActive ? 700 : 400,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
-                >
-                  <span>🎙️</span>
-                  <span>{voiceModeActive ? 'Voice Active' : 'Voice'}</span>
-                </button>
-
-                {[
-                  { id: 'web-search', label: '🌐 Web' },
-                  { id: 'iot', label: '⚡ IoT' },
-                  { id: 'notion', label: '🏛️ Notion' },
-                  { id: 'memory', label: '📜 Memory' },
-                ].map((p) => (
+              {/* Capsule Controls Footer */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingTop: '4px',
+                }}
+              >
+                {/* Left: Attach + Quick Chips */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={() => alert('File queued to multi-modal context')}
+                  />
                   <button
-                    key={p.id}
-                    onClick={() => togglePlugin(p.id)}
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Attach file"
                     style={{
-                      background: activePlugins.includes(p.id) ? 'rgba(105, 231, 185, 0.15)' : 'transparent',
-                      border: `1px solid ${activePlugins.includes(p.id) ? 'rgba(105, 231, 185, 0.3)' : 'rgba(255, 255, 255, 0.06)'}`,
-                      borderRadius: '6px',
-                      padding: '4px 8px',
-                      color: activePlugins.includes(p.id) ? '#69e7b9' : '#64748b',
-                      fontSize: '10px',
+                      width: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: 'none',
+                      color: '#9ca3af',
+                      fontSize: '15px',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
                   >
-                    {p.label}
+                    +
                   </button>
-                ))}
+
+                  {[
+                    { id: 'web-search', label: '🌐 Web' },
+                    { id: 'iot', label: '⚡ IoT' },
+                    { id: 'notion', label: '🏛️ Notion' },
+                    { id: 'memory', label: '📜 Memory' },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      onClick={() => togglePlugin(p.id)}
+                      style={{
+                        background: activePlugins.includes(p.id) ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                        border: `1px solid ${activePlugins.includes(p.id) ? 'rgba(255, 255, 255, 0.2)' : 'transparent'}`,
+                        borderRadius: '9999px',
+                        padding: '3px 8px',
+                        color: activePlugins.includes(p.id) ? '#ffffff' : '#9ca3af',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right: Voice + Circular Send Button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    onClick={() => startVoiceMode()}
+                    title="Advanced Voice Mode"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      border: 'none',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    🎙️
+                  </button>
+
+                  <button
+                    onClick={() => handleSendPrompt()}
+                    disabled={isSending || !promptText.trim()}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
+                      background: promptText.trim() ? '#ffffff' : '#424242',
+                      border: 'none',
+                      color: promptText.trim() ? '#000000' : '#888888',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      cursor: promptText.trim() ? 'pointer' : 'default',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    ↑
+                  </button>
+                </div>
               </div>
-
-              <button
-                onClick={() => handleSendPrompt()}
-                disabled={isSending || !promptText.trim()}
-                style={{
-                  padding: '7px 18px',
-                  borderRadius: '8px',
-                  background: promptText.trim()
-                    ? 'linear-gradient(135deg, #10b981 0%, #0284c7 100%)'
-                    : 'rgba(255, 255, 255, 0.08)',
-                  border: 'none',
-                  color: promptText.trim() ? '#ffffff' : '#64748b',
-                  fontWeight: 700,
-                  fontSize: '12px',
-                  cursor: promptText.trim() ? 'pointer' : 'not-allowed',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                {isSending ? 'Transmitting…' : 'Dispatch ➔'}
-              </button>
             </div>
-          </div>
 
-          {/* Quick Real-World Tool Execution Bar */}
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-              gap: '6px',
-              maxWidth: '720px',
-              width: '100%',
-              marginBottom: '20px',
-            }}
-          >
-            {[
-              { label: '🌐 Browse Web', action: () => executeRealWorldTool('browser-navigate', { url: 'https://example.com' }) },
-              { label: '⚡ IoT Sensors', action: () => executeRealWorldTool('iot-device-status') },
-              { label: '🔌 IoT Actuate', action: () => executeRealWorldTool('iot-relay-actuate', { relayId: 'relay-1', state: 'TOGGLE' }) },
-              { label: '🥇 Gold Spot', action: () => executeRealWorldTool('market-quote') },
-              { label: '📁 Workspace Files', action: () => executeRealWorldTool('fs-list', { path: '.' }) },
-              { label: '🐙 Git Diff', action: () => executeRealWorldTool('git-diff') },
-              { label: '📰 AI News', action: () => executeRealWorldTool('news-sensor') },
-              { label: '🖥️ System Health', action: () => executeRealWorldTool('system-health') },
-              { label: '🎭 Max Mood', action: () => handleSendPrompt('upgrade conversation mood at max scale') },
-            ].map((toolBtn, i) => (
-              <button
-                key={i}
-                onClick={toolBtn.action}
-                style={{
-                  padding: '5px 12px',
-                  borderRadius: '16px',
-                  background: 'rgba(10, 31, 40, 0.75)',
-                  border: '1px solid rgba(105, 231, 185, 0.16)',
-                  color: '#94a3b8',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#69e7b9';
-                  e.currentTarget.style.borderColor = 'rgba(105, 231, 185, 0.4)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#94a3b8';
-                  e.currentTarget.style.borderColor = 'rgba(105, 231, 185, 0.16)';
-                }}
-              >
-                {toolBtn.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Last Evidence Hash Pill */}
-          {lastExecutedEvidence && (
+            {/* Disclaimer */}
             <div
               style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                background: 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                color: '#6ee7b7',
                 fontSize: '11px',
-                fontFamily: theme.fontMono,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                color: '#71717a',
+                textAlign: 'center',
+                marginTop: '8px',
               }}
             >
-              <span>✓ Cryptographic Attestation Sealed:</span>
-              <span style={{ color: '#ffffff' }}>{lastExecutedEvidence}</span>
+              Ω∞v OceanicOS can make mistakes. Verify critical attestations in KAI Ledger.
             </div>
-          )}
+          </div>
         </main>
 
-        {/* ── RIGHT PANEL: Real-World Tool Telemetry, Logs & Global News ── */}
+        {/* ── SLIDE-OVER RIGHT TELEMETRY & SENSORY DRAWER ── */}
         {rightPanelOpen && (
           <aside
             style={{
-              width: '320px',
-              minWidth: '280px',
-              borderLeft: '1px solid rgba(105, 231, 185, 0.1)',
-              background: 'rgba(5, 12, 18, 0.95)',
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: '360px',
+              background: '#171717',
+              borderLeft: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: '-12px 0 40px rgba(0, 0, 0, 0.7)',
               display: 'flex',
               flexDirection: 'column',
-              padding: '16px 14px',
+              padding: '18px 16px',
               gap: '14px',
               overflowY: 'auto',
+              zIndex: 100,
             }}
           >
+            {/* Drawer Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>Telemetry & Sensory Logs</span>
+              <button
+                onClick={() => setRightPanelOpen(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#9ca3af',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
             {/* Auth0 Gateway Card */}
             <div
               style={{
-                padding: '10px 12px',
+                padding: '12px',
                 borderRadius: '10px',
-                background: 'rgba(10, 25, 35, 0.8)',
-                border: '1px solid rgba(56, 189, 248, 0.2)',
+                background: '#212121',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -1637,10 +1596,10 @@ export function GloberAgiCommandCenter({
                   FAIL-CLOSED ✓
                 </span>
               </div>
-              <div style={{ fontSize: '11px', color: '#cbd5e1' }}>
+              <div style={{ fontSize: '12px', color: '#e5e7eb' }}>
                 Tenant: <strong style={{ color: '#ffffff' }}>{authSession?.tenant?.name || 'Ω∞v Sovereign Enterprise'}</strong>
               </div>
-              <div style={{ fontSize: '10px', color: '#64748b', marginTop: '2px' }}>
+              <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '4px' }}>
                 Zero-Trust Token Vault Active
               </div>
             </div>
@@ -1649,12 +1608,12 @@ export function GloberAgiCommandCenter({
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: '#10b981' }}>REAL-WORLD TOOL LOGS</span>
-                <span style={{ fontSize: '9px', color: '#64748b', fontFamily: theme.fontMono }}>LIVE STREAM</span>
+                <span style={{ fontSize: '9px', color: '#6b7280', fontFamily: theme.fontMono }}>LIVE STREAM</span>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
                 {toolLogs.length === 0 ? (
-                  <div style={{ fontSize: '11px', color: '#64748b', fontStyle: 'italic' }}>
+                  <div style={{ fontSize: '11px', color: '#6b7280', fontStyle: 'italic' }}>
                     Ready for live tool executions…
                   </div>
                 ) : (
@@ -1664,20 +1623,20 @@ export function GloberAgiCommandCenter({
                       style={{
                         padding: '8px 10px',
                         borderRadius: '6px',
-                        background: 'rgba(255, 255, 255, 0.02)',
-                        border: '1px solid rgba(255, 255, 255, 0.05)',
-                        fontSize: '10.5px',
+                        background: '#212121',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        fontSize: '11px',
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
                         <span style={{ color: '#38bdf8', fontWeight: 600 }}>{log.toolId}</span>
                         <span style={{ color: '#10b981', fontFamily: theme.fontMono }}>{log.elapsedMs}ms</span>
                       </div>
-                      <div style={{ fontSize: '9px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <div style={{ fontSize: '10px', color: '#9ca3af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {log.outputPreview}
                       </div>
                       {log.kaiRecordId && (
-                        <div style={{ fontSize: '8.5px', color: '#34d399', marginTop: '2px', fontFamily: theme.fontMono }}>
+                        <div style={{ fontSize: '9px', color: '#34d399', marginTop: '2px', fontFamily: theme.fontMono }}>
                           KAI: {log.kaiRecordId}
                         </div>
                       )}
@@ -1695,36 +1654,36 @@ export function GloberAgiCommandCenter({
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {newsSignals.slice(0, 2).map((sig: any) => (
+                {newsSignals.slice(0, 3).map((sig: any) => (
                   <div
                     key={sig.id}
                     style={{
-                      padding: '8px',
+                      padding: '8px 10px',
                       borderRadius: '6px',
-                      background: 'rgba(255, 255, 255, 0.02)',
+                      background: '#212121',
                       border: '1px solid rgba(255, 255, 255, 0.06)',
-                      fontSize: '10.5px',
+                      fontSize: '11px',
                     }}
                   >
                     <div style={{ color: '#e2e8f0', fontWeight: 600, lineHeight: 1.3, marginBottom: '2px' }}>
                       {sig.headline}
                     </div>
-                    <div style={{ fontSize: '9px', color: '#8ba8a0' }}>{sig.actionableDelta}</div>
+                    <div style={{ fontSize: '10px', color: '#9ca3af' }}>{sig.actionableDelta}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* System Telemetry */}
-            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ fontSize: '10px', color: '#64748b', textTransform: 'uppercase', marginBottom: '4px' }}>
+            {/* System Telemetry Ports */}
+            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ fontSize: '10px', color: '#6b7280', textTransform: 'uppercase', marginBottom: '4px' }}>
                 System Telemetry
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#9ca3af' }}>
                 <span>Backend Port</span>
                 <span style={{ color: '#38bdf8', fontFamily: theme.fontMono }}>:5000 (Fastify)</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#9ca3af', marginTop: '2px' }}>
                 <span>VOOS Daemon</span>
                 <span style={{ color: '#10b981', fontFamily: theme.fontMono }}>:8088 (Active)</span>
               </div>
