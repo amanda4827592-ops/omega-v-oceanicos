@@ -31,7 +31,7 @@ describe('web/API contract', () => {
         collectRoutes(fullPath);
       } else if (entry.isFile() && entry.name.endsWith('.ts')) {
         const content = readFileSync(fullPath, 'utf8');
-        for (const match of content.matchAll(/(?:app|fastify)\.(get|post)\('([^']+)'/g)) {
+        for (const match of content.matchAll(/(?:app|fastify)\.(get|post)(?:<[^>]*>)?\('([^']+)'/g)) {
           serverRoutes.add(match[2]);
         }
       }

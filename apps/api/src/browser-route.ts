@@ -17,11 +17,7 @@ export function registerBrowserRoute(fastify: FastifyInstance, kaiLedger?: any):
   });
 
   // POST /v1/browser/launch - Launch host desktop Chrome window
-  fastify.post<{
-    Body: {
-      url?: string;
-    };
-  }>('/v1/browser/launch', async (request, reply) => {
+  fastify.post('/v1/browser/launch', async (request: any, reply) => {
     const chromePath = findChromePath();
     if (!chromePath) {
       return reply.status(503).send({
@@ -66,13 +62,7 @@ export function registerBrowserRoute(fastify: FastifyInstance, kaiLedger?: any):
   });
 
   // POST /v1/browser/navigate - Browse a target URL in the sandbox
-  fastify.post<{
-    Body: {
-      url?: string;
-      captureScreenshot?: boolean;
-      timeoutMs?: number;
-    };
-  }>('/v1/browser/navigate', async (request, reply) => {
+  fastify.post('/v1/browser/navigate', async (request: any, reply) => {
     const { url, captureScreenshot, timeoutMs } = request.body || {};
 
     if (!url || typeof url !== 'string') {
