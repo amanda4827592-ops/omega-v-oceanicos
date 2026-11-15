@@ -962,308 +962,308 @@ export function App() {
         >
           <div
             className="oceanic-dock"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '5px',
-            background: 'linear-gradient(135deg, rgba(12, 25, 34, 0.78) 0%, rgba(6, 15, 20, 0.88) 100%)',
-            backdropFilter: 'blur(24px) saturate(190%)',
-            WebkitBackdropFilter: 'blur(24px) saturate(190%)',
-            border: '1px solid rgba(105, 231, 185, 0.18)',
-            boxShadow: '0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 229, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            borderRadius: '9999px',
-            gap: '4px',
-            maxWidth: '100%',
-            overflowX: 'auto',
-          }}
-        >
-          <button
-            onClick={() => setViewportMode('glober')}
             style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: '1px solid rgba(56, 189, 248, 0.4)',
-              background: 'rgba(56, 189, 248, 0.1)',
-              color: '#38bdf8',
-              boxShadow: 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: '7px',
+              padding: '5px',
+              background: 'linear-gradient(135deg, rgba(12, 25, 34, 0.78) 0%, rgba(6, 15, 20, 0.88) 100%)',
+              backdropFilter: 'blur(24px) saturate(190%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(190%)',
+              border: '1px solid rgba(105, 231, 185, 0.18)',
+              boxShadow: '0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 229, 255, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              borderRadius: '9999px',
+              gap: '4px',
+              maxWidth: '100%',
+              overflowX: 'auto',
             }}
           >
-            <span>🌐</span>
-            <span>← Return to Glober AGI</span>
-          </button>
-          <button
-            onClick={() => setViewportMode('v0')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'v0' ? '1px solid rgba(255, 255, 255, 0.5)' : '1px solid transparent',
-              background: viewportMode === 'v0' ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.1) 100%)' : 'transparent',
-              color: viewportMode === 'v0' ? '#ffffff' : theme.textMuted,
-              boxShadow: viewportMode === 'v0' ? '0 0 18px rgba(255, 255, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span style={{ fontWeight: 800 }}>v0</span>
-            <span>v0 Mirror</span>
-            {viewportMode === 'v0' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
-            )}
-          </button>
-          <button
-            onClick={() => setViewportMode('trading')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'trading' ? '1px solid rgba(240, 198, 116, 0.6)' : '1px solid transparent',
-              background: viewportMode === 'trading' ? 'linear-gradient(180deg, rgba(240, 198, 116, 0.25) 0%, rgba(240, 198, 116, 0.12) 100%)' : 'transparent',
-              color: viewportMode === 'trading' ? '#fde047' : theme.textMuted,
-              boxShadow: viewportMode === 'trading' ? '0 0 20px rgba(240, 198, 116, 0.35), inset 0 1px 0 rgba(253, 224, 71, 0.4)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>🥇</span>
-            <span>XAU/USD AI Trader</span>
-            {viewportMode === 'trading' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fde047', boxShadow: '0 0 6px #fde047' }} />
-            )}
-          </button>
-          <button
-            onClick={() => setViewportMode('watcher')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'watcher' ? '1px solid rgba(239, 68, 68, 0.6)' : '1px solid transparent',
-              background: viewportMode === 'watcher' ? 'linear-gradient(180deg, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.12) 100%)' : 'transparent',
-              color: viewportMode === 'watcher' ? '#fca5a5' : theme.textMuted,
-              boxShadow: viewportMode === 'watcher' ? '0 0 20px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(252, 165, 165, 0.4)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>🕷️</span>
-            <span>WATCHER; 01</span>
-            {viewportMode === 'watcher' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} />
-            )}
-          </button>
-          <button
-            onClick={() => setViewportMode('catalog')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'catalog' ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid transparent',
-              background: viewportMode === 'catalog' ? 'linear-gradient(180deg, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.08) 100%)' : 'transparent',
-              color: viewportMode === 'catalog' ? '#38bdf8' : theme.textMuted,
-              boxShadow: viewportMode === 'catalog' ? '0 0 18px rgba(56, 189, 248, 0.3)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>🌌</span>
-            <span>Ecosystem Catalog</span>
-          </button>
-          <button
-            onClick={() => setViewportMode('conversation')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'conversation' ? `1px solid ${theme.accent}88` : '1px solid transparent',
-              background: viewportMode === 'conversation' ? `linear-gradient(180deg, ${theme.accent}26 0%, ${theme.accent}0d 100%)` : 'transparent',
-              color: viewportMode === 'conversation' ? theme.accent : theme.textMuted,
-              boxShadow: viewportMode === 'conversation' ? `0 0 18px ${theme.accent}44` : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>💬</span>
-            <span>Conversation Mode</span>
-            {viewportMode === 'conversation' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }} />
-            )}
-          </button>
-          <button
-            onClick={() => setViewportMode('work')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'work' ? `1px solid ${theme.accent}88` : '1px solid transparent',
-              background: viewportMode === 'work' ? `linear-gradient(180deg, ${theme.accent}26 0%, ${theme.accent}0d 100%)` : 'transparent',
-              color: viewportMode === 'work' ? theme.accent : theme.textMuted,
-              boxShadow: viewportMode === 'work' ? `0 0 18px ${theme.accent}44` : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>⚙️</span>
-            <span>Work Mode</span>
-            {moodData && (
-              <span
-                style={{
-                  fontSize: '9.5px',
-                  fontWeight: 700,
-                  padding: '1px 6px',
-                  borderRadius: '10px',
-                  background: 'rgba(56, 189, 248, 0.2)',
-                  border: '1px solid rgba(56, 189, 248, 0.4)',
-                  color: '#38bdf8',
-                  fontFamily: theme.fontMono,
-                }}
-              >
-                {moodData.moodEngine?.status || moodData.status || 'FLOW'}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setViewportMode('evidence')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'evidence' ? '1px solid rgba(96, 165, 250, 0.6)' : '1px solid transparent',
-              background: viewportMode === 'evidence' ? 'linear-gradient(180deg, rgba(96, 165, 250, 0.22) 0%, rgba(96, 165, 250, 0.08) 100%)' : 'transparent',
-              color: viewportMode === 'evidence' ? '#93c5fd' : theme.textMuted,
-              boxShadow: viewportMode === 'evidence' ? '0 0 18px rgba(96, 165, 250, 0.35)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>🛡️</span>
-            <span>Evidence Workspace</span>
-          </button>
-          <button
-            onClick={() => setViewportMode('wealth')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '9999px',
-              border: viewportMode === 'wealth' ? '1px solid rgba(192, 132, 252, 0.6)' : '1px solid transparent',
-              background: viewportMode === 'wealth' ? 'linear-gradient(180deg, rgba(192, 132, 252, 0.25) 0%, rgba(192, 132, 252, 0.08) 100%)' : 'transparent',
-              color: viewportMode === 'wealth' ? '#d8b4fe' : theme.textMuted,
-              boxShadow: viewportMode === 'wealth' ? '0 0 18px rgba(192, 132, 252, 0.35)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>💰</span>
-            <span>Wealth Pipeline</span>
-          </button>
-          <button
-            onClick={() => setViewportMode('ocean')}
-            style={{
-              padding: '8px 20px',
-              borderRadius: '9999px',
-              border: viewportMode === 'ocean' ? '1px solid rgba(0, 229, 255, 0.7)' : '1px solid transparent',
-              background: viewportMode === 'ocean' ? 'linear-gradient(180deg, rgba(0, 229, 255, 0.28) 0%, rgba(0, 229, 255, 0.1) 100%)' : 'transparent',
-              color: viewportMode === 'ocean' ? '#22d3ee' : theme.textMuted,
-              boxShadow: viewportMode === 'ocean' ? '0 0 22px rgba(0, 229, 255, 0.45), inset 0 1px 0 rgba(34, 211, 238, 0.4)' : 'none',
-              fontFamily: theme.fontSans,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '7px',
-            }}
-          >
-            <span>💧</span>
-            <span>ΩVØØS Ocean</span>
-            {viewportMode === 'ocean' && (
-              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 6px #00e5ff' }} />
-            )}
-          </button>
+            <button
+              onClick={() => setViewportMode('glober')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                background: 'rgba(56, 189, 248, 0.1)',
+                color: '#38bdf8',
+                boxShadow: 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>🌐</span>
+              <span>← Return to Glober AGI</span>
+            </button>
+            <button
+              onClick={() => setViewportMode('v0')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'v0' ? '1px solid rgba(255, 255, 255, 0.5)' : '1px solid transparent',
+                background: viewportMode === 'v0' ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.1) 100%)' : 'transparent',
+                color: viewportMode === 'v0' ? '#ffffff' : theme.textMuted,
+                boxShadow: viewportMode === 'v0' ? '0 0 18px rgba(255, 255, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span style={{ fontWeight: 800 }}>v0</span>
+              <span>v0 Mirror</span>
+              {viewportMode === 'v0' && (
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 6px #ffffff' }} />
+              )}
+            </button>
+            <button
+              onClick={() => setViewportMode('trading')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'trading' ? '1px solid rgba(240, 198, 116, 0.6)' : '1px solid transparent',
+                background: viewportMode === 'trading' ? 'linear-gradient(180deg, rgba(240, 198, 116, 0.25) 0%, rgba(240, 198, 116, 0.12) 100%)' : 'transparent',
+                color: viewportMode === 'trading' ? '#fde047' : theme.textMuted,
+                boxShadow: viewportMode === 'trading' ? '0 0 20px rgba(240, 198, 116, 0.35), inset 0 1px 0 rgba(253, 224, 71, 0.4)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>🥇</span>
+              <span>XAU/USD AI Trader</span>
+              {viewportMode === 'trading' && (
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#fde047', boxShadow: '0 0 6px #fde047' }} />
+              )}
+            </button>
+            <button
+              onClick={() => setViewportMode('watcher')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'watcher' ? '1px solid rgba(239, 68, 68, 0.6)' : '1px solid transparent',
+                background: viewportMode === 'watcher' ? 'linear-gradient(180deg, rgba(239, 68, 68, 0.25) 0%, rgba(239, 68, 68, 0.12) 100%)' : 'transparent',
+                color: viewportMode === 'watcher' ? '#fca5a5' : theme.textMuted,
+                boxShadow: viewportMode === 'watcher' ? '0 0 20px rgba(239, 68, 68, 0.35), inset 0 1px 0 rgba(252, 165, 165, 0.4)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>🕷️</span>
+              <span>WATCHER; 01</span>
+              {viewportMode === 'watcher' && (
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#ef4444', boxShadow: '0 0 6px #ef4444' }} />
+              )}
+            </button>
+            <button
+              onClick={() => setViewportMode('catalog')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'catalog' ? '1px solid rgba(56, 189, 248, 0.5)' : '1px solid transparent',
+                background: viewportMode === 'catalog' ? 'linear-gradient(180deg, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.08) 100%)' : 'transparent',
+                color: viewportMode === 'catalog' ? '#38bdf8' : theme.textMuted,
+                boxShadow: viewportMode === 'catalog' ? '0 0 18px rgba(56, 189, 248, 0.3)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>🌌</span>
+              <span>Ecosystem Catalog</span>
+            </button>
+            <button
+              onClick={() => setViewportMode('conversation')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'conversation' ? `1px solid ${theme.accent}88` : '1px solid transparent',
+                background: viewportMode === 'conversation' ? `linear-gradient(180deg, ${theme.accent}26 0%, ${theme.accent}0d 100%)` : 'transparent',
+                color: viewportMode === 'conversation' ? theme.accent : theme.textMuted,
+                boxShadow: viewportMode === 'conversation' ? `0 0 18px ${theme.accent}44` : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>💬</span>
+              <span>Conversation Mode</span>
+              {viewportMode === 'conversation' && (
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }} />
+              )}
+            </button>
+            <button
+              onClick={() => setViewportMode('work')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'work' ? `1px solid ${theme.accent}88` : '1px solid transparent',
+                background: viewportMode === 'work' ? `linear-gradient(180deg, ${theme.accent}26 0%, ${theme.accent}0d 100%)` : 'transparent',
+                color: viewportMode === 'work' ? theme.accent : theme.textMuted,
+                boxShadow: viewportMode === 'work' ? `0 0 18px ${theme.accent}44` : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>⚙️</span>
+              <span>Work Mode</span>
+              {moodData && (
+                <span
+                  style={{
+                    fontSize: '9.5px',
+                    fontWeight: 700,
+                    padding: '1px 6px',
+                    borderRadius: '10px',
+                    background: 'rgba(56, 189, 248, 0.2)',
+                    border: '1px solid rgba(56, 189, 248, 0.4)',
+                    color: '#38bdf8',
+                    fontFamily: theme.fontMono,
+                  }}
+                >
+                  {moodData.moodEngine?.status || moodData.status || 'FLOW'}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setViewportMode('evidence')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'evidence' ? '1px solid rgba(96, 165, 250, 0.6)' : '1px solid transparent',
+                background: viewportMode === 'evidence' ? 'linear-gradient(180deg, rgba(96, 165, 250, 0.22) 0%, rgba(96, 165, 250, 0.08) 100%)' : 'transparent',
+                color: viewportMode === 'evidence' ? '#93c5fd' : theme.textMuted,
+                boxShadow: viewportMode === 'evidence' ? '0 0 18px rgba(96, 165, 250, 0.35)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>🛡️</span>
+              <span>Evidence Workspace</span>
+            </button>
+            <button
+              onClick={() => setViewportMode('wealth')}
+              style={{
+                padding: '8px 18px',
+                borderRadius: '9999px',
+                border: viewportMode === 'wealth' ? '1px solid rgba(192, 132, 252, 0.6)' : '1px solid transparent',
+                background: viewportMode === 'wealth' ? 'linear-gradient(180deg, rgba(192, 132, 252, 0.25) 0%, rgba(192, 132, 252, 0.08) 100%)' : 'transparent',
+                color: viewportMode === 'wealth' ? '#d8b4fe' : theme.textMuted,
+                boxShadow: viewportMode === 'wealth' ? '0 0 18px rgba(192, 132, 252, 0.35)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>💰</span>
+              <span>Wealth Pipeline</span>
+            </button>
+            <button
+              onClick={() => setViewportMode('ocean')}
+              style={{
+                padding: '8px 20px',
+                borderRadius: '9999px',
+                border: viewportMode === 'ocean' ? '1px solid rgba(0, 229, 255, 0.7)' : '1px solid transparent',
+                background: viewportMode === 'ocean' ? 'linear-gradient(180deg, rgba(0, 229, 255, 0.28) 0%, rgba(0, 229, 255, 0.1) 100%)' : 'transparent',
+                color: viewportMode === 'ocean' ? '#22d3ee' : theme.textMuted,
+                boxShadow: viewportMode === 'ocean' ? '0 0 22px rgba(0, 229, 255, 0.45), inset 0 1px 0 rgba(34, 211, 238, 0.4)' : 'none',
+                fontFamily: theme.fontSans,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '7px',
+              }}
+            >
+              <span>💧</span>
+              <span>ΩVØØS Ocean</span>
+              {viewportMode === 'ocean' && (
+                <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#00e5ff', boxShadow: '0 0 6px #00e5ff' }} />
+              )}
+            </button>
 
-          {/* Desktop App Install / Launch Pill */}
-          <button
-            onClick={triggerInstall}
-            title={isStandalone ? "Running as Native Standalone App" : "Install OceanicOS as Native Windows Desktop App"}
-            style={{
-              padding: '8px 16px',
-              borderRadius: '9999px',
-              border: isStandalone ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255, 255, 255, 0.15)',
-              background: isStandalone ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-              color: isStandalone ? '#34d399' : '#e2e8f0',
-              fontFamily: theme.fontSans,
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#00f5a0';
-              e.currentTarget.style.background = 'rgba(0, 245, 160, 0.15)';
-              e.currentTarget.style.color = '#ffffff';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = isStandalone ? 'rgba(16, 185, 129, 0.5)' : 'rgba(255, 255, 255, 0.15)';
-              e.currentTarget.style.background = isStandalone ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.color = isStandalone ? '#34d399' : '#e2e8f0';
-            }}
-          >
-            <span>🖥️</span>
-            <span>{isStandalone ? 'Installed PC' : 'Install Desktop App'}</span>
-          </button>
+            {/* Desktop App Install / Launch Pill */}
+            <button
+              onClick={triggerInstall}
+              title={isStandalone ? "Running as Native Standalone App" : "Install OceanicOS as Native Windows Desktop App"}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '9999px',
+                border: isStandalone ? '1px solid rgba(16, 185, 129, 0.5)' : '1px solid rgba(255, 255, 255, 0.15)',
+                background: isStandalone ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                color: isStandalone ? '#34d399' : '#e2e8f0',
+                fontFamily: theme.fontSans,
+                fontSize: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#00f5a0';
+                e.currentTarget.style.background = 'rgba(0, 245, 160, 0.15)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = isStandalone ? 'rgba(16, 185, 129, 0.5)' : 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.background = isStandalone ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)';
+                e.currentTarget.style.color = isStandalone ? '#34d399' : '#e2e8f0';
+              }}
+            >
+              <span>🖥️</span>
+              <span>{isStandalone ? 'Installed PC' : 'Install Desktop App'}</span>
+            </button>
+          </div>
         </div>
-      </div>
       )}
 
       {viewportMode === 'glober' ? (

@@ -184,10 +184,26 @@ export function GloberAgiCommandCenter({
   const [organsAccordionOpen, setOrgansAccordionOpen] = useState(false);
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
 
-  // ── Mode & Model Toggles (The Glober Switch) ──
+  // ── Mode & Model Toggles (The Glober Switch with Persistence) ──
   const [activeMode, setActiveMode] = useState<'collaborative' | 'autonomous'>('collaborative');
-  const [activeSubMode, setActiveSubMode] = useState<'chat' | 'cowork' | 'swarm' | 'goal' | 'computer'>('chat');
-  const [selectedModel, setSelectedModel] = useState<'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini'>('auto');
+  const [activeSubMode, setActiveSubMode] = useState<'chat' | 'cowork' | 'swarm' | 'goal' | 'computer'>(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem('oceanicos_submode');
+      if (saved && ['chat', 'cowork', 'swarm', 'goal', 'computer'].includes(saved)) {
+        return saved as any;
+      }
+    }
+    return 'chat';
+  });
+  const [selectedModel, setSelectedModel] = useState<'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini'>(() => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem('oceanicos_model');
+      if (saved && ['fast', 'auto', 'expert', 'heavy', 'sonnet', 'gemini'].includes(saved)) {
+        return saved as any;
+      }
+    }
+    return 'auto';
+  });
 
   // ── Inputs ──
   const [promptText, setPromptText] = useState('');
@@ -195,6 +211,43 @@ export function GloberAgiCommandCenter({
   const [activePlugins, setActivePlugins] = useState<string[]>(['web-search', 'memory']);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // ── Global Keyboard Shortcuts (Ctrl+K, Cmd+K, Escape) ──
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPromptText('');
+        setLocalMessages([]);
+        if (onClearChat) onClearChat();
+        textareaRef.current?.focus();
+      }
+      if (e.key === 'Escape') {
+        setModelMenuOpen(false);
+        setRightPanelOpen(false);
+        setShowAuthOverlay(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClearChat]);
+
+  // ── Save Model & Submode on Change ──
+  const updateSelectedModel = (model: 'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini') => {
+    setSelectedModel(model);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('oceanicos_model', model);
+    }
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPromptText(e.target.value);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + 'px';
+    }
+  };
 
   // ── Local Fallback Messages ──
   const [localMessages, setLocalMessages] = useState<Array<{
@@ -396,6 +449,9 @@ export function GloberAgiCommandCenter({
     if (!query || isSending) return;
 
     setPromptText('');
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '26px';
+    }
 
     if (onSendMessage) {
       onSendMessage(query, activeSubMode, selectedModel);
@@ -711,7 +767,7 @@ export function GloberAgiCommandCenter({
                   <button
                     key={m.id}
                     onClick={() => {
-                      setSelectedModel(m.id as any);
+                      updateSelectedModel(m.id as any);
                       setModelMenuOpen(false);
                     }}
                     style={{
@@ -1335,6 +1391,30 @@ export function GloberAgiCommandCenter({
                     </div>
                   );
                 })}
+                {isSending && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      paddingLeft: '32px',
+                      marginTop: '4px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        background: '#10b981',
+                        boxShadow: '0 0 10px #10b981',
+                      }}
+                    />
+                    <span style={{ fontSize: '13px', color: '#9ca3af', fontStyle: 'italic' }}>
+                      Reasoning & verifying against KAI Ledger…
+                    </span>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
             )}
@@ -1388,8 +1468,9 @@ export function GloberAgiCommandCenter({
               }}
             >
               <textarea
+                ref={textareaRef}
                 value={promptText}
-                onChange={(e) => setPromptText(e.target.value)}
+                onChange={handleTextareaChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
