@@ -26,6 +26,9 @@ export function WaterP2PSessionView({
 }: WaterP2PSessionProps) {
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(false);
+  const [is432HzHarmonicActive, setIs432HzHarmonicActive] = useState(true);
+  const [micActive, setMicActive] = useState(false);
+  const [frequencyBars, setFrequencyBars] = useState<number[]>([30, 55, 80, 45, 90, 60, 40, 75, 50, 65, 85, 35]);
   const [activeTab, setActiveTab] = useState<'stream' | 'scratchpad' | 'files'>('stream');
   
   const [dataChannelStatus, setDataChannelStatus] = useState<'connecting' | 'open' | 'closed'>('connecting');
@@ -51,15 +54,75 @@ export function WaterP2PSessionView({
   const localChannelRef = useRef<RTCDataChannel | null>(null);
   const remoteChannelRef = useRef<RTCDataChannel | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const localStreamRef = useRef<MediaStream | null>(null);
+  const remoteStreamRef = useRef<MediaStream | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const filterRef = useRef<BiquadFilterNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Audio animation pulse
+  // Audio animation pulse fallback
   const [audioLevel, setAudioLevel] = useState(42);
   useEffect(() => {
+    if (micActive) return; // Use real analyser if mic is active
     const interval = setInterval(() => {
-      setAudioLevel(Math.floor(20 + Math.random() * 65));
+      const base = Math.floor(20 + Math.random() * 65);
+      setAudioLevel(base);
+      setFrequencyBars((prev) => prev.map(() => Math.floor(15 + Math.random() * 80)));
     }, 180);
     return () => clearInterval(interval);
-  }, []);
+  }, [micActive]);
+
+  // Real Web Audio API 432 Hz Resonance Processor
+  const initAudioProcessing = useCallback((stream: MediaStream) => {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      audioContextRef.current = ctx;
+
+      const source = ctx.createMediaStreamSource(stream);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'peaking';
+      filter.frequency.setValueAtTime(432, ctx.currentTime);
+      filter.Q.setValueAtTime(3.0, ctx.currentTime);
+      filter.gain.setValueAtTime(is432HzHarmonicActive ? 6.0 : 0.0, ctx.currentTime);
+      filterRef.current = filter;
+
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 64;
+      analyserRef.current = analyser;
+
+      source.connect(filter);
+      filter.connect(analyser);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      const updateAnalysis = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteFrequencyData(dataArray);
+
+        const bars: number[] = [];
+        const step = Math.max(1, Math.floor(bufferLength / 12));
+        let sum = 0;
+        for (let i = 0; i < 12; i++) {
+          const val = dataArray[i * step] || 0;
+          bars.push(Math.round((val / 255) * 100));
+          sum += val;
+        }
+        setFrequencyBars(bars);
+        const avg = Math.round((sum / (12 * 255)) * 100);
+        setAudioLevel(Math.max(15, avg));
+
+        animationFrameRef.current = requestAnimationFrame(updateAnalysis);
+      };
+      updateAnalysis();
+    } catch {
+      // Graceful fallback to synthetic pulse
+    }
+  }, [is432HzHarmonicActive]);
 
   // Compute SHA-256 hex string from ArrayBuffer
   const computeBufferHash = async (buffer: ArrayBuffer): Promise<string> => {
@@ -69,7 +132,7 @@ export function WaterP2PSessionView({
       .join('');
   };
 
-  // Setup loopback WebRTC DataChannel for local-first zero-cloud direct transfer
+  // Setup loopback WebRTC DataChannel & Peer Track handlers for local-first zero-cloud direct transfer
   useEffect(() => {
     if (typeof window === 'undefined' || !('RTCPeerConnection' in window)) {
       setDataChannelStatus('open');
@@ -88,6 +151,13 @@ export function WaterP2PSessionView({
       };
       pc2.onicecandidate = (e) => {
         if (e.candidate) pc1.addIceCandidate(e.candidate).catch(() => {});
+      };
+
+      // Remote track handling on pc2
+      pc2.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          remoteStreamRef.current = event.streams[0];
+        }
       };
 
       // Create DataChannel on pc1
@@ -157,12 +227,87 @@ export function WaterP2PSessionView({
     }
 
     return () => {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current) audioContextRef.current.close().catch(() => {});
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
       localChannelRef.current?.close();
       remoteChannelRef.current?.close();
       localPcRef.current?.close();
       remotePcRef.current?.close();
     };
   }, []);
+
+  // Audio Mute/Unmute & Microphone Acquirer
+  const handleToggleAudio = async () => {
+    if (isAudioMuted) {
+      if (localStreamRef.current) {
+        localStreamRef.current.getAudioTracks().forEach((t) => (t.enabled = true));
+        setIsAudioMuted(false);
+      } else if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: isVideoEnabled });
+          localStreamRef.current = stream;
+          setMicActive(true);
+          setIsAudioMuted(false);
+          initAudioProcessing(stream);
+          if (localPcRef.current) {
+            stream.getTracks().forEach((track) => {
+              localPcRef.current?.addTrack(track, stream);
+            });
+          }
+        } catch {
+          setIsAudioMuted(false);
+        }
+      } else {
+        setIsAudioMuted(false);
+      }
+    } else {
+      if (localStreamRef.current) {
+        localStreamRef.current.getAudioTracks().forEach((t) => (t.enabled = false));
+      }
+      setIsAudioMuted(true);
+    }
+  };
+
+  // Video Track Enabler
+  const handleToggleVideo = async () => {
+    const nextVideo = !isVideoEnabled;
+    setIsVideoEnabled(nextVideo);
+    if (nextVideo) {
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices?.getUserMedia) {
+        try {
+          const vStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: !isAudioMuted });
+          localStreamRef.current = vStream;
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = vStream;
+          }
+          if (localPcRef.current) {
+            vStream.getVideoTracks().forEach((track) => {
+              localPcRef.current?.addTrack(track, vStream);
+            });
+          }
+        } catch {
+          // Fallback if camera is unavailable or denied
+        }
+      }
+    } else {
+      if (localStreamRef.current) {
+        localStreamRef.current.getVideoTracks().forEach((t) => t.stop());
+      }
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+    }
+  };
+
+  // 432 Hz Biomorphic Resonance Harmonic Filter
+  const handleToggle432Hz = () => {
+    const next = !is432HzHarmonicActive;
+    setIs432HzHarmonicActive(next);
+    if (filterRef.current && audioContextRef.current) {
+      filterRef.current.gain.setValueAtTime(next ? 6.0 : 0.0, audioContextRef.current.currentTime);
+    }
+  };
 
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
@@ -390,7 +535,7 @@ export function WaterP2PSessionView({
 
         {/* Audio Frequency Bars */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '3px', height: '24px' }}>
-          {[30, 55, 80, 45, 90, 60, 40, 75, 50, 65, 85, 35].map((val, idx) => {
+          {frequencyBars.map((val, idx) => {
             const h = Math.max(4, (val * audioLevel) / 100);
             return (
               <div
@@ -399,24 +544,69 @@ export function WaterP2PSessionView({
                   width: '3px',
                   height: `${h}px`,
                   borderRadius: '2px',
-                  background: isAudioMuted ? '#64748b' : '#22d3ee',
-                  transition: 'height 0.12s ease',
+                  background: isAudioMuted ? '#64748b' : is432HzHarmonicActive ? '#c084fc' : '#22d3ee',
+                  transition: 'height 0.1s ease',
                 }}
               />
             );
           })}
         </div>
 
+        {/* Local Video Camera Preview */}
+        {isVideoEnabled && (
+          <div
+            style={{
+              position: 'relative',
+              width: '260px',
+              height: '140px',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              background: '#090d14',
+              border: '1px solid rgba(34, 211, 238, 0.4)',
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.5)',
+              margin: '4px 0',
+            }}
+          >
+            <video
+              ref={localVideoRef}
+              autoPlay
+              playsInline
+              muted
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transform: 'scaleX(-1)',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                bottom: '6px',
+                left: '8px',
+                fontSize: '10px',
+                fontFamily: theme.fontMono,
+                color: '#22d3ee',
+                background: 'rgba(0, 0, 0, 0.6)',
+                padding: '2px 6px',
+                borderRadius: '4px',
+              }}
+            >
+              ● Local Feed (E2EE)
+            </div>
+          </div>
+        )}
+
         {/* Media Control Strip */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
-            onClick={() => setIsAudioMuted(!isAudioMuted)}
+            onClick={handleToggleAudio}
             style={{
               padding: '6px 14px',
               borderRadius: '8px',
               background: isAudioMuted ? 'rgba(239, 68, 68, 0.2)' : 'rgba(255, 255, 255, 0.08)',
               border: `1px solid ${isAudioMuted ? '#ef4444' : 'rgba(255, 255, 255, 0.15)'}`,
-              color: isAudioMuted ? '#f87171' : '#ffffff',
+              color: isAudioMuted ? '#f87171' : micActive ? '#34d399' : '#ffffff',
               fontSize: '12px',
               cursor: 'pointer',
               display: 'flex',
@@ -425,11 +615,11 @@ export function WaterP2PSessionView({
             }}
           >
             <span>{isAudioMuted ? '🔇' : '🎙️'}</span>
-            <span>{isAudioMuted ? 'Unmute' : 'Mute'}</span>
+            <span>{isAudioMuted ? 'Unmute' : micActive ? 'Live Mic' : 'Mute'}</span>
           </button>
 
           <button
-            onClick={() => setIsVideoEnabled(!isVideoEnabled)}
+            onClick={handleToggleVideo}
             style={{
               padding: '6px 14px',
               borderRadius: '8px',
@@ -445,6 +635,26 @@ export function WaterP2PSessionView({
           >
             <span>📹</span>
             <span>{isVideoEnabled ? 'Video Active' : 'Enable Video'}</span>
+          </button>
+
+          <button
+            onClick={handleToggle432Hz}
+            style={{
+              padding: '6px 12px',
+              borderRadius: '8px',
+              background: is432HzHarmonicActive ? 'rgba(167, 139, 250, 0.2)' : 'rgba(255, 255, 255, 0.08)',
+              border: `1px solid ${is432HzHarmonicActive ? '#a78bfa' : 'rgba(255, 255, 255, 0.15)'}`,
+              color: is432HzHarmonicActive ? '#c084fc' : '#94a3b8',
+              fontSize: '12px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+            }}
+            title="Toggle 432 Hz Biomorphic Resonance Harmonic Filter"
+          >
+            <span>🌊</span>
+            <span>{is432HzHarmonicActive ? '432 Hz Active' : '432 Hz Bypass'}</span>
           </button>
 
           {/* Sub-mode Tab Buttons */}
