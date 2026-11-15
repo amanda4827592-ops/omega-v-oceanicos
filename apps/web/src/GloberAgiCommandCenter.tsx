@@ -184,6 +184,21 @@ export function GloberAgiCommandCenter({
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [toolsAccordionOpen, setToolsAccordionOpen] = useState(false);
   const [organsAccordionOpen, setOrgansAccordionOpen] = useState(false);
+  const [roomsAccordionOpen, setRoomsAccordionOpen] = useState(false);
+
+  // ── 00–09 Canonical Rooms (Notion Continuum) ──
+  const CANONICAL_ROOMS = [
+    { code: '00', title: 'CANON', icon: '📜', desc: 'Invariants & Laws (V(Δ) = ⊤)' },
+    { code: '01', title: 'HUMAN ROOT', icon: '👤', desc: 'Lived source (ELION VAREL // 11:11)' },
+    { code: '02', title: 'AI SOUL', icon: '🧠', desc: '8 Organs & Command Routing' },
+    { code: '03', title: 'ECHOFRAME', icon: '🎨', desc: 'Creation, Voice & 432 Hz Resonance' },
+    { code: '04', title: 'TRUTHOS', icon: '💎', desc: '4-Quadrant Wealth & Tithes' },
+    { code: '05', title: 'OCEANICOS', icon: '🌊', desc: 'Constitutional Gate & Verification' },
+    { code: '06', title: 'EXECUTION', icon: '⚡', desc: 'Work Queue & Bounded Actions' },
+    { code: '07', title: 'EVIDENCE', icon: '🧬', desc: 'KAI Merkle DAG & Ledger Receipts' },
+    { code: '08', title: 'ARCHIVE', icon: '📚', desc: 'Preserved Lineage & History' },
+    { code: '09', title: '12 ORGANS', icon: '🏛️', desc: 'Domain Applications & Workspaces' },
+  ];
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
   const [chromeBrowserOpen, setChromeBrowserOpen] = useState(false);
@@ -1506,8 +1521,71 @@ export function GloberAgiCommandCenter({
               )}
             </div>
 
+            {/* Collapsible Accordion: 00–09 Canonical Rooms (Notion Continuum) */}
+            <div style={{ marginTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '8px' }}>
+              <button
+                onClick={() => setRoomsAccordionOpen(!roomsAccordionOpen)}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '6px 8px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#9ca3af',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  borderRadius: '6px',
+                }}
+              >
+                <span>📜 00–09 Rooms ({CANONICAL_ROOMS.length})</span>
+                <span style={{ fontSize: '10px' }}>{roomsAccordionOpen ? '▾' : '▸'}</span>
+              </button>
+
+              {roomsAccordionOpen && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '6px', maxHeight: '180px', overflowY: 'auto' }}>
+                  {CANONICAL_ROOMS.map((room) => (
+                    <button
+                      key={room.code}
+                      onClick={() => setPromptText(`Explore Room ${room.code} — ${room.title}: ${room.desc}`)}
+                      title={`${room.code} ${room.title} — ${room.desc}`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '6px 8px',
+                        borderRadius: '6px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#d1d5db',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                        e.currentTarget.style.color = '#ffffff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.color = '#d1d5db';
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <span>{room.icon}</span>
+                        <span style={{ fontWeight: 600, color: '#a78bfa' }}>{room.code}</span>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{room.title}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Bottom Profile & Offline Indicator */}
-            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div style={{ marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px' }}>
                 <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#2f2f2f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 700, color: '#ffffff' }}>
                   EV
@@ -1516,6 +1594,15 @@ export function GloberAgiCommandCenter({
                   <span style={{ fontSize: '12px', fontWeight: 600, color: '#ffffff' }}>Elion Varel</span>
                   <span style={{ fontSize: '10px', color: '#10b981' }}>✓ Sovereign Root</span>
                 </div>
+              </div>
+              <div style={{ padding: '4px 8px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#34d399', fontWeight: 700 }}>
+                  <span>🟢</span>
+                  <span>ZERO EXTERNAL APIS</span>
+                </div>
+                <span style={{ fontSize: '9px', color: '#9ca3af', fontFamily: theme.fontMono }}>
+                  Tri-Surface: :3000 · :5000 · :8088
+                </span>
               </div>
             </div>
           </aside>
