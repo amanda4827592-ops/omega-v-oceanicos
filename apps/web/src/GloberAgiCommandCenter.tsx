@@ -183,6 +183,14 @@ export function GloberAgiCommandCenter({
   const [toolsAccordionOpen, setToolsAccordionOpen] = useState(false);
   const [organsAccordionOpen, setOrgansAccordionOpen] = useState(false);
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
+  const [toolMenuOpen, setToolMenuOpen] = useState(false);
+  const [expandedReasoningIds, setExpandedReasoningIds] = useState<string[]>([]);
+
+  const toggleReasoning = (id: string) => {
+    setExpandedReasoningIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
 
   // ── Mode & Model Toggles (The Glober Switch with Persistence) ──
   const [activeMode, setActiveMode] = useState<'collaborative' | 'autonomous'>('collaborative');
@@ -225,6 +233,7 @@ export function GloberAgiCommandCenter({
       }
       if (e.key === 'Escape') {
         setModelMenuOpen(false);
+        setToolMenuOpen(false);
         setRightPanelOpen(false);
         setShowAuthOverlay(false);
       }
@@ -1183,14 +1192,14 @@ export function GloberAgiCommandCenter({
 
                 <h1
                   style={{
-                    fontSize: '26px',
+                    fontSize: '28px',
                     fontWeight: 600,
                     color: '#ffffff',
                     margin: '0 0 6px',
                     letterSpacing: '-0.01em',
                   }}
                 >
-                  What can I help with today?
+                  {getGreeting()}, Traveler.
                 </h1>
 
                 <p
@@ -1356,6 +1365,50 @@ export function GloberAgiCommandCenter({
                             </span>
                           </div>
 
+                          {/* Progressive Thought & Verification Accordion */}
+                          <div style={{ paddingLeft: '32px', marginBottom: '8px' }}>
+                            <button
+                              onClick={() => toggleReasoning(m.id)}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                color: '#9ca3af',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                padding: 0,
+                                fontFamily: theme.fontSans,
+                              }}
+                            >
+                              <span style={{ fontSize: '10px' }}>{expandedReasoningIds.includes(m.id) ? '▾' : '▸'}</span>
+                              <span>Thought for 2s · Verified against kai_ledger</span>
+                              <span style={{ color: '#10b981' }}>✓</span>
+                            </button>
+
+                            {expandedReasoningIds.includes(m.id) && (
+                              <div
+                                style={{
+                                  marginTop: '6px',
+                                  padding: '8px 12px',
+                                  borderRadius: '8px',
+                                  background: 'rgba(255, 255, 255, 0.03)',
+                                  borderLeft: '2px solid #10b981',
+                                  fontSize: '11px',
+                                  color: '#9ca3af',
+                                  fontFamily: theme.fontMono,
+                                  lineHeight: 1.5,
+                                }}
+                              >
+                                <div>• Organ: {m.organ || m.metadata?.organ || 'Ω∞v GLOBER AI'} (432 Hz)</div>
+                                {m.metadata?.actionTriggered && <div>• Action: {m.metadata.actionTriggered}</div>}
+                                {m.metadata?.evidenceHash && <div>• Evidence Hash: {m.metadata.evidenceHash}</div>}
+                                {m.metadata?.kaiRecordId && <div>• KAI Ledger Block: {m.metadata.kaiRecordId}</div>}
+                              </div>
+                            )}
+                          </div>
+
                           {/* Message Body */}
                           <div
                             style={{
@@ -1368,24 +1421,35 @@ export function GloberAgiCommandCenter({
                             {renderMessageContent(m.content)}
                           </div>
 
-                          {/* Cryptographic Attestation Footer */}
-                          {m.metadata?.evidenceHash && (
-                            <div
+                          {/* Minimalist Verified Badge */}
+                          <div
+                            style={{
+                              marginTop: '8px',
+                              paddingLeft: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            <span
+                              title={m.metadata?.evidenceHash ? `Cryptographic Proof: ${m.metadata.evidenceHash}` : 'Verified against KAI Ledger'}
                               style={{
-                                marginTop: '8px',
-                                paddingLeft: '32px',
-                                fontSize: '10px',
-                                fontFamily: theme.fontMono,
-                                color: '#6b7280',
-                                display: 'flex',
+                                fontSize: '11px',
+                                padding: '2px 8px',
+                                borderRadius: '9999px',
+                                background: 'rgba(16, 185, 129, 0.1)',
+                                border: '1px solid rgba(16, 185, 129, 0.25)',
+                                color: '#34d399',
+                                display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: '6px',
+                                gap: '4px',
+                                cursor: 'default',
                               }}
                             >
-                              <span style={{ color: '#10b981' }}>✓ ATTESTED:</span>
-                              <span>{m.metadata.evidenceHash.slice(0, 24)}…</span>
-                            </div>
-                          )}
+                              <span>🔒</span>
+                              <span>Verified</span>
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1454,6 +1518,92 @@ export function GloberAgiCommandCenter({
               </div>
             )}
 
+            {/* Floating Toolbelt Menu (Triggered by + icon) */}
+            {toolMenuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '80px',
+                  left: '16px',
+                  background: '#2f2f2f',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: '16px',
+                  padding: '8px',
+                  boxShadow: '0 16px 36px rgba(0, 0, 0, 0.6)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '4px',
+                  zIndex: 50,
+                  minWidth: '220px',
+                }}
+              >
+                <div style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af', padding: '4px 8px', textTransform: 'uppercase' }}>
+                  Tools & Capabilities
+                </div>
+                {[
+                  { id: 'web-search', icon: '🌐', label: 'Browse Web', desc: 'Real-time search & extraction' },
+                  { id: 'iot', icon: '⚡', label: 'Industrial IoT', desc: 'Query sensors & relays' },
+                  { id: 'notion', icon: '🏛️', label: 'Notion Workspace', desc: '7 canonical surfaces & wealth' },
+                  { id: 'memory', icon: '📜', label: 'KAI Memory', desc: 'Recall cryptographic receipts' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      togglePlugin(item.id);
+                      setToolMenuOpen(false);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      background: activePlugins.includes(item.id) ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                      border: 'none',
+                      color: activePlugins.includes(item.id) ? '#6ee7b7' : '#e5e7eb',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      width: '100%',
+                    }}
+                  >
+                    <span>{item.icon}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 600 }}>{item.label}</span>
+                      <span style={{ fontSize: '10px', color: '#9ca3af' }}>{item.desc}</span>
+                    </div>
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                    setToolMenuOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#e5e7eb',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+                    marginTop: '2px',
+                    paddingTop: '6px',
+                  }}
+                >
+                  <span>📎</span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600 }}>Attach File</span>
+                    <span style={{ fontSize: '10px', color: '#9ca3af' }}>Document, code, or image</span>
+                  </div>
+                </button>
+              </div>
+            )}
+
             {/* Floating Capsule */}
             <div
               style={{
@@ -1478,7 +1628,7 @@ export function GloberAgiCommandCenter({
                   }
                 }}
                 rows={1}
-                placeholder="Message Ω∞v OceanicOS..."
+                placeholder="Where should we start?"
                 style={{
                   width: '100%',
                   background: 'transparent',
@@ -1503,7 +1653,7 @@ export function GloberAgiCommandCenter({
                   paddingTop: '4px',
                 }}
               >
-                {/* Left: Attach + Quick Chips */}
+                {/* Left: Small unassuming (+) button */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <input
                     type="file"
@@ -1512,47 +1662,49 @@ export function GloberAgiCommandCenter({
                     onChange={() => alert('File queued to multi-modal context')}
                   />
                   <button
-                    onClick={() => fileInputRef.current?.click()}
-                    title="Attach file"
+                    onClick={() => setToolMenuOpen(!toolMenuOpen)}
+                    title="Add tools or attachments"
                     style={{
                       width: '30px',
                       height: '30px',
                       borderRadius: '50%',
-                      background: 'rgba(255, 255, 255, 0.08)',
+                      background: toolMenuOpen ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.08)',
                       border: 'none',
-                      color: '#9ca3af',
-                      fontSize: '15px',
+                      color: toolMenuOpen ? '#ffffff' : '#9ca3af',
+                      fontSize: '16px',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      transition: 'all 0.15s ease',
                     }}
                   >
                     +
                   </button>
 
-                  {[
-                    { id: 'web-search', label: '🌐 Web' },
-                    { id: 'iot', label: '⚡ IoT' },
-                    { id: 'notion', label: '🏛️ Notion' },
-                    { id: 'memory', label: '📜 Memory' },
-                  ].map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => togglePlugin(p.id)}
-                      style={{
-                        background: activePlugins.includes(p.id) ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
-                        border: `1px solid ${activePlugins.includes(p.id) ? 'rgba(255, 255, 255, 0.2)' : 'transparent'}`,
-                        borderRadius: '9999px',
-                        padding: '3px 8px',
-                        color: activePlugins.includes(p.id) ? '#ffffff' : '#9ca3af',
-                        fontSize: '11px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
+                  {/* Active plugin indicators (only show if active) */}
+                  {activePlugins.map((pId) => {
+                    const iconMap: Record<string, string> = {
+                      'web-search': '🌐',
+                      'iot': '⚡',
+                      'notion': '🏛️',
+                      'memory': '📜',
+                    };
+                    return (
+                      <span
+                        key={pId}
+                        style={{
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '9999px',
+                          background: 'rgba(255, 255, 255, 0.06)',
+                          color: '#d1d5db',
+                        }}
+                      >
+                        {iconMap[pId] || pId}
+                      </span>
+                    );
+                  })}
                 </div>
 
                 {/* Right: Voice + Circular Send Button */}

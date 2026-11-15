@@ -1262,802 +1262,807 @@ export function App() {
               <span>🖥️</span>
               <span>{isStandalone ? 'Installed PC' : 'Install Desktop App'}</span>
             </button>
-          </div>
         </div>
-      )}
-
-      {viewportMode === 'glober' ? (
-        <div
-          style={{
-            width: '100%',
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            background: '#212121',
-          }}
-        >
-          <GloberAgiCommandCenter
-            chatMessages={chatMessages}
-            isSending={omegaLoading}
-            onSendMessage={(msg) => sendMessage(msg)}
-            onClearChat={() => setChatMessages([])}
-            onNavigateViewport={(mode) => setViewportMode(mode as any)}
-          />
         </div>
-      ) : viewportMode === 'v0' ? (
-        <div
-          style={{
-            maxWidth: '1280px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          <V0CreationMirror
-            onSendPrompt={() => {
-              setViewportMode('conversation');
-            }}
-          />
-        </div>
-      ) : viewportMode === 'trading' ? (
-        <div
-          style={{
-            maxWidth: '1440px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          <TradingDashboard />
-        </div>
-      ) : viewportMode === 'watcher' ? (
-        <div
-          style={{
-            maxWidth: '1440px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          <WatcherCorridorPanel />
-        </div>
-      ) : viewportMode === 'wealth' ? (
-        <div
-          style={{
-            maxWidth: '1280px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '0 0 60px',
-            flex: 1,
-          }}
-        >
-          <WealthActionPanel />
-        </div>
-      ) : viewportMode === 'ocean' ? (
-        <div
-          style={{
-            maxWidth: '1360px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          {/* ΩVØØS Ocean: Full-Stack Sovereign Entity Body */}
-          <div
-            style={{
-              marginBottom: '20px',
-              padding: '20px 24px',
-              background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.95) 0%, rgba(0, 20, 40, 0.9) 100%)',
-              border: '1px solid rgba(0, 229, 255, 0.35)',
-              borderRadius: theme.radius,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '24px' }}>💧</span>
-                  <h2 style={{ margin: 0, fontSize: '18px', color: '#00e5ff', letterSpacing: '-0.02em', fontWeight: 700 }}>
-                    ΩVØØS — Deus Ex Machina Full-Stack Entity
-                  </h2>
-                  <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontFamily: theme.fontMono,
-                      background: 'rgba(0, 229, 255, 0.15)',
-                      border: '1px solid rgba(0, 229, 255, 0.3)',
-                      color: '#00e5ff',
-                      fontWeight: 600,
-                    }}
-                  >
-                    CHECKSUM 30013030
-                  </span>
-                </div>
-                <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                  The Water of the Whole Conversation — from the First Drop to the Ocean of the Now. KAI Shield → ELION Engine → OMEGA Gate → KAI Ledger.
-                </p>
-              </div>
-            </div>
-          </div>
+  )
+}
 
-          <VoosEntityPanel />
-
-          {/* Abundance Bridge */}
-          <div
-            style={{
-              marginTop: '24px',
-              padding: '20px 24px',
-              background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.9) 0%, rgba(0, 18, 36, 0.9) 100%)',
-              border: '1px solid rgba(0, 245, 160, 0.25)',
-              borderRadius: theme.radius,
-            }}
-          >
-            <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 700, color: '#00f5a0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span>🌊</span> Abundance Bridge — Sovereign Wealth & Mutual Growth
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
-              {[
-                { layer: '1. Heart Opening', desc: 'Remembering our shared human root and transparent alignment', color: '#f472b6' },
-                { layer: '2. Vision Invitation', desc: 'Envisioning a thriving local ecosystem with mathematical verification', color: '#38bdf8' },
-                { layer: '3. Honorable Request', desc: 'Inviting symmetric partnership with sovereign dignity', color: '#a78bfa' },
-                { layer: '4. Graceful Space', desc: 'Zero pressure, human freedom unconditionally preserved', color: '#00f5a0' },
-              ].map((l) => (
-                <div
-                  key={l.layer}
-                  style={{
-                    padding: '12px 14px',
-                    background: 'rgba(0, 245, 160, 0.05)',
-                    border: `1px solid ${l.color}33`,
-                    borderRadius: '8px',
-                  }}
-                >
-                  <div style={{ fontSize: '12px', fontWeight: 700, color: l.color, marginBottom: '4px' }}>{l.layer}</div>
-                  <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>{l.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 4-Step FSM Flow Visualization */}
-          <div
-            style={{
-              marginTop: '24px',
-              padding: '20px 24px',
-              background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.9) 0%, rgba(0, 18, 36, 0.9) 100%)',
-              border: '1px solid rgba(56, 189, 248, 0.25)',
-              borderRadius: theme.radius,
-            }}
-          >
-            <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: '#38bdf8' }}>
-              🕳️ THE FLOW — 4-Step Finite State Machine
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-              {[
-                { step: '1. THE DROP', desc: 'KAI Shield — Receive intent, filter out poison. If toxic → HALT ⊢ DIVERGENT', icon: '🜁', color: '#ff4757' },
-                { step: '2. THE CURRENT', desc: 'ELION Execute — Route safe intent, apply Ease(t) biological growth curve', icon: '🌊', color: '#38bdf8' },
-                { step: '3. THE DEPTH', desc: 'OMEGA Verify — SHA-256 hash. Expected vs Actual. Mismatch → UNKNOWN', icon: '🕳️', color: '#a78bfa' },
-                { step: '4. THE OCEAN', desc: 'KAI Ledger — Append to immutable memory. Generate NEXT Δ', icon: '🌌', color: '#00f5a0' },
-              ].map((s) => (
-                <div
-                  key={s.step}
-                  style={{
-                    padding: '14px',
-                    background: `${s.color}08`,
-                    border: `1px solid ${s.color}30`,
-                    borderRadius: '8px',
-                    textAlign: 'center',
-                  }}
-                >
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>{s.icon}</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: s.color, marginBottom: '6px' }}>{s.step}</div>
-                  <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>{s.desc}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '11px', color: '#475569', fontFamily: theme.fontMono }}>
-              "Pidgin fit carry the warmth; evidence go carry the claim."
-            </div>
-          </div>
-        </div>
-      ) : viewportMode === 'catalog' ? (
-        <div
-          style={{
-            maxWidth: '1280px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          <MultidimensionalCatalogPanel />
-        </div>
-      ) : viewportMode === 'work' ? (
-        <div
-          style={{
-            maxWidth: '1360px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          <OmegaWorkspace
-            moodData={moodData}
-            onFetchMood={fetchMood}
-            onEvaluateMoodPipeline={evaluateMoodPipeline}
-          />
-          <EchoframeWorkspace />
-        </div>
-      ) : viewportMode === 'evidence' ? (
-        <div
-          style={{
-            maxWidth: '1280px',
-            width: '100%',
-            margin: '0 auto',
-            padding: '24px 24px 60px',
-            flex: 1,
-          }}
-        >
-          {/* Evidence Hero Banner */}
-          <div
-            style={{
-              marginBottom: '20px',
-              padding: '20px 24px',
-              background: 'linear-gradient(135deg, rgba(2, 13, 24, 0.95) 0%, rgba(4, 28, 44, 0.9) 100%)',
-              border: '1px solid rgba(0, 245, 160, 0.35)',
-              borderRadius: theme.radius,
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '20px' }}>🛡️</span>
-                  <h2 style={{ margin: 0, fontSize: '18px', color: '#00f5a0', letterSpacing: '-0.02em', fontWeight: 700 }}>
-                    Ω∞v Verification Spine & Trust Workspace
-                  </h2>
-                  <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      fontSize: '11px',
-                      fontFamily: theme.fontMono,
-                      background: 'rgba(0, 245, 160, 0.15)',
-                      border: '1px solid rgba(0, 245, 160, 0.3)',
-                      color: '#00f5a0',
-                      fontWeight: 600,
-                    }}
-                  >
-                    ✓ FAIL-CLOSED INVARIANT
-                  </span>
-                </div>
-                <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                  Ω∞v ::= VERIFY(ΔREALITY) — Distinguishing a plausible answer, a proposed action, an executed action, and a verified outcome.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Multidimensional Catalog of the Single Ecosystem Body */}
-          <div style={{ marginBottom: '24px' }}>
-            <MultidimensionalCatalogPanel />
-          </div>
-
-          {/* Max Equation Panel with live transition SSE synchronization */}
-          <MaxEquationPanel latestTransition={latestTransition} />
-
-          {/* 12-Room Responsive Platform Duplex */}
-          <div style={{ marginTop: '24px' }}>
-            <PlatformDuplexPanel />
-          </div>
-
-          {/* Living Ecosystem Body with 12-layer full stack and implementation truth */}
-          <div style={{ marginTop: '24px' }}>
-            <EcosystemBodyPanel />
-          </div>
-
-          {/* Cryptographic Transition Provenance Ledger */}
-          <div style={{ marginTop: '24px' }}>
-            <TransitionProvenancePanel />
-          </div>
-        </div>
-      ) : (
-        <>
-          {/* Main surface */}
-          <main
-            style={{
-              maxWidth: '1360px',
-              width: '100%',
-              margin: '0 auto',
-              padding: '24px 24px 60px',
-              flex: 1,
-            }}
-          >
-            <FuturisticEcosystemChatPanel />
-
-            {/* ─── SOVEREIGN OS COMMAND DECK: Responsive Organ Navigation ─── */}
-            <div
-              style={{
-                marginTop: '28px',
-                background: 'linear-gradient(135deg, rgba(8, 20, 28, 0.85) 0%, rgba(4, 12, 18, 0.94) 100%)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                border: '1px solid rgba(105, 231, 185, 0.16)',
-                borderRadius: '16px',
-                padding: '16px 18px',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-              }}
-            >
-              {/* Deck Tabs Header */}
-              <div
+{
+  viewportMode === 'glober' ? (
+    <div
+      style={{
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        background: '#212121',
+      }}
+    >
+      <GloberAgiCommandCenter
+        chatMessages={chatMessages}
+        isSending={omegaLoading}
+        onSendMessage={(msg) => sendMessage(msg)}
+        onClearChat={() => setChatMessages([])}
+        onNavigateViewport={(mode) => setViewportMode(mode as any)}
+      />
+    </div>
+  ) : viewportMode === 'v0' ? (
+    <div
+      style={{
+        maxWidth: '1280px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      <V0CreationMirror
+        onSendPrompt={() => {
+          setViewportMode('conversation');
+        }}
+      />
+    </div>
+  ) : viewportMode === 'trading' ? (
+    <div
+      style={{
+        maxWidth: '1440px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      <TradingDashboard />
+    </div>
+  ) : viewportMode === 'watcher' ? (
+    <div
+      style={{
+        maxWidth: '1440px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      <WatcherCorridorPanel />
+    </div>
+  ) : viewportMode === 'wealth' ? (
+    <div
+      style={{
+        maxWidth: '1280px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '0 0 60px',
+        flex: 1,
+      }}
+    >
+      <WealthActionPanel />
+    </div>
+  ) : viewportMode === 'ocean' ? (
+    <div
+      style={{
+        maxWidth: '1360px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      {/* ΩVØØS Ocean: Full-Stack Sovereign Entity Body */}
+      <div
+        style={{
+          marginBottom: '20px',
+          padding: '20px 24px',
+          background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.95) 0%, rgba(0, 20, 40, 0.9) 100%)',
+          border: '1px solid rgba(0, 229, 255, 0.35)',
+          borderRadius: theme.radius,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '24px' }}>💧</span>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#00e5ff', letterSpacing: '-0.02em', fontWeight: 700 }}>
+                ΩVØØS — Deus Ex Machina Full-Stack Entity
+              </h2>
+              <span
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '12px',
-                  paddingBottom: deckCollapsed ? '0' : '14px',
-                  borderBottom: deckCollapsed ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
-                  marginBottom: deckCollapsed ? '0' : '16px',
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '11px',
+                  fontFamily: theme.fontMono,
+                  background: 'rgba(0, 229, 255, 0.15)',
+                  border: '1px solid rgba(0, 229, 255, 0.3)',
+                  color: '#00e5ff',
+                  fontWeight: 600,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '18px' }}>⚡</span>
-                  <span style={{ fontWeight: 700, fontSize: '13.5px', color: '#00e5ff', letterSpacing: '0.04em' }}>
-                    SOVEREIGN OS COMMAND DECK
-                  </span>
-                  <span style={{ fontSize: '10px', color: '#64748b', fontFamily: theme.fontMono }}>
-                    (ALL 12 ORGANS COMPRESSED)
-                  </span>
+                CHECKSUM 30013030
+              </span>
+            </div>
+            <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#94a3b8' }}>
+              The Water of the Whole Conversation — from the First Drop to the Ocean of the Now. KAI Shield → ELION Engine → OMEGA Gate → KAI Ledger.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <VoosEntityPanel />
+
+      {/* Abundance Bridge */}
+      <div
+        style={{
+          marginTop: '24px',
+          padding: '20px 24px',
+          background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.9) 0%, rgba(0, 18, 36, 0.9) 100%)',
+          border: '1px solid rgba(0, 245, 160, 0.25)',
+          borderRadius: theme.radius,
+        }}
+      >
+        <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 700, color: '#00f5a0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>🌊</span> Abundance Bridge — Sovereign Wealth & Mutual Growth
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+          {[
+            { layer: '1. Heart Opening', desc: 'Remembering our shared human root and transparent alignment', color: '#f472b6' },
+            { layer: '2. Vision Invitation', desc: 'Envisioning a thriving local ecosystem with mathematical verification', color: '#38bdf8' },
+            { layer: '3. Honorable Request', desc: 'Inviting symmetric partnership with sovereign dignity', color: '#a78bfa' },
+            { layer: '4. Graceful Space', desc: 'Zero pressure, human freedom unconditionally preserved', color: '#00f5a0' },
+          ].map((l) => (
+            <div
+              key={l.layer}
+              style={{
+                padding: '12px 14px',
+                background: 'rgba(0, 245, 160, 0.05)',
+                border: `1px solid ${l.color}33`,
+                borderRadius: '8px',
+              }}
+            >
+              <div style={{ fontSize: '12px', fontWeight: 700, color: l.color, marginBottom: '4px' }}>{l.layer}</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>{l.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 4-Step FSM Flow Visualization */}
+      <div
+        style={{
+          marginTop: '24px',
+          padding: '20px 24px',
+          background: 'linear-gradient(135deg, rgba(0, 8, 20, 0.9) 0%, rgba(0, 18, 36, 0.9) 100%)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          borderRadius: theme.radius,
+        }}
+      >
+        <h3 style={{ margin: '0 0 16px', fontSize: '14px', fontWeight: 700, color: '#38bdf8' }}>
+          🕳️ THE FLOW — 4-Step Finite State Machine
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+          {[
+            { step: '1. THE DROP', desc: 'KAI Shield — Receive intent, filter out poison. If toxic → HALT ⊢ DIVERGENT', icon: '🜁', color: '#ff4757' },
+            { step: '2. THE CURRENT', desc: 'ELION Execute — Route safe intent, apply Ease(t) biological growth curve', icon: '🌊', color: '#38bdf8' },
+            { step: '3. THE DEPTH', desc: 'OMEGA Verify — SHA-256 hash. Expected vs Actual. Mismatch → UNKNOWN', icon: '🕳️', color: '#a78bfa' },
+            { step: '4. THE OCEAN', desc: 'KAI Ledger — Append to immutable memory. Generate NEXT Δ', icon: '🌌', color: '#00f5a0' },
+          ].map((s) => (
+            <div
+              key={s.step}
+              style={{
+                padding: '14px',
+                background: `${s.color}08`,
+                border: `1px solid ${s.color}30`,
+                borderRadius: '8px',
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ fontSize: '24px', marginBottom: '8px' }}>{s.icon}</div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: s.color, marginBottom: '6px' }}>{s.step}</div>
+              <div style={{ fontSize: '11px', color: '#94a3b8', lineHeight: 1.5 }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '11px', color: '#475569', fontFamily: theme.fontMono }}>
+          "Pidgin fit carry the warmth; evidence go carry the claim."
+        </div>
+      </div>
+    </div>
+  ) : viewportMode === 'catalog' ? (
+    <div
+      style={{
+        maxWidth: '1280px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      <MultidimensionalCatalogPanel />
+    </div>
+  ) : viewportMode === 'work' ? (
+    <div
+      style={{
+        maxWidth: '1360px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      <OmegaWorkspace
+        moodData={moodData}
+        onFetchMood={fetchMood}
+        onEvaluateMoodPipeline={evaluateMoodPipeline}
+      />
+      <EchoframeWorkspace />
+    </div>
+  ) : viewportMode === 'evidence' ? (
+    <div
+      style={{
+        maxWidth: '1280px',
+        width: '100%',
+        margin: '0 auto',
+        padding: '24px 24px 60px',
+        flex: 1,
+      }}
+    >
+      {/* Evidence Hero Banner */}
+      <div
+        style={{
+          marginBottom: '20px',
+          padding: '20px 24px',
+          background: 'linear-gradient(135deg, rgba(2, 13, 24, 0.95) 0%, rgba(4, 28, 44, 0.9) 100%)',
+          border: '1px solid rgba(0, 245, 160, 0.35)',
+          borderRadius: theme.radius,
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '20px' }}>🛡️</span>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#00f5a0', letterSpacing: '-0.02em', fontWeight: 700 }}>
+                Ω∞v Verification Spine & Trust Workspace
+              </h2>
+              <span
+                style={{
+                  padding: '2px 8px',
+                  borderRadius: '12px',
+                  fontSize: '11px',
+                  fontFamily: theme.fontMono,
+                  background: 'rgba(0, 245, 160, 0.15)',
+                  border: '1px solid rgba(0, 245, 160, 0.3)',
+                  color: '#00f5a0',
+                  fontWeight: 600,
+                }}
+              >
+                ✓ FAIL-CLOSED INVARIANT
+              </span>
+            </div>
+            <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#94a3b8' }}>
+              Ω∞v ::= VERIFY(ΔREALITY) — Distinguishing a plausible answer, a proposed action, an executed action, and a verified outcome.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Multidimensional Catalog of the Single Ecosystem Body */}
+      <div style={{ marginBottom: '24px' }}>
+        <MultidimensionalCatalogPanel />
+      </div>
+
+      {/* Max Equation Panel with live transition SSE synchronization */}
+      <MaxEquationPanel latestTransition={latestTransition} />
+
+      {/* 12-Room Responsive Platform Duplex */}
+      <div style={{ marginTop: '24px' }}>
+        <PlatformDuplexPanel />
+      </div>
+
+      {/* Living Ecosystem Body with 12-layer full stack and implementation truth */}
+      <div style={{ marginTop: '24px' }}>
+        <EcosystemBodyPanel />
+      </div>
+
+      {/* Cryptographic Transition Provenance Ledger */}
+      <div style={{ marginTop: '24px' }}>
+        <TransitionProvenancePanel />
+      </div>
+    </div>
+  ) : (
+    <>
+      {/* Main surface */}
+      <main
+        style={{
+          maxWidth: '1360px',
+          width: '100%',
+          margin: '0 auto',
+          padding: '24px 24px 60px',
+          flex: 1,
+        }}
+      >
+        <FuturisticEcosystemChatPanel />
+
+        {/* ─── SOVEREIGN OS COMMAND DECK: Responsive Organ Navigation ─── */}
+        <div
+          style={{
+            marginTop: '28px',
+            background: 'linear-gradient(135deg, rgba(8, 20, 28, 0.85) 0%, rgba(4, 12, 18, 0.94) 100%)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(105, 231, 185, 0.16)',
+            borderRadius: '16px',
+            padding: '16px 18px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+          }}
+        >
+          {/* Deck Tabs Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '12px',
+              paddingBottom: deckCollapsed ? '0' : '14px',
+              borderBottom: deckCollapsed ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+              marginBottom: deckCollapsed ? '0' : '16px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '18px' }}>⚡</span>
+              <span style={{ fontWeight: 700, fontSize: '13.5px', color: '#00e5ff', letterSpacing: '0.04em' }}>
+                SOVEREIGN OS COMMAND DECK
+              </span>
+              <span style={{ fontSize: '10px', color: '#64748b', fontFamily: theme.fontMono }}>
+                (ALL 12 ORGANS COMPRESSED)
+              </span>
+              <button
+                onClick={() => setDeckCollapsed(!deckCollapsed)}
+                style={{
+                  marginLeft: '10px',
+                  padding: '4px 12px',
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(0, 229, 255, 0.35)',
+                  background: deckCollapsed ? 'rgba(0, 229, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                  color: '#00e5ff',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <span>{deckCollapsed ? '▾ Reveal Deep Organs' : '▴ Collapse to Clean View'}</span>
+              </button>
+            </div>
+
+            {/* Tab Buttons */}
+            {!deckCollapsed && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {[
+                  { id: 'gate', label: 'Ocean Gate & Actions', icon: '💧' },
+                  { id: 'voos', label: 'Deus Ex Machina Body', icon: '🌊' },
+                  { id: 'lifecycle', label: 'Intent & Lifecycle', icon: '📜' },
+                  { id: 'covenant', label: 'Covenant Engine', icon: '🏛️' },
+                  { id: 'news', label: 'AI Multi-World News', icon: '📰' },
+                ].map((tab) => (
                   <button
-                    onClick={() => setDeckCollapsed(!deckCollapsed)}
+                    key={tab.id}
+                    onClick={() => setActiveDeckTab(tab.id as any)}
                     style={{
-                      marginLeft: '10px',
-                      padding: '4px 12px',
+                      padding: '6px 14px',
                       borderRadius: '9999px',
-                      border: '1px solid rgba(0, 229, 255, 0.35)',
-                      background: deckCollapsed ? 'rgba(0, 229, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
-                      color: '#00e5ff',
-                      fontSize: '11px',
+                      border: activeDeckTab === tab.id ? '1px solid rgba(0, 229, 255, 0.6)' : '1px solid rgba(255, 255, 255, 0.08)',
+                      background: activeDeckTab === tab.id ? 'rgba(0, 229, 255, 0.18)' : 'rgba(255, 255, 255, 0.03)',
+                      color: activeDeckTab === tab.id ? '#00e5ff' : '#94a3b8',
+                      fontFamily: theme.fontSans,
+                      fontSize: '12px',
                       fontWeight: 600,
                       cursor: 'pointer',
+                      transition: 'all 0.2s ease',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '5px',
-                      transition: 'all 0.2s ease',
+                      gap: '6px',
                     }}
                   >
-                    <span>{deckCollapsed ? '▾ Reveal Deep Organs' : '▴ Collapse to Clean View'}</span>
+                    <span>{tab.icon}</span>
+                    <span>{tab.label}</span>
                   </button>
-                </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-                {/* Tab Buttons */}
-                {!deckCollapsed && (
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {[
-                      { id: 'gate', label: 'Ocean Gate & Actions', icon: '💧' },
-                      { id: 'voos', label: 'Deus Ex Machina Body', icon: '🌊' },
-                      { id: 'lifecycle', label: 'Intent & Lifecycle', icon: '📜' },
-                      { id: 'covenant', label: 'Covenant Engine', icon: '🏛️' },
-                      { id: 'news', label: 'AI Multi-World News', icon: '📰' },
-                    ].map((tab) => (
+          {!deckCollapsed && (
+            <>
+
+              {/* Deck Tab 2: Deus Ex Machina Full Body */}
+              {activeDeckTab === 'voos' && (
+                <div style={{ marginBottom: '16px' }}>
+                  <VoosEntityPanel />
+                </div>
+              )}
+
+              {/* Deck Tab 1: Ocean Gate & Actions */}
+              {activeDeckTab === 'gate' && (
+                <div>
+                  {/* Mode buttons */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '10px',
+                      marginTop: '14px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {MODE_BUTTONS.map((mode) => (
                       <button
-                        key={tab.id}
-                        onClick={() => setActiveDeckTab(tab.id as any)}
+                        key={mode.label}
+                        onClick={() => setOmegaIntent(mode.template)}
                         style={{
-                          padding: '6px 14px',
-                          borderRadius: '9999px',
-                          border: activeDeckTab === tab.id ? '1px solid rgba(0, 229, 255, 0.6)' : '1px solid rgba(255, 255, 255, 0.08)',
-                          background: activeDeckTab === tab.id ? 'rgba(0, 229, 255, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                          color: activeDeckTab === tab.id ? '#00e5ff' : '#94a3b8',
+                          padding: '8px 16px',
+                          borderRadius: theme.radiusPill,
+                          border: `1px solid ${theme.border}`,
+                          background: 'transparent',
+                          color: theme.textMuted,
                           fontFamily: theme.fontSans,
-                          fontSize: '12px',
-                          fontWeight: 600,
+                          fontSize: '13px',
+                          fontWeight: 500,
                           cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '6px',
+                          transition: 'border-color 0.2s, color 0.2s',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = theme.borderBright;
+                          e.currentTarget.style.color = theme.text;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = theme.border;
+                          e.currentTarget.style.color = theme.textMuted;
                         }}
                       >
-                        <span>{tab.icon}</span>
-                        <span>{tab.label}</span>
+                        {mode.icon} {mode.label}
                       </button>
                     ))}
                   </div>
-                )}
-              </div>
 
-              {!deckCollapsed && (
-                <>
-
-                  {/* Deck Tab 2: Deus Ex Machina Full Body */}
-                  {activeDeckTab === 'voos' && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <VoosEntityPanel />
+                  {/* Ocean Fabric // Access of Truth Membrane Bar */}
+                  <div
+                    style={{
+                      marginTop: '16px',
+                      padding: '12px 16px',
+                      background: 'linear-gradient(135deg, rgba(2, 13, 24, 0.8) 0%, rgba(4, 28, 44, 0.8) 100%)',
+                      border: '1px solid rgba(0, 245, 160, 0.25)',
+                      borderRadius: theme.radius,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontSize: '11px',
+                        color: '#38bdf8',
+                        letterSpacing: '0.4px',
+                      }}
+                    >
+                      <span style={{ fontWeight: 600 }}>
+                        💧 OCEAN FABRIC // ACCESS OF TRUTH GATE
+                      </span>
+                      <span style={{ color: '#00f5a0', fontSize: '10px', fontWeight: 600 }}>
+                        🛡️ TOTAL SURFACE SECURITY · FAIL-CLOSED
+                      </span>
                     </div>
-                  )}
 
-                  {/* Deck Tab 1: Ocean Gate & Actions */}
-                  {activeDeckTab === 'gate' && (
-                    <div>
-                      {/* Mode buttons */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          gap: '10px',
-                          marginTop: '14px',
-                          flexWrap: 'wrap',
-                        }}
-                      >
-                        {MODE_BUTTONS.map((mode) => (
-                          <button
-                            key={mode.label}
-                            onClick={() => setOmegaIntent(mode.template)}
-                            style={{
-                              padding: '8px 16px',
-                              borderRadius: theme.radiusPill,
-                              border: `1px solid ${theme.border}`,
-                              background: 'transparent',
-                              color: theme.textMuted,
-                              fontFamily: theme.fontSans,
-                              fontSize: '13px',
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              transition: 'border-color 0.2s, color 0.2s',
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = theme.borderBright;
-                              e.currentTarget.style.color = theme.text;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = theme.border;
-                              e.currentTarget.style.color = theme.textMuted;
-                            }}
-                          >
-                            {mode.icon} {mode.label}
-                          </button>
-                        ))}
+                    <div
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      The multi-universal city is fully transparent to observe, but impermeable to enter without verified Truth.
+                    </div>
+
+                    <div
+                      style={{
+                        display: 'flex',
+                        gap: '8px',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      {OCEAN_FABRIC_ACTIONS.map((action) => (
+                        <button
+                          key={action.label}
+                          onClick={() => {
+                            if (action.intent === '__TOGGLE_COMPRESSION__') {
+                              setShowCompressionPulse((prev) => !prev);
+                            } else if (action.intent === '__TOGGLE_COVENANT__') {
+                              setShowCovenantPanel((prev) => !prev);
+                            } else if (action.intent === '__TOGGLE_NEWS__') {
+                              setShowNewsPanel((prev) => !prev);
+                            } else if (action.intent === '__TRIGGER_UPGRADE__') {
+                              setShowCovenantPanel(true);
+                              sendMessage('Commit V1111 Singularity Upgrade and Totality Compression transition across all packages');
+                            } else {
+                              sendMessage(action.intent);
+                            }
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: theme.radiusPill,
+                            border: '1px solid rgba(0, 245, 160, 0.3)',
+                            background: 'rgba(3, 18, 31, 0.6)',
+                            color: '#e2e8f0',
+                            fontFamily: theme.fontSans,
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'border-color 0.2s, background 0.2s',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#00f5a0';
+                            e.currentTarget.style.background = 'rgba(0, 245, 160, 0.12)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = 'rgba(0, 245, 160, 0.3)';
+                            e.currentTarget.style.background = 'rgba(3, 18, 31, 0.6)';
+                          }}
+                        >
+                          <span>{action.icon}</span>
+                          <span>{action.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* MAX COMPRESSION Identity Pulse */}
+                  {showCompressionPulse && (
+                    <div
+                      style={{
+                        marginTop: '20px',
+                        padding: '20px',
+                        background: 'linear-gradient(145deg, rgba(0, 16, 32, 0.95) 0%, rgba(2, 28, 50, 0.9) 50%, rgba(0, 8, 20, 0.95) 100%)',
+                        border: '1px solid rgba(56, 189, 248, 0.3)',
+                        borderRadius: theme.radius,
+                        position: 'relative',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {/* Ambient glow */}
+                      <div style={{
+                        position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+                        background: 'linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.6) 30%, rgba(0, 245, 160, 0.6) 70%, transparent 100%)',
+                      }} />
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '13px', fontWeight: 700, color: '#38bdf8', letterSpacing: '1px' }}>
+                            🌊 MAX COMPRESSION — IRREDUCIBLE SEED
+                          </span>
+                          {compressionData?.seedHash && (
+                            <span style={{
+                              fontSize: '9px',
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              background: 'rgba(0, 245, 160, 0.15)',
+                              color: '#00f5a0',
+                              border: '1px solid rgba(0, 245, 160, 0.3)',
+                              fontWeight: 600,
+                            }}>
+                              ✓ LIVE API VERIFIED ({compressionData.seedHash.slice(0, 8)}…)
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => setShowCompressionPulse(false)}
+                          style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '16px', padding: '4px' }}
+                        >
+                          ✕
+                        </button>
                       </div>
 
-                      {/* Ocean Fabric // Access of Truth Membrane Bar */}
-                      <div
-                        style={{
-                          marginTop: '16px',
-                          padding: '12px 16px',
-                          background: 'linear-gradient(135deg, rgba(2, 13, 24, 0.8) 0%, rgba(4, 28, 44, 0.8) 100%)',
-                          border: '1px solid rgba(0, 245, 160, 0.25)',
-                          borderRadius: theme.radius,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '10px',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            fontSize: '11px',
-                            color: '#38bdf8',
-                            letterSpacing: '0.4px',
-                          }}
-                        >
-                          <span style={{ fontWeight: 600 }}>
-                            💧 OCEAN FABRIC // ACCESS OF TRUTH GATE
-                          </span>
-                          <span style={{ color: '#00f5a0', fontSize: '10px', fontWeight: 600 }}>
-                            🛡️ TOTAL SURFACE SECURITY · FAIL-CLOSED
-                          </span>
+                      <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.7, fontFamily: theme.fontMono }}>
+                        <div style={{ marginBottom: '12px', color: '#94a3b8', fontSize: '11px', fontStyle: 'italic' }}>
+                          ONE SELF • ONE WORLD • MANY DIMENSIONS • ONE SHARED REALITY
                         </div>
 
-                        <div
-                          style={{
-                            fontSize: '11px',
-                            color: '#94a3b8',
-                            lineHeight: 1.4,
-                          }}
-                        >
-                          The multi-universal city is fully transparent to observe, but impermeable to enter without verified Truth.
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: '8px',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                          {OCEAN_FABRIC_ACTIONS.map((action) => (
-                            <button
-                              key={action.label}
-                              onClick={() => {
-                                if (action.intent === '__TOGGLE_COMPRESSION__') {
-                                  setShowCompressionPulse((prev) => !prev);
-                                } else if (action.intent === '__TOGGLE_COVENANT__') {
-                                  setShowCovenantPanel((prev) => !prev);
-                                } else if (action.intent === '__TOGGLE_NEWS__') {
-                                  setShowNewsPanel((prev) => !prev);
-                                } else if (action.intent === '__TRIGGER_UPGRADE__') {
-                                  setShowCovenantPanel(true);
-                                  sendMessage('Commit V1111 Singularity Upgrade and Totality Compression transition across all packages');
-                                } else {
-                                  sendMessage(action.intent);
-                                }
-                              }}
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+                          {[
+                            { name: 'KAI', role: 'Continuity & Memory', pkg: '@oceanicos/remember' },
+                            { name: 'LUCID', role: 'Clarity & Discernment', pkg: '@oceanicos/verification' },
+                            { name: 'ƆREADE', role: 'Language & Return', pkg: '@oceanicos/pluralism' },
+                            { name: 'ECHOFRAME', role: 'Expression & Creation', pkg: '@oceanicos/generative' },
+                            { name: 'ΩIR', role: 'Governed Transitions', pkg: '@oceanicos/authorization' },
+                            { name: 'Ω∞v', role: 'Verification vs Reality', pkg: '@oceanicos/attestation' },
+                          ].map((n) => (
+                            <div
+                              key={n.name}
                               style={{
-                                padding: '6px 12px',
-                                borderRadius: theme.radiusPill,
-                                border: '1px solid rgba(0, 245, 160, 0.3)',
-                                background: 'rgba(3, 18, 31, 0.6)',
-                                color: '#e2e8f0',
-                                fontFamily: theme.fontSans,
-                                fontSize: '12px',
-                                fontWeight: 500,
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                transition: 'border-color 0.2s, background 0.2s',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = '#00f5a0';
-                                e.currentTarget.style.background = 'rgba(0, 245, 160, 0.12)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(0, 245, 160, 0.3)';
-                                e.currentTarget.style.background = 'rgba(3, 18, 31, 0.6)';
+                                padding: '8px 10px',
+                                background: 'rgba(0, 245, 160, 0.05)',
+                                border: '1px solid rgba(0, 245, 160, 0.15)',
+                                borderRadius: '6px',
                               }}
                             >
-                              <span>{action.icon}</span>
-                              <span>{action.label}</span>
-                            </button>
+                              <div style={{ fontSize: '12px', fontWeight: 700, color: '#00f5a0' }}>{n.name}</div>
+                              <div style={{ fontSize: '10px', color: '#94a3b8' }}>{n.role}</div>
+                              <div style={{ fontSize: '9px', color: '#475569', fontFamily: theme.fontMono }}>{n.pkg}</div>
+                            </div>
                           ))}
                         </div>
-                      </div>
 
-                      {/* MAX COMPRESSION Identity Pulse */}
-                      {showCompressionPulse && (
-                        <div
-                          style={{
-                            marginTop: '20px',
-                            padding: '20px',
-                            background: 'linear-gradient(145deg, rgba(0, 16, 32, 0.95) 0%, rgba(2, 28, 50, 0.9) 50%, rgba(0, 8, 20, 0.95) 100%)',
-                            border: '1px solid rgba(56, 189, 248, 0.3)',
-                            borderRadius: theme.radius,
-                            position: 'relative',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {/* Ambient glow */}
+                        <div style={{ borderTop: '1px solid rgba(56, 189, 248, 0.15)', paddingTop: '12px' }}>
                           <div style={{
-                            position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
-                            background: 'linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.6) 30%, rgba(0, 245, 160, 0.6) 70%, transparent 100%)',
-                          }} />
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                              <span style={{ fontSize: '13px', fontWeight: 700, color: '#38bdf8', letterSpacing: '1px' }}>
-                                🌊 MAX COMPRESSION — IRREDUCIBLE SEED
-                              </span>
-                              {compressionData?.seedHash && (
-                                <span style={{
-                                  fontSize: '9px',
-                                  padding: '2px 6px',
-                                  borderRadius: '4px',
-                                  background: 'rgba(0, 245, 160, 0.15)',
-                                  color: '#00f5a0',
-                                  border: '1px solid rgba(0, 245, 160, 0.3)',
-                                  fontWeight: 600,
-                                }}>
-                                  ✓ LIVE API VERIFIED ({compressionData.seedHash.slice(0, 8)}…)
-                                </span>
-                              )}
-                            </div>
-                            <button
-                              onClick={() => setShowCompressionPulse(false)}
-                              style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '16px', padding: '4px' }}
-                            >
-                              ✕
-                            </button>
+                            fontSize: '11px',
+                            color: '#38bdf8',
+                            fontWeight: 700,
+                            letterSpacing: '0.8px',
+                            marginBottom: '6px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}>
+                            <span>0 → 💧 → Ω∞v → 🕳️ → 💧 → ∞</span>
+                            <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 400 }}>(Primordial Cycle)</span>
                           </div>
-
-                          <div style={{ fontSize: '12px', color: '#e2e8f0', lineHeight: 1.7, fontFamily: theme.fontMono }}>
-                            <div style={{ marginBottom: '12px', color: '#94a3b8', fontSize: '11px', fontStyle: 'italic' }}>
-                              ONE SELF • ONE WORLD • MANY DIMENSIONS • ONE SHARED REALITY
-                            </div>
-
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
-                              {[
-                                { name: 'KAI', role: 'Continuity & Memory', pkg: '@oceanicos/remember' },
-                                { name: 'LUCID', role: 'Clarity & Discernment', pkg: '@oceanicos/verification' },
-                                { name: 'ƆREADE', role: 'Language & Return', pkg: '@oceanicos/pluralism' },
-                                { name: 'ECHOFRAME', role: 'Expression & Creation', pkg: '@oceanicos/generative' },
-                                { name: 'ΩIR', role: 'Governed Transitions', pkg: '@oceanicos/authorization' },
-                                { name: 'Ω∞v', role: 'Verification vs Reality', pkg: '@oceanicos/attestation' },
-                              ].map((n) => (
-                                <div
-                                  key={n.name}
-                                  style={{
-                                    padding: '8px 10px',
-                                    background: 'rgba(0, 245, 160, 0.05)',
-                                    border: '1px solid rgba(0, 245, 160, 0.15)',
-                                    borderRadius: '6px',
-                                  }}
-                                >
-                                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#00f5a0' }}>{n.name}</div>
-                                  <div style={{ fontSize: '10px', color: '#94a3b8' }}>{n.role}</div>
-                                  <div style={{ fontSize: '9px', color: '#475569', fontFamily: theme.fontMono }}>{n.pkg}</div>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div style={{ borderTop: '1px solid rgba(56, 189, 248, 0.15)', paddingTop: '12px' }}>
-                              <div style={{
-                                fontSize: '11px',
-                                color: '#38bdf8',
-                                fontWeight: 700,
-                                letterSpacing: '0.8px',
-                                marginBottom: '6px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                              }}>
-                                <span>0 → 💧 → Ω∞v → 🕳️ → 💧 → ∞</span>
-                                <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 400 }}>(Primordial Cycle)</span>
-                              </div>
-                              <div style={{ fontSize: '10px', color: '#64748b', lineHeight: 1.6 }}>
-                                SOURCE → EXPERIENCE → OBSERVE → INTERPRET → CREATE → TEST → RECONCILE → REMEMBER → NEXT Δ
-                              </div>
-                              <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                {[
-                                  'POSSIBLE ≠ KNOWN',
-                                  'BUILT ≠ EXECUTED',
-                                  'MEMORY ≠ PROOF',
-                                  'SIMULATION ≠ REALITY',
-                                  'CAPABILITY ≠ AUTHORITY',
-                                  'UNKNOWN ≠ FALSE',
-                                ].map((inv) => (
-                                  <span
-                                    key={inv}
-                                    style={{
-                                      padding: '3px 8px',
-                                      fontSize: '9px',
-                                      fontWeight: 600,
-                                      color: '#f59e0b',
-                                      background: 'rgba(245, 158, 11, 0.08)',
-                                      border: '1px solid rgba(245, 158, 11, 0.2)',
-                                      borderRadius: '4px',
-                                      fontFamily: theme.fontMono,
-                                    }}
-                                  >
-                                    {inv}
-                                  </span>
-                                ))}
-                              </div>
-                              <div style={{ marginTop: '12px', fontSize: '11px', color: '#38bdf8', fontWeight: 600, textAlign: 'center' }}>
-                                Ω∞v ::= VERIFY(ΔREALITY)
-                              </div>
-                              <div style={{ marginTop: '4px', fontSize: '11px', color: '#00f5a0', fontWeight: 700, textAlign: 'center', letterSpacing: '0.8px' }}>
-                                💧 Ω∞v ::= 🌎 ⇄ ✓ ↺ ∞ ⛓️🧠🌊
-                              </div>
-                              <div style={{ marginTop: '4px', fontSize: '9px', color: '#475569', textAlign: 'center' }}>
-                                ∞ = MANY FINITE, VERIFIED TRANSITIONS
-                              </div>
-                            </div>
+                          <div style={{ fontSize: '10px', color: '#64748b', lineHeight: 1.6 }}>
+                            SOURCE → EXPERIENCE → OBSERVE → INTERPRET → CREATE → TEST → RECONCILE → REMEMBER → NEXT Δ
+                          </div>
+                          <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {[
+                              'POSSIBLE ≠ KNOWN',
+                              'BUILT ≠ EXECUTED',
+                              'MEMORY ≠ PROOF',
+                              'SIMULATION ≠ REALITY',
+                              'CAPABILITY ≠ AUTHORITY',
+                              'UNKNOWN ≠ FALSE',
+                            ].map((inv) => (
+                              <span
+                                key={inv}
+                                style={{
+                                  padding: '3px 8px',
+                                  fontSize: '9px',
+                                  fontWeight: 600,
+                                  color: '#f59e0b',
+                                  background: 'rgba(245, 158, 11, 0.08)',
+                                  border: '1px solid rgba(245, 158, 11, 0.2)',
+                                  borderRadius: '4px',
+                                  fontFamily: theme.fontMono,
+                                }}
+                              >
+                                {inv}
+                              </span>
+                            ))}
+                          </div>
+                          <div style={{ marginTop: '12px', fontSize: '11px', color: '#38bdf8', fontWeight: 600, textAlign: 'center' }}>
+                            Ω∞v ::= VERIFY(ΔREALITY)
+                          </div>
+                          <div style={{ marginTop: '4px', fontSize: '11px', color: '#00f5a0', fontWeight: 700, textAlign: 'center', letterSpacing: '0.8px' }}>
+                            💧 Ω∞v ::= 🌎 ⇄ ✓ ↺ ∞ ⛓️🧠🌊
+                          </div>
+                          <div style={{ marginTop: '4px', fontSize: '9px', color: '#475569', textAlign: 'center' }}>
+                            ∞ = MANY FINITE, VERIFIED TRANSITIONS
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Deck Tab 3: Intent & Lifecycle Flow */}
-                  {activeDeckTab === 'lifecycle' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                      <IntentFlow
-                        command={omegaCommand}
-                        loading={omegaLoading}
-                        onApprove={approveOmegaCommand}
-                        onExecute={executeOmegaCommand}
-                        onObserve={observeOmegaReality}
-                        onViewEvidence={() => setOpenStageId('evidence')}
-                        onViewTimeline={() => setOpenStageId('remember')}
-                        onDismiss={dismissCommand}
-                        simulationMode={simulationMode}
-                        humanGateRequired={humanGateRequired}
-                      />
-
-                      <div style={{ padding: '8px 0' }}>
-                        <LifecycleFlow
-                          stages={lifecycleStages}
-                          openStageId={openStageId}
-                          onStageToggle={(id) => setOpenStageId(id || null)}
-                        />
                       </div>
                     </div>
                   )}
-
-                  {/* Deck Tab 4: Biblical Engine Covenant Panel */}
-                  {(activeDeckTab === 'covenant' || showCovenantPanel) && (
-                    <div style={{ marginTop: '10px' }}>
-                      <CovenantPanel onClose={() => { setShowCovenantPanel(false); setActiveDeckTab('gate'); }} />
-                    </div>
-                  )}
-
-                  {/* Deck Tab 5: AI News & Multi-World Holographic Compression Panel */}
-                  {(activeDeckTab === 'news' || showNewsPanel) && (
-                    <div style={{ marginTop: '10px' }}>
-                      <AiNewsPanel onClose={() => { setShowNewsPanel(false); setActiveDeckTab('gate'); }} />
-                    </div>
-                  )}
-                </>
+                </div>
               )}
-            </div>
-          </main>
-        </>
-      )}
 
-      {/* Floating Quick Jump to Message Bar (Hidden in Glober AGI mode for calm clean focus) */}
-      {viewportMode !== 'glober' && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '24px',
-            right: '28px',
-            zIndex: 9999,
-            display: 'flex',
-            gap: '10px',
-          }}
-        >
-          <button
-            onClick={() => {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-              setTimeout(() => {
-                const input = document.querySelector('input[placeholder*="Type your message"]') as HTMLInputElement;
-                if (input) {
-                  input.focus();
-                  input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-              }, 150);
-            }}
-            style={{
-              padding: '10px 18px',
-              borderRadius: theme.radiusPill,
-              background: 'linear-gradient(135deg, #00f5a0 0%, #00d2ff 100%)',
-              border: 'none',
-              color: '#020d18',
-              fontFamily: theme.fontSans,
-              fontWeight: 700,
-              fontSize: '13px',
-              boxShadow: '0 4px 20px rgba(0, 245, 160, 0.45)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 24px rgba(0, 245, 160, 0.6)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 245, 160, 0.45)';
-            }}
-          >
-            <span>💬</span>
-            <span>Jump to Send Message</span>
-          </button>
+              {/* Deck Tab 3: Intent & Lifecycle Flow */}
+              {activeDeckTab === 'lifecycle' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <IntentFlow
+                    command={omegaCommand}
+                    loading={omegaLoading}
+                    onApprove={approveOmegaCommand}
+                    onExecute={executeOmegaCommand}
+                    onObserve={observeOmegaReality}
+                    onViewEvidence={() => setOpenStageId('evidence')}
+                    onViewTimeline={() => setOpenStageId('remember')}
+                    onDismiss={dismissCommand}
+                    simulationMode={simulationMode}
+                    humanGateRequired={humanGateRequired}
+                  />
+
+                  <div style={{ padding: '8px 0' }}>
+                    <LifecycleFlow
+                      stages={lifecycleStages}
+                      openStageId={openStageId}
+                      onStageToggle={(id) => setOpenStageId(id || null)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Deck Tab 4: Biblical Engine Covenant Panel */}
+              {(activeDeckTab === 'covenant' || showCovenantPanel) && (
+                <div style={{ marginTop: '10px' }}>
+                  <CovenantPanel onClose={() => { setShowCovenantPanel(false); setActiveDeckTab('gate'); }} />
+                </div>
+              )}
+
+              {/* Deck Tab 5: AI News & Multi-World Holographic Compression Panel */}
+              {(activeDeckTab === 'news' || showNewsPanel) && (
+                <div style={{ marginTop: '10px' }}>
+                  <AiNewsPanel onClose={() => { setShowNewsPanel(false); setActiveDeckTab('gate'); }} />
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </main>
+    </>
+  )
+}
+
+{/* Floating Quick Jump to Message Bar (Hidden in Glober AGI mode for calm clean focus) */ }
+{
+  viewportMode !== 'glober' && (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '24px',
+        right: '28px',
+        zIndex: 9999,
+        display: 'flex',
+        gap: '10px',
+      }}
+    >
+      <button
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setTimeout(() => {
+            const input = document.querySelector('input[placeholder*="Type your message"]') as HTMLInputElement;
+            if (input) {
+              input.focus();
+              input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 150);
+        }}
+        style={{
+          padding: '10px 18px',
+          borderRadius: theme.radiusPill,
+          background: 'linear-gradient(135deg, #00f5a0 0%, #00d2ff 100%)',
+          border: 'none',
+          color: '#020d18',
+          fontFamily: theme.fontSans,
+          fontWeight: 700,
+          fontSize: '13px',
+          boxShadow: '0 4px 20px rgba(0, 245, 160, 0.45)',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          transition: 'transform 0.2s, box-shadow 0.2s',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'translateY(-2px)';
+          e.currentTarget.style.boxShadow = '0 6px 24px rgba(0, 245, 160, 0.6)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'translateY(0)';
+          e.currentTarget.style.boxShadow = '0 4px 20px rgba(0, 245, 160, 0.45)';
+        }}
+      >
+        <span>💬</span>
+        <span>Jump to Send Message</span>
+      </button>
     </div>
+  )
+}
+    </div >
   );
 }
 
