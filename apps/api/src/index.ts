@@ -775,6 +775,22 @@ export function createApp(
     return { success: true, report };
   });
 
+  fastify.get('/v1/kai/dag', async () => {
+    const dag = kaiLedger.getDag();
+    return {
+      success: true,
+      protocol: dag.protocol,
+      genesisHash: dag.genesisHash,
+      tipHash: dag.tipHash,
+      nodeCount: dag.nodeCount,
+      roots: dag.roots,
+      tips: dag.tips,
+      nodes: dag.nodes,
+      verified: dag.verified,
+      computedAt: dag.computedAt,
+    };
+  });
+
   fastify.post('/v1/kai/record', async (request: any, reply) => {
     try {
       const body = request.body || {};
@@ -1591,6 +1607,7 @@ export const STARTUP_BANNER = [
   '  GET    /memory/integrity',
   '  GET    /v1/kai/records',
   '  GET    /v1/kai/integrity',
+  '  GET    /v1/kai/dag',
   '  POST   /v1/kai/record',
   '  POST   /v1/kai/verify-inference',
   '  POST   /v1/chat',

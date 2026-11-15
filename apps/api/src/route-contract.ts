@@ -111,6 +111,7 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/echoframe/templates',
   'GET /v1/compression',
   'POST /v1/kai/record',
+  'GET /v1/kai/dag',
   'GET /v1/omega/commands',
   'GET /v1/omega/workers',
   'GET /',

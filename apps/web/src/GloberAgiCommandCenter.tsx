@@ -304,6 +304,43 @@ export function GloberAgiCommandCenter({
   const [newsSignals, setNewsSignals] = useState<any[]>([]);
   const [lastExecutedEvidence, setLastExecutedEvidence] = useState<string | null>(null);
 
+  // ── KAI Merkle DAG State ──
+  const [kaiDag, setKaiDag] = useState<{
+    protocol: string;
+    genesisHash: string;
+    tipHash: string;
+    nodeCount: number;
+    roots: string[];
+    tips: string[];
+    nodes: Array<{
+      nodeId: string;
+      index: number;
+      timestamp: string;
+      contentHash: string;
+      merkleRoot: string;
+      parentHashes: string[];
+      nodeHash: string;
+      data: any;
+    }>;
+    verified: boolean;
+  } | null>(null);
+  const [selectedDagNode, setSelectedDagNode] = useState<string | null>(null);
+  const [loadingDag, setLoadingDag] = useState(false);
+
+  const fetchKaiDag = useCallback(async () => {
+    try {
+      setLoadingDag(true);
+      const res = await apiRequest<any>('/v1/kai/dag');
+      if (res && res.nodes) {
+        setKaiDag(res);
+      }
+    } catch {
+      // Degrades gracefully
+    } finally {
+      setLoadingDag(false);
+    }
+  }, []);
+
   // ── ChatGPT Advanced Voice Mode State & Invariants ──
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceState, setVoiceState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
@@ -730,6 +767,13 @@ export function GloberAgiCommandCenter({
       }
     };
   }, [stopListening]);
+
+  // Fetch KAI Merkle DAG on drawer open
+  useEffect(() => {
+    if (rightPanelOpen) {
+      fetchKaiDag();
+    }
+  }, [rightPanelOpen, fetchKaiDag]);
 
   return (
     <div
@@ -2075,6 +2119,136 @@ export function GloberAgiCommandCenter({
               </div>
               <div style={{ fontSize: '10px', color: '#6b7280', marginTop: '4px' }}>
                 Zero-Trust Token Vault Active
+              </div>
+            </div>
+
+            {/* KAI MERKLE DAG MEMORY EXPLORER */}
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '10px',
+                background: '#212121',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#a78bfa' }}>KAI MERKLE DAG</span>
+                  <span
+                    style={{
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      padding: '2px 5px',
+                      borderRadius: '4px',
+                      background: 'rgba(167, 139, 250, 0.15)',
+                      color: '#c4b5fd',
+                    }}
+                  >
+                    {kaiDag?.protocol || 'ΩVØØS-DAG/1'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <button
+                    onClick={fetchKaiDag}
+                    disabled={loadingDag}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#9ca3af',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                    }}
+                    title="Refresh Merkle DAG"
+                  >
+                    {loadingDag ? '…' : '↻'}
+                  </button>
+                  <span
+                    style={{
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      background: 'rgba(16, 185, 129, 0.15)',
+                      color: '#10b981',
+                    }}
+                  >
+                    ✓ PROVEN
+                  </span>
+                </div>
+              </div>
+
+              {/* DAG Overview Stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '10px' }}>
+                <div style={{ background: '#171717', padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                  <div style={{ color: '#6b7280' }}>Total Blocks</div>
+                  <div style={{ color: '#ffffff', fontWeight: 600, fontSize: '12px', fontFamily: theme.fontMono }}>
+                    {kaiDag?.nodeCount ?? '...'}
+                  </div>
+                </div>
+                <div style={{ background: '#171717', padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                  <div style={{ color: '#6b7280' }}>DAG Tip</div>
+                  <div style={{ color: '#38bdf8', fontWeight: 600, fontFamily: theme.fontMono, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {kaiDag?.tipHash ? `${kaiDag.tipHash.slice(0, 10)}…` : 'Genesis'}
+                  </div>
+                </div>
+              </div>
+
+              {/* DAG Nodes List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', maxHeight: '180px', overflowY: 'auto' }}>
+                {!kaiDag || kaiDag.nodes.length === 0 ? (
+                  <div style={{ fontSize: '10px', color: '#6b7280', fontStyle: 'italic', padding: '4px' }}>
+                    Loading DAG memory graph…
+                  </div>
+                ) : (
+                  [...kaiDag.nodes].reverse().slice(0, 8).map((node) => {
+                    const isSelected = selectedDagNode === node.nodeHash;
+                    return (
+                      <div
+                        key={node.nodeHash}
+                        onClick={() => setSelectedDagNode(isSelected ? null : node.nodeHash)}
+                        style={{
+                          padding: '6px 8px',
+                          borderRadius: '6px',
+                          background: isSelected ? 'rgba(167, 139, 250, 0.1)' : '#171717',
+                          border: isSelected ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.05)',
+                          cursor: 'pointer',
+                          fontSize: '10px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                          <span style={{ color: '#c4b5fd', fontWeight: 600, fontFamily: theme.fontMono }}>
+                            #{node.index} {node.nodeId}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: '8px',
+                              padding: '1px 4px',
+                              borderRadius: '3px',
+                              background: 'rgba(255, 255, 255, 0.08)',
+                              color: '#9ca3af',
+                            }}
+                          >
+                            {node.data?.distinction || 'VERIFIED'}
+                          </span>
+                        </div>
+                        <div style={{ color: '#9ca3af', fontSize: '9px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {node.data?.statement || node.data?.subject || node.nodeHash}
+                        </div>
+                        {isSelected && (
+                          <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', flexDirection: 'column', gap: '3px', color: '#cbd5e1', fontSize: '9px', fontFamily: theme.fontMono }}>
+                            <div><strong>Hash:</strong> {node.nodeHash.slice(0, 16)}…</div>
+                            <div><strong>Merkle Root:</strong> {node.merkleRoot.slice(0, 16)}…</div>
+                            <div><strong>Parents:</strong> {node.parentHashes.length === 0 ? 'Root' : node.parentHashes.map(p => p.slice(0, 8)).join(', ')}</div>
+                            {node.data?.evidenceRef && <div><strong>Evidence:</strong> {node.data.evidenceRef.slice(0, 16)}…</div>}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
 

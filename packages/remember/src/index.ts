@@ -339,4 +339,5 @@ export class RememberEngine {
 export * from './ledger.js';
 export * from './store.js';
 export * from './kai.js';
+export * from './merkle-dag.js';
 export { Remember as default };

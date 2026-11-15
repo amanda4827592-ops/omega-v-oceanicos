@@ -6,6 +6,7 @@ import type {
   KaiProvenanceRecord,
   KaiIntegrityReport,
 } from '@oceanicos/types';
+import { MerkleDagEngine, type KaiMerkleDag } from './merkle-dag.js';
 
 export const KAI_GENESIS_HASH = '8a3f91c2e4f9011b989210ffffffffff';
 export const KAI_GENESIS_ID = 'kai-genesis-0';
@@ -309,5 +310,9 @@ export class KaiLedger {
       distinctions: distinctionsCount,
       evaluatedAt: new Date().toISOString(),
     };
+  }
+
+  public getDag(): KaiMerkleDag {
+    return MerkleDagEngine.buildFromKaiRecords(this.records);
   }
 }
