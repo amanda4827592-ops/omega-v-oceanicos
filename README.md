@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml"><img src="https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml/badge.svg" alt="Verification Pipeline" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-0ea5e9.svg" alt="License" /></a>
-  <a href="kai_ledger.json"><img src="https://img.shields.io/badge/swarm%20receipts-89%20verified-10b981.svg" alt="Swarm Receipts" /></a>
+  <a href="kai_ledger.json"><img src="https://img.shields.io/badge/swarm%20receipts-90%20verified-10b981.svg" alt="Swarm Receipts" /></a>
   <a href="docs/spec/ATTESTATION-ENVELOPE.md"><img src="https://img.shields.io/badge/doctrine-attest%20don't%20assert-38bdf8.svg" alt="Doctrine" /></a>
   <a href="http://localhost:5000"><img src="https://img.shields.io/badge/port-5000%20(master)-6ee7b7.svg" alt="Master Port" /></a>
   <a href="docs/BRAND.md"><img src="https://img.shields.io/badge/brand-verified%20intelligence-a855f7.svg" alt="Brand System" /></a>
@@ -56,7 +56,7 @@ The entire full-stack system—UI cockpit, conversational AI Soul, 22 real-world
 
 - 🌐 **[Master Blueprint](docs/MASTER_BLUEPRINT_ECOSYSTEM_ALIGNED.md)** — Canonical full-stack ecosystem blueprint
 - 💧 **[MAX COMPRESSION](COMPRESSION.md)** — Irreducible mathematical seed of the ecosystem
-- 📜 **[Swarm Ledger](kai_ledger.json)** — 89 monotonic cryptographic receipts
+- 📜 **[Swarm Ledger](kai_ledger.json)** — 90 monotonic cryptographic receipts
 - 📋 **[Manifest](MANIFEST.md)** — Project mission, principles, and architecture
 - 🛡️ **[Security Policy](SECURITY.md)** — Fail-closed invariants and veiled custody
 - 🎨 **[Brand System](docs/BRAND.md)** — Visual identity and brand laws

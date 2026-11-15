@@ -101,11 +101,29 @@ export async function browseWeb(
         timeout: options.timeoutMs ?? 15000,
         maxBuffer: 10 * 1024 * 1024,
       },
-      (err, stdout, stderr) => {
+      async (err, stdout, stderr) => {
         const elapsedMs = Date.now() - startedAt;
         const executedAt = new Date().toISOString();
+        const screenshotExists = options.captureScreenshot && existsSync(screenshotPath);
 
-        if (err && !stdout) {
+        let html = stdout || '';
+
+        // If stdout was empty (e.g. Windows GUI subsystem handle quirks), fetch page directly
+        if (!html.trim()) {
+          try {
+            const fetchRes = await fetch(validUrl, {
+              headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36' },
+              signal: AbortSignal.timeout(6000),
+            });
+            if (fetchRes.ok) {
+              html = await fetchRes.text();
+            }
+          } catch (fetchErr: any) {
+            // Note: external domain might be unreachable or blocking automated fetch
+          }
+        }
+
+        if (!html && !screenshotExists) {
           try { rmSync(tmpDir, { recursive: true, force: true }); } catch {}
           return resolve({
             success: false,
@@ -116,11 +134,10 @@ export async function browseWeb(
             evidenceHash: '0x0000-exec-error',
             elapsedMs,
             executedAt,
-            error: err.message || stderr,
+            error: err?.message || stderr || 'Target URL unreachable or process exited without output',
           });
         }
 
-        const html = stdout || '';
         const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
         const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
 

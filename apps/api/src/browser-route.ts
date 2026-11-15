@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import { browseWeb, findChromePath, type BrowserNavigationResult } from './browser-service.js';
+import { spawn } from 'node:child_process';
+import { browseWeb, findChromePath, sanitizeUrl, type BrowserNavigationResult } from './browser-service.js';
 
 export function registerBrowserRoute(fastify: FastifyInstance, kaiLedger?: any): void {
   // GET /v1/browser/status - Report sandbox Chrome availability
@@ -13,6 +14,55 @@ export function registerBrowserRoute(fastify: FastifyInstance, kaiLedger?: any):
       sandbox: 'isolated-headless',
       policy: 'fail-closed-http-https-only',
     };
+  });
+
+  // POST /v1/browser/launch - Launch host desktop Chrome window
+  fastify.post<{
+    Body: {
+      url?: string;
+    };
+  }>('/v1/browser/launch', async (request, reply) => {
+    const chromePath = findChromePath();
+    if (!chromePath) {
+      return reply.status(503).send({
+        success: false,
+        error: 'CHROME_NOT_FOUND',
+        message: 'Google Chrome binary not detected on host system',
+      });
+    }
+
+    const rawUrl = request.body?.url || 'http://localhost:5000';
+    let targetUrl: string;
+    try {
+      targetUrl = sanitizeUrl(rawUrl);
+    } catch (e: any) {
+      return reply.status(400).send({
+        success: false,
+        error: 'INVALID_URL',
+        message: e.message || 'Disallowed protocol or malformed URL',
+      });
+    }
+
+    try {
+      const child = spawn(chromePath, [targetUrl], {
+        detached: true,
+        stdio: 'ignore',
+      });
+      child.unref();
+
+      return reply.send({
+        success: true,
+        message: 'Host Chrome launched successfully',
+        url: targetUrl,
+        binaryPath: chromePath,
+      });
+    } catch (err: any) {
+      return reply.status(500).send({
+        success: false,
+        error: 'LAUNCH_FAILED',
+        message: err.message,
+      });
+    }
   });
 
   // POST /v1/browser/navigate - Browse a target URL in the sandbox

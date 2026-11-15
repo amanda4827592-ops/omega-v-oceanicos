@@ -1308,6 +1308,25 @@
       "tests_passed": true,
       "evidence_hash": "7a35c28f1107661cf6a5750ee0b93ca24d35508a8a6493c4b7891823eb52643a",
       "next_delta": "Perpetually iterate the verified loop: Observe, Verify, Remember, Attest, Display, Return"
+    },
+    {
+      "timestamp": "2026-11-15T01:30:48.229Z",
+      "agent_id": "antigravity",
+      "branch": "agent/antigravity/omega-entity-full-stack",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/api/src/browser-route.ts",
+        "apps/api/src/browser-service.ts",
+        "apps/api/src/chat-route.ts",
+        "apps/web/src/GloberAgiCommandCenter.tsx",
+        "apps/web/src/InAppChromeBrowser.tsx",
+        "docs/RECEIPT_90_IN_APP_CHROME_BROWSER_INTEGRATION.md",
+        "kai_ledger.json",
+        "README.md"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "94311795f793458eeed9a1ac9655210f5a69b08f6c09ef3d2dd1ddbbf8d29cd8",
+      "next_delta": "Perpetually iterate the verified loop: Observe, Verify, Remember, Attest, Display, Return"
     }
   ]
 }

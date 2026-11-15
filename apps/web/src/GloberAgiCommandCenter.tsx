@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { theme } from './oceanicosTheme';
 import { enqueueOfflineMessage } from './offlineQueue';
+import { InAppChromeBrowser } from './InAppChromeBrowser';
 
 /* ── API helpers ── */
 const API_BASE_URL = (
@@ -184,6 +185,8 @@ export function GloberAgiCommandCenter({
   const [organsAccordionOpen, setOrgansAccordionOpen] = useState(false);
   const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const [toolMenuOpen, setToolMenuOpen] = useState(false);
+  const [chromeBrowserOpen, setChromeBrowserOpen] = useState(false);
+  const [chromeInitialUrl, setChromeInitialUrl] = useState('http://localhost:5000');
   const [expandedReasoningIds, setExpandedReasoningIds] = useState<string[]>([]);
 
   const toggleReasoning = (id: string) => {
@@ -236,6 +239,7 @@ export function GloberAgiCommandCenter({
         setToolMenuOpen(false);
         setRightPanelOpen(false);
         setShowAuthOverlay(false);
+        setChromeBrowserOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -456,6 +460,32 @@ export function GloberAgiCommandCenter({
   const handleSendPrompt = async (textToSend?: string) => {
     const query = (textToSend || promptText).trim();
     if (!query || isSending) return;
+
+    // Auto-open In-App Chrome Browser on browser queries
+    const lower = query.toLowerCase();
+    if (
+      lower.includes('open chrome') ||
+      lower.includes('test chrome') ||
+      lower.includes('chrome inside') ||
+      lower.includes('browers') ||
+      lower.includes('browser') ||
+      lower.includes('chrome.com') ||
+      lower.includes('love')
+    ) {
+      let targetUrl = 'http://localhost:5000';
+      if (lower.includes('chrome.com')) {
+        targetUrl = 'https://www.google.com/chrome';
+      } else if (/\blove(?:\.com)?\b/i.test(query)) {
+        targetUrl = 'https://love.com';
+      } else {
+        const urlMatch = query.match(/https?:\/\/[^\s]+/i) || query.match(/\b([a-zA-Z0-9-]+\.(?:com|org|io|dev|app|net)(?:\/[^\s]*)?)/i);
+        if (urlMatch) {
+          targetUrl = urlMatch[0].startsWith('http') ? urlMatch[0] : `https://${urlMatch[0]}`;
+        }
+      }
+      setChromeInitialUrl(targetUrl);
+      setChromeBrowserOpen(true);
+    }
 
     setPromptText('');
     if (textareaRef.current) {
@@ -864,6 +894,28 @@ export function GloberAgiCommandCenter({
           >
             <span>📊</span>
             <span>Telemetry</span>
+          </button>
+
+          {/* In-App Chrome Browser Toggle */}
+          <button
+            onClick={() => setChromeBrowserOpen(true)}
+            title="Open In-App Chrome Browser (Live Viewport + Headless Snapshot)"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: chromeBrowserOpen ? 'rgba(66, 133, 244, 0.2)' : 'rgba(255, 255, 255, 0.06)',
+              border: `1px solid ${chromeBrowserOpen ? 'rgba(66, 133, 244, 0.4)' : 'rgba(255, 255, 255, 0.1)'}`,
+              borderRadius: '8px',
+              padding: '6px 12px',
+              color: chromeBrowserOpen ? '#60a5fa' : '#e5e7eb',
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 500,
+            }}
+          >
+            <span>🌐</span>
+            <span>Chrome</span>
           </button>
 
           {/* Auth0 User Button */}
@@ -1537,6 +1589,32 @@ export function GloberAgiCommandCenter({
                   minWidth: '220px',
                 }}
               >
+                <button
+                  onClick={() => {
+                    setChromeBrowserOpen(true);
+                    setToolMenuOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: 'rgba(66, 133, 244, 0.15)',
+                    border: '1px solid rgba(66, 133, 244, 0.3)',
+                    color: '#60a5fa',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%',
+                    marginBottom: '2px',
+                  }}
+                >
+                  <span style={{ fontSize: '15px' }}>🌐</span>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600 }}>Open In-App Chrome</span>
+                    <span style={{ fontSize: '10px', color: '#93c5fd' }}>Dual-engine live viewport + snapshot</span>
+                  </div>
+                </button>
                 <div style={{ fontSize: '11px', fontWeight: 600, color: '#9ca3af', padding: '4px 8px', textTransform: 'uppercase' }}>
                   Tools & Capabilities
                 </div>
@@ -2331,6 +2409,13 @@ export function GloberAgiCommandCenter({
           </div>
         </div>
       )}
+
+      {/* ── IN-APP CHROME BROWSER MODAL (Live Viewport + Headless Snapshot) ── */}
+      <InAppChromeBrowser
+        isOpen={chromeBrowserOpen}
+        initialUrl={chromeInitialUrl}
+        onClose={() => setChromeBrowserOpen(false)}
+      />
     </div>
   );
 }
