@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, realpathSync, statSync } from 'node:fs';
+import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 
 /**
@@ -794,3 +794,164 @@ export const REPO_OUTWARD_RING: readonly OutwardSurface[] = Object.freeze([
   Object.freeze({ id: 'body-doc', path: 'docs/SINGLE-BODY-4X4X4X4.md', role: 'docs' as const }),
   ...FULL_STACK_WATER,
 ]);
+
+/**
+ * Total flow — one declared order, then a census of everything it did not read.
+ *
+ *   math → matrix → equation → total → action → execution
+ *        → work → expand → upgrade → compress
+ *
+ * The list is a declaration. Reading a file is the observation. Folding the
+ * ten does not run them, and it does not make the unread tree verified.
+ * A checkout has more files than this list. Those files stay NOT_OBSERVED.
+ * Over-capacity input is refused above; this block does not truncate the tree
+ * into the 64-surface fold.
+ */
+export const TOTAL_FLOW_ID = 'TOTAL_FLOW' as const;
+
+export const TOTAL_FLOW: readonly OutwardSurface[] = Object.freeze([
+  Object.freeze({ id: 'math', path: 'WHOLE-ECOSYSTEM-MASTER-PROMPT.md', role: 'docs' as const }),
+  Object.freeze({ id: 'matrix', path: 'packages/mini/src/single-body.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'equation', path: 'packages/mini/src/ecosystem-body-equation.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'total', path: 'packages/mini/src/total-compress.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'action', path: 'apps/api/src/execute-route.ts', role: 'api' as const }),
+  Object.freeze({ id: 'execution', path: 'apps/api/src/invisible-computer.ts', role: 'api' as const }),
+  Object.freeze({ id: 'work', path: 'packages/worker/src/index.ts', role: 'kernel' as const }),
+  Object.freeze({ id: 'expand', path: 'scripts/compress-repo-equation.ts', role: 'cli' as const }),
+  Object.freeze({ id: 'upgrade', path: 'OMEGA_UPGRADE_MAX_COMPRESS.md', role: 'contract' as const }),
+  Object.freeze({ id: 'compress', path: 'docs/ECOSYSTEM-COMPRESSION.md', role: 'docs' as const }),
+]);
+
+export const TOTAL_FLOW_SKIPPED_DIRECTORIES = Object.freeze([
+  '.git',
+  '.pnpm-store',
+  'coverage',
+  'dist',
+  'node_modules',
+] as const);
+
+export type RepoCensus = {
+  /** The remainder is never promoted. An empty remainder is still not a proof of the whole tree. */
+  readonly status: 'NOT_OBSERVED';
+  readonly treeFiles: number;
+  readonly declared: number;
+  readonly declaredPresent: number;
+  readonly unobservedFiles: number;
+  readonly skippedDirectories: readonly string[];
+  /** SHA-256 of sorted relative paths. Paths, not file bytes. */
+  readonly pathDigest: string;
+  readonly reason: string;
+};
+
+export type TotalFlowReport = {
+  readonly law: typeof ECOSYSTEM_BODY_EQUATION_ID;
+  readonly current: typeof TOTAL_FLOW_ID;
+  readonly stages: number;
+  readonly status: EquationCompression['status'];
+  readonly digest: string | null;
+  readonly halt: EquationHalt | null;
+  readonly upgrade: RepoUpgradeCompression;
+  readonly expansion: EquationExpansion['status'] | null;
+  readonly reconciliation: OutwardReconciliation['status'] | null;
+  readonly flow: readonly { readonly id: string; readonly path: string }[];
+  readonly census: RepoCensus;
+  readonly evidenceBoundary: string;
+};
+
+const walkFiles = (rootReal: string, dir: string, out: string[]): void => {
+  let entries: ReturnType<typeof readdirSync>;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return;
+  }
+  for (const entry of entries) {
+    if (entry.isSymbolicLink()) continue;
+    const abs = resolve(dir, entry.name);
+    if (entry.isDirectory()) {
+      if ((TOTAL_FLOW_SKIPPED_DIRECTORIES as readonly string[]).includes(entry.name)) continue;
+      walkFiles(rootReal, abs, out);
+      continue;
+    }
+    if (!entry.isFile()) continue;
+    let real: string;
+    try {
+      real = realpathSync(abs);
+    } catch {
+      continue;
+    }
+    const rel = relative(rootReal, real);
+    if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) continue;
+    out.push(rel.split(sep).join('/'));
+  }
+};
+
+/**
+ * Count files this process could see. Skipped directories are not read.
+ * The digest covers unobserved paths only. It is not a content hash and
+ * it is not a VERIFIED claim.
+ */
+export function censusRepo(root: string, declared: readonly OutwardSurface[]): RepoCensus {
+  let rootReal: string;
+  try {
+    rootReal = realpathSync(root);
+  } catch {
+    return Object.freeze({
+      status: 'NOT_OBSERVED',
+      treeFiles: 0,
+      declared: declared.length,
+      declaredPresent: 0,
+      unobservedFiles: 0,
+      skippedDirectories: TOTAL_FLOW_SKIPPED_DIRECTORIES,
+      pathDigest: sha256(''),
+      reason: 'The root could not be read, so the remainder stays NOT_OBSERVED.',
+    });
+  }
+  const files: string[] = [];
+  walkFiles(rootReal, rootReal, files);
+  const seen = new Set(files);
+  const declaredPaths = new Set(declared.map((surface) => surface.path));
+  let declaredPresent = 0;
+  for (const path of declaredPaths) {
+    if (seen.has(path)) declaredPresent += 1;
+  }
+  const unobserved = files.filter((path) => !declaredPaths.has(path)).sort();
+  return Object.freeze({
+    status: 'NOT_OBSERVED',
+    treeFiles: files.length,
+    declared: declared.length,
+    declaredPresent,
+    unobservedFiles: unobserved.length,
+    skippedDirectories: TOTAL_FLOW_SKIPPED_DIRECTORIES,
+    pathDigest: sha256(unobserved.join('\n')),
+    reason:
+      'The fold remembers only the declared total flow. Other files, and every skipped directory, stay NOT_OBSERVED. The path digest is a list of paths, not file bytes. upgrade.execution stays NOT_EXECUTED.',
+  });
+}
+
+/**
+ * Fold the ten stages, expand that memory, reconcile the bytes, and census
+ * the rest. Compression is not permission.
+ */
+export function compressTotalFlow(root: string): TotalFlowReport {
+  const observed = observeOutwardFiles(root, TOTAL_FLOW);
+  const compression = compressRepoEquation(observed.surfaces);
+  const expansion =
+    compression.status === 'COMPRESSED' && compression.body ? expandRepoEquation(compression.body) : null;
+  const reconciliation = expansion ? reconcileOutwardExpansion(root, expansion) : null;
+  return Object.freeze({
+    law: ECOSYSTEM_BODY_EQUATION_ID,
+    current: TOTAL_FLOW_ID,
+    stages: TOTAL_FLOW.length,
+    status: compression.status,
+    digest: compression.body?.digest ?? null,
+    halt: compression.body?.halt ?? null,
+    upgrade: compression.upgrade,
+    expansion: expansion?.status ?? null,
+    reconciliation: reconciliation?.status ?? null,
+    flow: Object.freeze(TOTAL_FLOW.map((surface) => Object.freeze({ id: surface.id, path: surface.path }))),
+    census: censusRepo(root, TOTAL_FLOW),
+    evidenceBoundary:
+      'COMPRESSED means this process read each of the ten declared files and the file was non-empty, then a second read matched the stored hash. It is not a proof of the math inside the master prompt, not a deploy, not a merge, and not permission to upgrade. The census status stays NOT_OBSERVED. upgrade.execution stays NOT_EXECUTED.',
+  });
+}

@@ -207,9 +207,14 @@ export {
   compressFullStackWater,
   compressRepoEquation,
   compressRepoTowardUpgrade,
+  compressTotalFlow,
+  censusRepo,
   expandRepoEquation,
   observeOutwardFiles,
   reconcileOutwardExpansion,
+  TOTAL_FLOW,
+  TOTAL_FLOW_ID,
+  TOTAL_FLOW_SKIPPED_DIRECTORIES,
 } from './ecosystem-body-equation.js';
 export type {
   EquationBody,
@@ -219,8 +224,10 @@ export type {
   EquationIssue,
   FullStackWaterReport,
   OutwardSurface,
+  RepoCensus,
   RepoSurfaceObservation,
   RepoUpgradeCompression,
+  TotalFlowReport,
 } from './ecosystem-body-equation.js';
 
 export function executeOceanicosMaxExpansion(): CryptographicBlock {

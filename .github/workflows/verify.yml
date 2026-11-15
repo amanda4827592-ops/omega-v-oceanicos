@@ -89,10 +89,12 @@ jobs:
         run: |
           pnpm --silent compress:repo > /tmp/repo-compression.json
           pnpm --silent flow:water > /tmp/water-flow.json
+          pnpm --silent flow:total > /tmp/total-flow.json
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
           const repo = JSON.parse(readFileSync('/tmp/repo-compression.json', 'utf8'));
           const water = JSON.parse(readFileSync('/tmp/water-flow.json', 'utf8'));
+          const total = JSON.parse(readFileSync('/tmp/total-flow.json', 'utf8'));
           const failures = [];
           if (repo.status !== 'COMPRESSED') failures.push(`repo.status=${repo.status}`);
           if (repo.reconciliation !== 'VERIFIED') failures.push(`repo.reconciliation=${repo.reconciliation}`);
@@ -106,11 +108,21 @@ jobs:
           if (water.halt !== null) failures.push('water halt was not null');
           if (water.upgrade?.execution !== 'NOT_EXECUTED') failures.push(`water.upgrade.execution=${water.upgrade?.execution}`);
           if (water.upgrade?.selected?.evidenceHash !== water.digest) failures.push('water evidenceHash does not match digest');
+          if (total.current !== 'TOTAL_FLOW') failures.push(`total.current=${total.current}`);
+          if (total.stages !== 10) failures.push(`total.stages=${total.stages}`);
+          if (total.status !== 'COMPRESSED') failures.push(`total.status=${total.status}`);
+          if (total.halt !== null) failures.push('total halt was not null');
+          if (total.expansion !== 'EXPANDED') failures.push(`total.expansion=${total.expansion}`);
+          if (total.reconciliation !== 'VERIFIED') failures.push(`total.reconciliation=${total.reconciliation}`);
+          if (total.upgrade?.execution !== 'NOT_EXECUTED') failures.push(`total.upgrade.execution=${total.upgrade?.execution}`);
+          if (total.upgrade?.selected?.evidenceHash !== total.digest) failures.push('total evidenceHash does not match digest');
+          if (total.census?.status !== 'NOT_OBSERVED') failures.push(`total.census.status=${total.census?.status}`);
+          if (!(total.census?.unobservedFiles > 0)) failures.push('total census observed the whole checkout');
           if (failures.length) {
             console.error(`Repository flow contract failed: ${failures.join(', ')}`);
             process.exit(1);
           }
-          console.log(`Flow held: ${repo.remembered} outward surfaces and ${water.skills} skills compressed; upgrade remains NOT_EXECUTED.`);
+          console.log(`Flow held: ${repo.remembered} outward surfaces, ${water.skills} skills, and ${total.stages} total stages compressed; the remainder stays NOT_OBSERVED and upgrade remains NOT_EXECUTED.`);
           NODE
 
       # The swarm ledger is the cross-agent record. A missing check here is how
