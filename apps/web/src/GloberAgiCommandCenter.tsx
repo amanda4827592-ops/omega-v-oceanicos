@@ -1726,6 +1726,12 @@ export function GloberAgiCommandCenter({
                                 {m.metadata?.actionTriggered && <div>• Action: {m.metadata.actionTriggered}</div>}
                                 {m.metadata?.evidenceHash && <div>• Evidence Hash: {m.metadata.evidenceHash}</div>}
                                 {m.metadata?.kaiRecordId && <div>• KAI Ledger Block: {m.metadata.kaiRecordId}</div>}
+                                {m.metadata?.verificationOutcome && (
+                                  <div>• Verification Gate: {m.metadata.verificationOutcome} ({m.metadata.verificationDecision})</div>
+                                )}
+                                {m.metadata?.frobeniusNorm !== undefined && (
+                                  <div>• 4x4 Matrix Norm: {m.metadata.frobeniusNorm} · Gram Det: {m.metadata.fourthRootGramDeterminant?.toFixed(4)}</div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1753,7 +1759,13 @@ export function GloberAgiCommandCenter({
                             }}
                           >
                             <span
-                              title={m.metadata?.evidenceHash ? `Cryptographic Proof: ${m.metadata.evidenceHash}` : 'Verified against KAI Ledger'}
+                              title={
+                                m.metadata?.verificationOutcome
+                                  ? `Verification: ${m.metadata.verificationOutcome} (${m.metadata.verificationDecision})\nNorm: ${m.metadata.frobeniusNorm}\nProof: ${m.metadata.evidenceHash}`
+                                  : m.metadata?.evidenceHash
+                                  ? `Cryptographic Proof: ${m.metadata.evidenceHash}`
+                                  : 'Verified against KAI Ledger'
+                              }
                               style={{
                                 fontSize: '11px',
                                 padding: '2px 8px',
@@ -1768,7 +1780,7 @@ export function GloberAgiCommandCenter({
                               }}
                             >
                               <span>🔒</span>
-                              <span>Verified</span>
+                              <span>{m.metadata?.verificationDecision ? `✓ ${m.metadata.verificationDecision}` : 'Verified'}</span>
                             </span>
                           </div>
                         </div>
