@@ -310,6 +310,7 @@ export function createApp(
     attestationSigningKey,
     optimizeMaxEquationSlices,
     moodEngine,
+    inferenceClient,
   });
 
   registerUpgradeRoute(fastify, jsonError, upgradeKernel);
@@ -1037,6 +1038,20 @@ export function createApp(
     return { success: true, result };
   });
 
+  fastify.post('/v1/inference/generate', async (request: any, reply) => {
+    const { prompt, model, systemPrompt, temperature, maxTokens } = request.body || {};
+    if (!prompt || typeof prompt !== 'string') {
+      return jsonError(reply, 400, 'MISSING_PROMPT', { detail: 'prompt is required' });
+    }
+    const result = await inferenceClient.generateCompletion(prompt, {
+      model,
+      systemPrompt,
+      temperature,
+      maxTokens,
+    });
+    return { success: true, result };
+  });
+
   fastify.get('/v1/memory/status', async () => ({
     success: true,
     memory: await vectorMemory.getStatus(),
@@ -1621,6 +1636,7 @@ export const STARTUP_BANNER = [
   '  POST   /v1/cycle',
   '  GET    /v1/inference/status',
   '  POST   /v1/inference/analyze',
+  '  POST   /v1/inference/generate',
   '  GET    /v1/memory/status',
   '  GET    /v1/memory/search',
   '  GET    /v1/memory/causal',

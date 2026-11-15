@@ -210,10 +210,10 @@ export function GloberAgiCommandCenter({
     }
     return 'chat';
   });
-  const [selectedModel, setSelectedModel] = useState<'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini'>(() => {
+  const [selectedModel, setSelectedModel] = useState<'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini' | 'ollama' | 'vllm' | 'sovereign'>(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const saved = window.localStorage.getItem('oceanicos_model');
-      if (saved && ['fast', 'auto', 'expert', 'heavy', 'sonnet', 'gemini'].includes(saved)) {
+      if (saved && ['fast', 'auto', 'expert', 'heavy', 'sonnet', 'gemini', 'ollama', 'vllm', 'sovereign'].includes(saved)) {
         return saved as any;
       }
     }
@@ -252,7 +252,7 @@ export function GloberAgiCommandCenter({
   }, [onClearChat]);
 
   // ── Save Model & Submode on Change ──
-  const updateSelectedModel = (model: 'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini') => {
+  const updateSelectedModel = (model: 'fast' | 'auto' | 'expert' | 'heavy' | 'sonnet' | 'gemini' | 'ollama' | 'vllm' | 'sovereign') => {
     setSelectedModel(model);
     if (typeof window !== 'undefined' && window.localStorage) {
       window.localStorage.setItem('oceanicos_model', model);
@@ -338,6 +338,19 @@ export function GloberAgiCommandCenter({
       // Degrades gracefully
     } finally {
       setLoadingDag(false);
+    }
+  }, []);
+
+  const [inferenceStatus, setInferenceStatus] = useState<any>(null);
+
+  const fetchInferenceStatus = useCallback(async () => {
+    try {
+      const res = await apiRequest<any>('/v1/inference/status');
+      if (res && res.inference) {
+        setInferenceStatus(res.inference);
+      }
+    } catch {
+      // Degrades gracefully
     }
   }, []);
 
@@ -768,12 +781,13 @@ export function GloberAgiCommandCenter({
     };
   }, [stopListening]);
 
-  // Fetch KAI Merkle DAG on drawer open
+  // Fetch KAI Merkle DAG & Local Inference Status on drawer open
   useEffect(() => {
     if (rightPanelOpen) {
       fetchKaiDag();
+      fetchInferenceStatus();
     }
-  }, [rightPanelOpen, fetchKaiDag]);
+  }, [rightPanelOpen, fetchKaiDag, fetchInferenceStatus]);
 
   return (
     <div
@@ -870,6 +884,9 @@ export function GloberAgiCommandCenter({
               >
                 {[
                   { id: 'auto', name: 'Auto (Hybrid)', desc: 'Smart balanced multimodal reasoning' },
+                  { id: 'ollama', name: 'Ollama (Local Open-Weight)', desc: '100% self-hosted GPU (Llama 3 / DeepSeek / Phi3)' },
+                  { id: 'vllm', name: 'vLLM (Local High-Throughput)', desc: 'Zero-latency local tensor-parallel inference' },
+                  { id: 'sovereign', name: 'Know Child (Zero-Dependency)', desc: '100% internal cryptographic organ reasoner' },
                   { id: 'fast', name: 'Fast (Low-Latency)', desc: 'Instant conversational speed' },
                   { id: 'expert', name: 'Expert (Deep)', desc: 'Extended mathematical & code proof' },
                   { id: 'heavy', name: 'Heavy (Singularity)', desc: '4x4 Whole-ecosystem matrix' },
@@ -2249,6 +2266,46 @@ export function GloberAgiCommandCenter({
                     );
                   })
                 )}
+              </div>
+            </div>
+
+            {/* LOCAL SOVEREIGN INFERENCE CARD */}
+            <div
+              style={{
+                padding: '12px',
+                borderRadius: '10px',
+                background: '#212121',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#f59e0b' }}>LOCAL MODEL INFERENCE</span>
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                    background: inferenceStatus?.available ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                    color: inferenceStatus?.available ? '#10b981' : '#f59e0b',
+                  }}
+                >
+                  {inferenceStatus?.available ? 'OLLAMA ONLINE' : 'SOVEREIGN FALLBACK'}
+                </span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Host:</span>
+                <span style={{ color: '#93c5fd', fontFamily: theme.fontMono }}>{inferenceStatus?.host || '127.0.0.1:11434'}</span>
+              </div>
+              <div style={{ fontSize: '11px', color: '#d1d5db', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Active Model:</span>
+                <span style={{ color: '#a78bfa', fontFamily: theme.fontMono }}>{inferenceStatus?.model || 'phi3:mini'}</span>
+              </div>
+              <div style={{ fontSize: '10px', color: '#71717a' }}>
+                Zero External APIs · 100% self-hosted open-weight inference
               </div>
             </div>
 

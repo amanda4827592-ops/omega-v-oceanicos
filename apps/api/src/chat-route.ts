@@ -113,6 +113,7 @@ export interface ChatRouteDependencies {
   attestationSigningKey?: string;
   optimizeMaxEquationSlices?: (candidates: any[], context?: any) => any;
   moodEngine?: AutopilotMoodEngine;
+  inferenceClient?: any;
 }
 
 /**
@@ -880,6 +881,17 @@ export function registerChatRoute(
     });
     if (geminiReply) {
       replyContent = geminiReply;
+    } else if (deps.inferenceClient) {
+      try {
+        const localInf = await deps.inferenceClient.generateCompletion(userMessage, {
+          systemPrompt: `You are the sovereign AI Soul of Ω∞v OCEANICOS speaking as organ ${organ}. Context: ${recallContext || 'None'}. Provide a concise, truthful answer.`,
+        });
+        if (localInf && localInf.text && localInf.source !== 'STUB') {
+          replyContent = localInf.text;
+        }
+      } catch {
+        // Fall back to staticReply
+      }
     }
 
     const evidenceHash = resolvedEvidenceHash || `0x${Buffer.from(userMessage).toString('hex').slice(0, 16)}`;
@@ -997,10 +1009,25 @@ export function registerChatRoute(
       // streaming failed or interrupted
     }
 
-    // Fall back to static reply if Gemini produced no tokens (e.g. no API key configured)
+    // Fall back to local inference or static reply if Gemini produced no tokens (e.g. no API key configured)
     if (tokenCount === 0) {
-      fullText = staticReply;
-      reply.raw.write(`event: chunk\ndata: ${JSON.stringify({ token: staticReply })}\n\n`);
+      if (deps.inferenceClient) {
+        try {
+          const localInf = await deps.inferenceClient.generateCompletion(userMessage, {
+            systemPrompt: `You are the sovereign AI Soul of Ω∞v OCEANICOS speaking as organ ${organ}. Context: ${recallContext || 'None'}. Provide a concise, truthful answer.`,
+          });
+          if (localInf && localInf.text && localInf.source !== 'STUB') {
+            fullText = localInf.text;
+          } else {
+            fullText = staticReply;
+          }
+        } catch {
+          fullText = staticReply;
+        }
+      } else {
+        fullText = staticReply;
+      }
+      reply.raw.write(`event: chunk\ndata: ${JSON.stringify({ token: fullText })}\n\n`);
     }
 
     const evidenceHash = resolvedEvidenceHash || `0x${Buffer.from(userMessage).toString('hex').slice(0, 16)}`;
