@@ -1,5 +1,5 @@
 {
-  "protocol": "\u03a9V\u00d8\u00d8S-SWARM/1",
+  "protocol": "ΩVØØS-SWARM/1",
   "checksum": "30013030",
   "doctrine": "ATTEST, DON'T ASSERT. UNKNOWN PRESERVED.",
   "append_only": true,
@@ -9,7 +9,7 @@
     "UNKNOWN",
     "NOT_EXECUTED"
   ],
-  "rule": "Append only. Never rewrite or delete an entry. On conflict keep both receipts, ordered by timestamp. See SWARM_PROTOCOL.md \u00a7VI.",
+  "rule": "Append only. Never rewrite or delete an entry. On conflict keep both receipts, ordered by timestamp. See SWARM_PROTOCOL.md §VI.",
   "entries": [
     {
       "timestamp": "2026-11-08T16:03:00Z",
@@ -25,7 +25,7 @@
       ],
       "tests_passed": null,
       "evidence_hash": null,
-      "next_delta": "Claim one domain from SWARM_PROTOCOL.md \u00a7III, branch as agent/<platform>/<task>, and append your own receipt."
+      "next_delta": "Claim one domain from SWARM_PROTOCOL.md §III, branch as agent/<platform>/<task>, and append your own receipt."
     },
     {
       "timestamp": "2026-11-11T08:18:22Z",
@@ -36,7 +36,7 @@
         "apps/web/src/InvisibleComputer.tsx",
         "apps/web/src/InvisibleComputer.css",
         "apps/web/src/__tests__/dom/InvisibleComputer.test.tsx",
-        "\u03a9V\u00d8\u00d8S/ASSIGNMENTS/002-beta-invisible-computer-workspace.md",
+        "ΩVØØS/ASSIGNMENTS/002-beta-invisible-computer-workspace.md",
         "kai_ledger.json"
       ],
       "tests_passed": true,
@@ -315,6 +315,19 @@
       "tests_passed": true,
       "evidence_hash": "33c63fe5cf304b30ca99a1cc846d35a4a8d63f06795b4a20848cbd83d869a3b6",
       "next_delta": "Human-review CI on current main. The outward ring remembers the water runtime (26/26, NOT_EXECUTED) and a command receipt stays UNKNOWN. Boundary suites are now named by the release scripts; their dist execution was not run in this workspace. Do not treat this receipt as a merge."
+    },
+    {
+      "timestamp": "2026-11-15T21:50:01Z",
+      "agent_id": "grok",
+      "branch": "agent/grok/untrack-pnpm-store",
+      "status": "UNKNOWN",
+      "files_touched": [
+        ".pnpm-store",
+        "kai_ledger.json"
+      ],
+      "tests_passed": null,
+      "evidence_hash": "f7b4480fdee7ceea8ef4e17e9750ffcca0483a6a1defc1640e15ce41883fcfc3",
+      "next_delta": "Human-review the index-only removal of 7711 tracked .pnpm-store paths. Working files were not deleted. Full pnpm test was not run. upgrade.execution stays NOT_EXECUTED."
     }
   ]
 }
