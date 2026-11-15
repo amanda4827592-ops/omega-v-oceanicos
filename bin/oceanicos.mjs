@@ -1865,6 +1865,15 @@ async function handleMatrix(cmdArgs = []) {
     } catch {}
   }
 
+  let hyperMatrixPkg;
+  try {
+    hyperMatrixPkg = await import('../packages/pluralism/src/hyper-matrix-8x8.ts');
+  } catch {
+    try {
+      hyperMatrixPkg = await import('../packages/pluralism/dist/hyper-matrix-8x8.js');
+    } catch {}
+  }
+
   if (subCommand === 'transition') {
     const isUnauthorized = args.includes('--unauthorized');
     const isUnverified = args.includes('--unverified');
@@ -1967,6 +1976,74 @@ async function handleMatrix(cmdArgs = []) {
       console.log(`  Row 3 [K, L, G, Ω] : [${result.numericalMatrix[3].join(', ')}]\n`);
     } else {
       console.log(`  ${ANSI.red}[ERROR] 4x4 matrix engine unavailable.${ANSI.reset}\n`);
+    }
+    return;
+  }
+
+  if (subCommand === '6x6' || subCommand === '6x6x6x6') {
+    let result = null;
+    if (hyperMatrixPkg?.evaluate6x6x6x6HexTensor) {
+      result = hyperMatrixPkg.evaluate6x6x6x6HexTensor();
+    }
+
+    if (isJson) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    printBanner();
+    console.log(`\n${ANSI.bold}=== 🌊 6×6×6×6 HEXAGONAL PLURALISTIC WATER LATTICE TENSOR ===${ANSI.reset}\n`);
+    if (result) {
+      console.log(`  ${ANSI.cyan}Contract${ANSI.reset}           : ${ANSI.bold}${result.contract}${ANSI.reset}`);
+      console.log(`  ${ANSI.yellow}Human Steward${ANSI.reset}      : ${result.steward}`);
+      console.log(`  ${ANSI.cyan}Tensor Dimension${ANSI.reset}   : ${ANSI.bold}${result.tensorDimension}${ANSI.reset} coordinates (6^4)`);
+      console.log(`  ${ANSI.cyan}Frobenius Norm${ANSI.reset}     : ${result.frobeniusNorm.toFixed(4)}`);
+      console.log(`  ${ANSI.bold}Gram Determinant${ANSI.reset}   : ${ANSI.green}${result.gramDeterminant.toFixed(6)}${ANSI.reset}`);
+      console.log(`  ${ANSI.bold}⁶√det(G₆)${ANSI.reset}          : ${ANSI.green}${result.rootGramDeterminant.toFixed(6)}${ANSI.reset}`);
+      console.log(`  ${ANSI.cyan}Gram Trace${ANSI.reset}         : ${result.traceGram.toFixed(4)}`);
+      console.log(`  ${ANSI.green}Ψ Fixpoint${ANSI.reset}         : ${result.psiZeroFixpoint ? ANSI.green + '✓ STABLE (0)' : ANSI.red + 'DISSENSUS'}${ANSI.reset}`);
+      console.log(`  ${ANSI.green}Proof Hash${ANSI.reset}         : ${ANSI.dim}${result.proofHash}${ANSI.reset}\n`);
+      console.log(`${ANSI.bold}Hexagonal Strata (6x6x6x6):${ANSI.reset}`);
+      console.log(`  Waters (Òrìṣà) : ${ANSI.dim}${result.strata.waters.join(', ')}${ANSI.reset}`);
+      console.log(`  Horizons       : ${ANSI.dim}${result.strata.horizons.join(', ')}${ANSI.reset}`);
+      console.log(`  Gates          : ${ANSI.dim}${result.strata.gates.join(', ')}${ANSI.reset}`);
+      console.log(`  Allocations    : ${ANSI.dim}${result.strata.allocations.join(', ')}${ANSI.reset}\n`);
+    } else {
+      console.log(`  ${ANSI.red}[ERROR] 6x6x6x6 hex tensor engine unavailable.${ANSI.reset}\n`);
+    }
+    return;
+  }
+
+  if (subCommand === '8x8' || subCommand === '8x8x8x8') {
+    let result = null;
+    if (hyperMatrixPkg?.evaluate8x8x8x8HyperTensor) {
+      result = hyperMatrixPkg.evaluate8x8x8x8HyperTensor();
+    }
+
+    if (isJson) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+
+    printBanner();
+    console.log(`\n${ANSI.bold}=== 🌌 8×8×8×8 HYPER-TORUS CONTINUUM TENSOR (4096-D) ===${ANSI.reset}\n`);
+    if (result) {
+      console.log(`  ${ANSI.cyan}Contract${ANSI.reset}           : ${ANSI.bold}${result.contract}${ANSI.reset}`);
+      console.log(`  ${ANSI.yellow}Human Steward${ANSI.reset}      : ${result.steward}`);
+      console.log(`  ${ANSI.cyan}Tensor Dimension${ANSI.reset}   : ${ANSI.bold}${result.tensorDimension}${ANSI.reset} coordinates (8^4)`);
+      console.log(`  ${ANSI.cyan}Frobenius Norm${ANSI.reset}     : ${result.frobeniusNorm.toFixed(4)}`);
+      console.log(`  ${ANSI.bold}Gram Determinant${ANSI.reset}   : ${ANSI.green}${result.gram8x8Determinant.toFixed(6)}${ANSI.reset}`);
+      console.log(`  ${ANSI.bold}⁸√det(G₈)${ANSI.reset}          : ${ANSI.green}${result.eighthRootGramDeterminant.toFixed(6)}${ANSI.reset}`);
+      console.log(`  ${ANSI.cyan}Gram Trace${ANSI.reset}         : ${result.traceGram.toFixed(4)}`);
+      console.log(`  ${ANSI.green}Ψ Fixpoint${ANSI.reset}         : ${result.psiZeroFixpoint ? ANSI.green + '✓ STABLE (0)' : ANSI.red + 'DISSENSUS'}${ANSI.reset}`);
+      console.log(`  ${ANSI.green}Proof Hash${ANSI.reset}         : ${ANSI.dim}${result.proofHash}${ANSI.reset}\n`);
+      console.log(`${ANSI.bold}Hyper-Torus Strata (8x8x8x8):${ANSI.reset}`);
+      console.log(`  Identity       : ${ANSI.dim}${result.strata.identity.join(', ')}${ANSI.reset}`);
+      console.log(`  Organs         : ${ANSI.dim}${result.strata.organs.join(', ')}${ANSI.reset}`);
+      console.log(`  Surfaces       : ${ANSI.dim}${result.strata.surfaces.join(', ')}${ANSI.reset}`);
+      console.log(`  Values         : ${ANSI.dim}${result.strata.values.join(', ')}${ANSI.reset}\n`);
+    } else {
+      console.log(`  ${ANSI.red}[ERROR] 8x8x8x8 hyper-tensor engine unavailable.${ANSI.reset}\n`);
     }
     return;
   }
