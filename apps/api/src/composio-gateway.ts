@@ -89,7 +89,6 @@ export function validateComposioArguments(toolSlug: string, value: unknown): Rec
   validateJsonValue(value);
   const serialized = JSON.stringify(value);
   if (Buffer.byteLength(serialized, 'utf8') > MAX_ARGUMENT_BYTES) throw new Error('ARGUMENTS_TOO_LARGE');
-
   const bounded = { ...(value as Record<string, unknown>) };
   const capInteger = (key: string, maximum: number): void => {
     const candidate = bounded[key];
