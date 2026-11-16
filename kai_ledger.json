@@ -363,6 +363,22 @@
       "evidence_hash": null,
       "next_delta": "Run the API and repository verification checks on this branch; keep the receipt UNKNOWN until the checks pass.",
       "timestamp": "2026-11-16T03:20:52Z"
+    },
+    {
+      "agent_id": "chatgpt",
+      "branch": "agent/chatgpt/composio-readonly-gateway",
+      "status": "UNKNOWN",
+      "files_touched": [
+        "apps/api/src/composio-gateway.ts",
+        "apps/api/src/composio-gateway-route.ts",
+        "apps/api/src/__tests__/composio-gateway.test.ts",
+        "docs/COMPOSIO_READ_ONLY_GATEWAY.md",
+        "kai_ledger.json"
+      ],
+      "tests_passed": null,
+      "evidence_hash": null,
+      "next_delta": "Run the API test matrix and repository verification after the new per-tool limits; preserve UNKNOWN until they pass.",
+      "timestamp": "2026-11-16T03:23:48Z"
     }
   ]
 }
