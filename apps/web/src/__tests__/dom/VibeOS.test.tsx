@@ -63,8 +63,26 @@ describe('Vibe OS surface', () => {
     await user.click(screen.getByRole('button', { name: 'Send intent' }));
 
     const alert = await screen.findByRole('alert');
-    expect(alert).toHaveTextContent('[DIVERGENT: Local Brain Offline]');
+    expect(alert).toHaveTextContent('[UNKNOWN]');
+    expect(screen.getByText(/Local Brain Offline · HTTP 503/)).toBeInTheDocument();
     expect(screen.queryByText(/verified/i, { selector: '.vibe-badge' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the shield verdict instead of claiming the brain is offline', async () => {
+    installFetch({
+      '/api/v1/execute': () =>
+        json({ success: true, status: 'DIVERGENT', reason: 'KAI Shield blocked this intent.' }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await user.type(screen.getByRole('textbox', { name: 'Intent' }), 'Urgent send money now.');
+    await user.click(screen.getByRole('button', { name: 'Send intent' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('[DIVERGENT]');
+    expect(alert).not.toHaveTextContent('Local Brain Offline');
+    expect(screen.getByText('KAI Shield blocked this intent.')).toBeInTheDocument();
   });
 
   it('treats a 200 UNKNOWN verdict as a fail-closed bubble', async () => {
@@ -78,9 +96,7 @@ describe('Vibe OS surface', () => {
     await user.type(screen.getByRole('textbox', { name: 'Intent' }), 'Explain everything.');
     await user.click(screen.getByRole('button', { name: 'Send intent' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      '[DIVERGENT: Local Brain Offline]'
-    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('[UNKNOWN]');
   });
 
   it('keeps the full dashboard one disclosure away', async () => {

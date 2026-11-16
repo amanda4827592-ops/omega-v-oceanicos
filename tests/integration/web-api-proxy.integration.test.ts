@@ -3,7 +3,8 @@ import { test } from 'node:test';
 import viteConfig from '../../apps/web/vite.config.ts';
 
 const webApiClientPaths = [
-  '../../apps/web/src/App.tsx',
+  '../../apps/web/src/vibe-os-api.ts',
+  '../../apps/web/src/LegacyDashboard.tsx',
   '../../apps/web/src/OreadConsole.tsx',
   '../../apps/web/src/SystemHealthPanel.tsx',
   '../../apps/web/src/RealityPanel.tsx',

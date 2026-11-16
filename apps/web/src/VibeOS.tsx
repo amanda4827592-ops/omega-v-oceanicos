@@ -21,7 +21,13 @@ export type ChatMessage = {
 };
 
 const VERIFYING = '[Verifying against kai_ledger...]';
-const FAIL_CLOSED = '[DIVERGENT: Local Brain Offline]';
+
+// The fail-closed headline is the receipt's own verdict, never a cause we did not
+// observe: an offline transport answers UNKNOWN, a KAI Shield block answers DIVERGENT.
+// The API's reason sits underneath and says which one happened.
+function failClosedCopy(status: string): string {
+  return `[${status}]`;
+}
 
 export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -58,7 +64,7 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
           }
         : {
             role: 'ai',
-            content: FAIL_CLOSED,
+            content: failClosedCopy(receipt.status),
             verified: false,
             detail: receipt.reason ?? undefined,
           },
