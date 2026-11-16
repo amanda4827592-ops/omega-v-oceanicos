@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from '@jest/globals';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { App } from '../../App';
+import { LegacyDashboard } from '../../LegacyDashboard';
 import { installFetch, json } from './harness';
 
-describe('current Oceanicos app shell', () => {
+describe('legacy OceanicOS dashboard', () => {
   beforeEach(() => {
     installFetch();
   });
@@ -15,7 +15,7 @@ describe('current Oceanicos app shell', () => {
 
   const renderApp = async () => {
     await act(async () => {
-      render(<App />);
+      render(<LegacyDashboard onClose={() => {}} />);
     });
   };
 

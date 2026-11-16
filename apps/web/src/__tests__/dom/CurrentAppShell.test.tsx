@@ -1,13 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import App from '../../App';
+import { LegacyDashboard } from '../../LegacyDashboard';
 import { installFetch, json } from './harness';
 
-describe('current OceanicOS app shell', () => {
+describe('legacy OceanicOS dashboard', () => {
   it('renders the whole-ecosystem surface without promoting unqueried sources to verified', async () => {
     installFetch();
-    render(<App />);
+    render(<LegacyDashboard onClose={() => {}} />);
 
     await userEvent.click(await screen.findByRole('button', { name: /open background full-stack/i }));
     const dashboard = await screen.findByRole('region', { name: 'Whole ecosystem command surface' });
@@ -29,7 +29,7 @@ describe('current OceanicOS app shell', () => {
         }),
     });
     const user = userEvent.setup();
-    render(<App />);
+    render(<LegacyDashboard onClose={() => {}} />);
 
     const workspace = document.getElementById('background-full-stack-workspace');
     expect(workspace).not.toBeNull();
@@ -53,7 +53,7 @@ describe('current OceanicOS app shell', () => {
   it('turns an organ choice into a draft prompt without submitting an action', async () => {
     const fetchMock = installFetch();
     const user = userEvent.setup();
-    render(<App />);
+    render(<LegacyDashboard onClose={() => {}} />);
 
     await user.click(await screen.findByRole('button', { name: /open background full-stack/i }));
     await user.click(await screen.findByRole('button', { name: /AI SOUL/i }));
