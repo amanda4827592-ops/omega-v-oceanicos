@@ -1,0 +1,410 @@
+/*
+ * Vibe OS — soft ocean-calm surface.
+ *
+ * One sidebar, one conversation, one input. Colour here carries meaning only:
+ * verified is green, a fail-closed answer is red, everything else is depth.
+ */
+
+.vibe-os {
+  --vibe-abyss: #050d18;
+  --vibe-deep: #071523;
+  --vibe-surface: rgba(255, 255, 255, 0.035);
+  --vibe-surface-solid: #0b1a29;
+  --vibe-line: rgba(148, 197, 214, 0.12);
+  --vibe-line-bright: rgba(148, 197, 214, 0.24);
+  --vibe-ink: #e8f1f6;
+  --vibe-ink-muted: #93a9ba;
+  --vibe-ink-dim: #64798b;
+  --vibe-current: #6fd0dc;
+  --vibe-verified: #6ee7a8;
+  --vibe-divergent: #f87171;
+
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -10%, rgba(56, 132, 158, 0.18) 0%, transparent 65%),
+    var(--vibe-abyss);
+  color: var(--vibe-ink);
+  font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────── */
+
+.vibe-sidebar {
+  width: 244px;
+  flex: 0 0 244px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px 16px 18px;
+  border-right: 1px solid var(--vibe-line);
+  background: linear-gradient(180deg, rgba(11, 26, 41, 0.72), rgba(5, 13, 24, 0.5));
+}
+
+.vibe-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px;
+  letter-spacing: 0.16em;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--vibe-ink-muted);
+  text-transform: uppercase;
+}
+
+.vibe-brand-mark {
+  color: var(--vibe-current);
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.vibe-new {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--vibe-line-bright);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--vibe-ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.vibe-new:hover {
+  background: var(--vibe-surface);
+  border-color: var(--vibe-current);
+}
+
+.vibe-sidebar-note {
+  margin: 0 6px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-sidebar-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 6px;
+}
+
+.vibe-sovereign {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-sovereign-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vibe-current);
+  box-shadow: 0 0 0 3px rgba(111, 208, 220, 0.14);
+}
+
+.vibe-disclose {
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font-size: 11.5px;
+  color: var(--vibe-ink-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--vibe-line-bright);
+  text-underline-offset: 3px;
+}
+
+.vibe-disclose:hover {
+  color: var(--vibe-ink);
+}
+
+/* ── Conversation column ─────────────────────────────────── */
+
+.vibe-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.vibe-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--vibe-line);
+  font-size: 12px;
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-topbar-title {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--vibe-ink-muted);
+}
+
+.vibe-topbar-dashboard {
+  display: none;
+}
+
+.vibe-log {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--vibe-line-bright) transparent;
+}
+
+.vibe-log::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vibe-log::-webkit-scrollbar-thumb {
+  background: var(--vibe-line-bright);
+  border-radius: 8px;
+}
+
+.vibe-thread {
+  max-width: 748px;
+  margin: 0 auto;
+  padding: 28px 24px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.vibe-empty {
+  min-height: 46vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.vibe-empty h1 {
+  margin: 0;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--vibe-ink);
+}
+
+.vibe-empty p {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-message {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.vibe-message--user {
+  align-items: flex-end;
+}
+
+.vibe-message--ai {
+  align-items: flex-start;
+}
+
+.vibe-bubble {
+  max-width: 88%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.68;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.vibe-bubble--user {
+  background: var(--vibe-surface);
+  border: 1px solid var(--vibe-line);
+  border-bottom-right-radius: 6px;
+  color: var(--vibe-ink);
+}
+
+.vibe-bubble--ai {
+  background: transparent;
+  border: none;
+  padding: 0 2px;
+  color: var(--vibe-ink);
+}
+
+.vibe-bubble--pending {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--vibe-ink-dim);
+  animation: vibe-breathe 1.6s ease-in-out infinite;
+}
+
+.vibe-bubble--fail {
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.32);
+  color: var(--vibe-divergent);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12.5px;
+}
+
+@keyframes vibe-breathe {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.vibe-detail {
+  margin: 0;
+  padding: 0 2px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border: 1px solid rgba(110, 231, 168, 0.34);
+  border-radius: 6px;
+  background: rgba(110, 231, 168, 0.08);
+  color: var(--vibe-verified);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.vibe-badge-hash {
+  color: var(--vibe-ink-dim);
+}
+
+/* ── Composer ────────────────────────────────────────────── */
+
+.vibe-composer-wrap {
+  padding: 10px 24px 22px;
+}
+
+.vibe-composer {
+  max-width: 748px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 8px 8px 8px 18px;
+  border: 1px solid var(--vibe-line-bright);
+  border-radius: 18px;
+  background: var(--vibe-surface-solid);
+  box-shadow: 0 18px 50px rgba(2, 8, 16, 0.45);
+  transition: border-color 0.18s ease;
+}
+
+.vibe-composer:focus-within {
+  border-color: rgba(111, 208, 220, 0.55);
+}
+
+.vibe-input {
+  flex: 1;
+  min-height: 40px;
+  max-height: 180px;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  color: var(--vibe-ink);
+  font-family: inherit;
+  font-size: 14.5px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+
+.vibe-input::placeholder {
+  color: var(--vibe-ink-dim);
+}
+
+.vibe-send {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 12px;
+  background: var(--vibe-current);
+  color: #04121b;
+  font-size: 17px;
+  font-weight: 700;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.vibe-send:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.vibe-send:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.vibe-footnote {
+  max-width: 748px;
+  margin: 8px auto 0;
+  font-size: 10.5px;
+  color: var(--vibe-ink-dim);
+  text-align: center;
+}
+
+/* ── Narrow viewports: the sidebar yields to the conversation ── */
+
+@media (max-width: 860px) {
+  .vibe-sidebar {
+    display: none;
+  }
+
+  .vibe-topbar-dashboard {
+    display: inline;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 11.5px;
+    color: var(--vibe-ink-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .vibe-thread {
+    padding: 20px 16px 8px;
+  }
+
+  .vibe-composer-wrap {
+    padding: 8px 14px 16px;
+  }
+
+  .vibe-bubble {
+    max-width: 100%;
+  }
+}
