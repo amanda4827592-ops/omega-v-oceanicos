@@ -21,6 +21,9 @@ import { registerRealityRoute } from './reality-route.js';
 import { registerDependencyRoute } from './dependency-route.js';
 import { registerValueNavigatorRoute } from './value-navigator-route.js';
 import { registerConnectorObservationRoute, type ConnectorAdmissionEvidenceResolver } from './connector-observation-route.js';
+import { registerComposioGatewayRoute } from './composio-gateway-route.js';
+import { loadComposioGatewayConfig } from './composio-gateway.js';
+import type { ComposioGatewayConfig } from './composio-gateway.js';
 import {
   OmegaCommandStore,
   OmegaIdempotencyConflictError,
@@ -66,6 +69,8 @@ export type CreateAppOptions = {
   connectorAdmissionEvidence?: ConnectorAdmissionEvidenceResolver;
   pipelineAdmissionEvidence?: PipelineAdmissionEvidenceResolver;
   omegaCommandAdmissionEvidence?: OmegaCommandAdmissionEvidenceResolver;
+  composioGatewayConfig?: ComposioGatewayConfig | null;
+  composioFetch?: typeof fetch;
 };
 
 type AuthMode = 'local' | 'required';
@@ -256,13 +261,16 @@ export function createApp(
       request.omegaAuthorization = { mode: 'local', principal: 'local-development' };
       return;
     }
-    const required = request.method === 'GET' ? readToken : adminToken;
+    const isReadOnlyComposioRequest =
+      request.method === 'POST' && request.url.split('?')[0] === '/v1/omega/composio/read';
+    const isReadRequest = request.method === 'GET' || isReadOnlyComposioRequest;
+    const required = isReadRequest ? readToken : adminToken;
     if (bearer(request.headers.authorization) !== required) {
-      return jsonError(reply, 401, request.method === 'GET' ? 'READ_ACCESS_REQUIRED' : 'ADMIN_ACCESS_REQUIRED');
+      return jsonError(reply, 401, isReadRequest ? 'READ_ACCESS_REQUIRED' : 'ADMIN_ACCESS_REQUIRED');
     }
     request.omegaAuthorization = {
       mode: 'required',
-      principal: request.method === 'GET' ? 'read-bearer' : 'admin-bearer',
+      principal: isReadRequest ? 'read-bearer' : 'admin-bearer',
     };
   });
 
@@ -279,6 +287,17 @@ export function createApp(
   registerConnectorObservationRoute(fastify, jsonError, connectorObservationStore, {
     githubFetch: options.githubFetch,
     resolveAdmissionEvidence: options.connectorAdmissionEvidence,
+  });
+  fastify.register(async (scope) => {
+    await scope.register(rateLimit, { global: false });
+    registerComposioGatewayRoute(scope, jsonError, connectorObservationStore, {
+      config: options.composioGatewayConfig !== undefined
+        ? options.composioGatewayConfig
+        : loadComposioGatewayConfig(process.env),
+      fetch: options.composioFetch,
+      resolveAdmissionEvidence: options.connectorAdmissionEvidence,
+      requireReadAccess,
+    });
   });
   registerMeshValidationRoute(fastify, ledgerMemory, requireReadAccess, jsonError);
   registerExecuteRoute(fastify, kaiMemory, jsonError, attestationSigningKey);
