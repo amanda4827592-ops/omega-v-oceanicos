@@ -19,7 +19,7 @@ export interface ComposioGatewayRouteOptions {
   readonly config: ComposioGatewayConfig | null;
   readonly fetch?: typeof fetch;
   readonly resolveAdmissionEvidence?: ConnectorAdmissionEvidenceResolver;
-  readonly requireReadAccess?: (request: any, reply: any) => unknown;
+  readonly requireReadAccess?: (request: any, reply: any) => void | Promise<unknown>;
 }
 function parseObject(value: unknown): Record<string, unknown> | null {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
