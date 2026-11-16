@@ -11,6 +11,12 @@ Human intent → bounded admission → deterministic compute → invariant verif
 
 The implementation is finite and local. `T[i,j,k,l] = i + j + k + l` is a deterministic program rule, not a claim about physical infinity, consciousness, or a universal external system. Evidence outranks assertion; a failed or unavailable observation remains `UNKNOWN` or `DIVERGENT` rather than being promoted to `VERIFIED`.
 
+## Visual orientation
+
+![Illustrative Ω∞v OCEANICOS tensor flow](assets/omega-v-oceanicos-flow.jpg)
+
+This supplied illustration is a human-orientation aid for the flow described below. It is not runtime telemetry, a cryptographic attestation, a deployment screenshot, or evidence that any external service is available.
+
 ## Runtime path
 
 ### 1. Human root
