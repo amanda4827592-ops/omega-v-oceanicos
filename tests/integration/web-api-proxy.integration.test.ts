@@ -112,3 +112,12 @@ test('Vite proxies browser-relative API requests to the local API', () => {
   assert.equal(apiProxy.changeOrigin, true);
   assert.equal(apiProxy.rewrite?.('/api/complete-loop'), '/complete-loop');
 });
+
+test('Base44 keeps browser API requests on the web origin and proxies them to the API service', async () => {
+  const { readFileSync } = await import('node:fs');
+  const compose = readFileSync(new URL('../../docker-compose.base44.yml', import.meta.url), 'utf8');
+
+  assert.match(compose, /VITE_API_URL=\/api/);
+  assert.match(compose, /VITE_API_PROXY_TARGET=http:\/\/api:5000/);
+  assert.doesNotMatch(compose, /VITE_API_URL=https:\/\/5000-/);
+});

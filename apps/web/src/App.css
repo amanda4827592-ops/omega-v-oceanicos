@@ -2484,6 +2484,64 @@ body {
 }
 .single-body-equation strong { color: var(--omega-current); font-weight: 600; }
 .single-body-equation span { color: var(--omega-unknown); }
+.single-body-capacity {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 10px;
+  align-items: center;
+  margin: 0 0 13px;
+  padding: 10px 11px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 10px;
+  background: linear-gradient(125deg, rgba(6, 182, 212, 0.05), rgba(2, 6, 23, 0.2));
+}
+.single-body-capacity-intro {
+  display: grid;
+  gap: 5px;
+}
+.single-body-capacity-intro strong {
+  color: var(--omega-current);
+  font: 9px var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.single-body-capacity-intro span {
+  color: var(--omega-unknown);
+  font: 9px/1.5 var(--font-mono);
+}
+.single-body-capacity-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
+  gap: 6px;
+}
+.single-body-capacity-card {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  background: rgba(2, 6, 23, 0.2);
+}
+.single-body-capacity-card.is-canonical[data-state="observed"] {
+  border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(6, 182, 212, 0.06);
+}
+.single-body-capacity-card b {
+  color: var(--omega-foam);
+  font: 8px var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.single-body-capacity-card strong {
+  color: var(--omega-foam-muted);
+  font: 9px var(--font-mono);
+}
+.single-body-capacity-card small {
+  color: var(--omega-unknown);
+  font: 7px/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.single-body-capacity-card.is-canonical[data-state="observed"] small { color: var(--omega-current); }
 .single-body-meter {
   height: 4px;
   margin-bottom: 13px;
@@ -2657,6 +2715,7 @@ body {
 .single-body-empty { color: var(--omega-unknown); font: 9px var(--font-mono); }
 @media (max-width: 700px) {
   .single-body-space { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .single-body-capacity { grid-template-columns: 1fr; }
   .single-body-records li { grid-template-columns: minmax(0, 1fr) auto; }
   .single-body-records small { grid-column: 1 / -1; text-align: left; }
 }

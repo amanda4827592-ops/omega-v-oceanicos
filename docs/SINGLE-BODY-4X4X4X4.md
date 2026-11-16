@@ -23,6 +23,15 @@ Compression is **bounded addressing with lossless expansion**, not size reductio
 the point is one inspectable body with a fixed address space and a verifiable
 round trip. Byte-level compression is out of scope and not claimed.
 
+## Rank-four capacity preview
+
+The front view may show the equation `N × N × N × N = N⁴` as a capacity
+comparison. It displays `4⁴ = 256` as the only observed API contract,
+`6⁴ = 1,296` and `8⁴ = 4,096` as scenario-only values marked `UNKNOWN`, and
+does not infer coordinate labels or map records into those larger spaces.
+Eight is the largest size previewed here, not a mathematical maximum; no
+larger contract is claimed.
+
 ## Contract
 
 `packages/mini/src/single-body.ts`

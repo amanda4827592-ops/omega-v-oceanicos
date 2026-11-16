@@ -45,6 +45,13 @@ for (const entry of ['AGENTS.md', '.cursorrules', 'CLAUDE.md']) {
 
 const ledger = JSON.parse(read('kai_ledger.json'));
 const baselineRef = process.env.SWARM_LEDGER_BASELINE_REF?.trim() || 'HEAD';
+const baselineCommit =
+  baselineRef === 'HEAD'
+    ? 'HEAD'
+    : execFileSync('git', ['merge-base', 'HEAD', baselineRef], {
+        cwd: root,
+        encoding: 'utf8',
+      }).trim();
 const baselineSource = execFileSync('git', ['show', `${baselineRef}:kai_ledger.json`], {
   cwd: root,
   encoding: 'utf8',
@@ -53,18 +60,28 @@ const baseline = JSON.parse(baselineSource);
 if (!Array.isArray(baseline.entries)) {
   throw new Error(`kai_ledger.json: append-only baseline ${baselineRef} has no entries array`);
 }
-  let baselineIndex = 0;
-  for (const entry of ledger.entries ?? []) {
-    if (isDeepStrictEqual(entry, baseline.entries[baselineIndex])) {
-      baselineIndex += 1;
-  }
-    if (baselineIndex === baseline.entries.length) break;
-  }
-  if (baselineIndex !== baseline.entries.length) {
+const ancestorSource =
+  baselineCommit === 'HEAD'
+    ? baselineSource
+    : execFileSync('git', ['show', `${baselineCommit}:kai_ledger.json`], {
+        cwd: root,
+        encoding: 'utf8',
+      });
+const ancestor = JSON.parse(ancestorSource);
+if (!Array.isArray(ancestor.entries)) {
+  throw new Error(`kai_ledger.json: append-only baseline ${baselineRef} has no entries array`);
+}
+
+const remainingEntries = [...(ledger.entries ?? [])];
+for (const [baselineIndex, entry] of ancestor.entries.entries()) {
+  const matchingIndex = remainingEntries.findIndex((candidate) => isDeepStrictEqual(candidate, entry));
+  if (matchingIndex < 0) {
     throw new Error(
       `kai_ledger.json: append-only baseline ${baselineRef} entry ${baselineIndex} was removed or modified`
     );
   }
+  remainingEntries.splice(matchingIndex, 1);
+}
 
 if (ledger.protocol !== 'ΩVØØS-SWARM/1') {
   throw new Error('kai_ledger.json: protocol must be ΩVØØS-SWARM/1');

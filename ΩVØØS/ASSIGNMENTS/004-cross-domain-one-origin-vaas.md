@@ -74,3 +74,36 @@ repairs. They do not prove live Auth0 configuration or deployment.
 - Keep live Auth0 tenant verification UNKNOWN until tested with a real non-production tenant.
 - Preserve every historical ledger receipt exactly; any new receipt must be appended without rewriting or formatting existing entries.
 - Do not merge PR #602 or deploy.
+
+## Human-authorized bounded front-view addendum — 2026-11-15
+
+The human authorized a calm, self-contained front-view improvement and asked
+that existing matrix math be observed before adding dimensions. This addendum
+permits a rank-four capacity preview in the existing Single Body panel:
+
+- `4×4×4×4` remains the only active data/API contract.
+- `6×6×6×6` and `8×8×8×8` may be displayed as capacity-only scenarios:
+  `1,296` and `4,096` addresses, both `UNKNOWN` and not implemented.
+- No coordinate labels, mood mapping, Copilot internals, API behavior, or
+  package contract may be inferred or changed in this slice.
+
+Additional authorized files:
+
+- `apps/web/src/App.css`
+- `apps/web/src/__tests__/dom/SingleBodyPanel.test.tsx`
+- `docs/SINGLE-BODY-4X4X4X4.md`
+- `docker-compose.base44.yml`
+- `tests/integration/web-api-proxy.integration.test.ts`
+- `AGENTS.md`
+
+The Base44 dev stack must use the same-origin `/api` proxy, targeting the
+internal `api:5000` service. It must not synthesize a public API host when
+`BASE44_PUBLIC_HOST_SUFFIX` is absent.
+
+Acceptance additions:
+
+```bash
+pnpm --filter web test --runTestsByPath src/__tests__/dom/SingleBodyPanel.test.tsx
+pnpm --filter web build
+node --experimental-strip-types --test ./tests/integration/web-api-proxy.integration.test.ts
+```

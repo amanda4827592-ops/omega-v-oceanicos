@@ -109,16 +109,66 @@ test('swarm ledger validation accepts new receipts appended to the baseline', ()
   }
 });
 
+test('swarm ledger validation accepts a branch that predates newer baseline receipts', () => {
+  const root = createGitFixture();
+  try {
+    const ledgerPath = path.join(root, 'kai_ledger.json');
+    const baseLedger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
+    const latestTimestamp = Math.max(...baseLedger.entries.map((entry) => Date.parse(entry.timestamp)));
+    const receipt = (agent, branch, timestamp) => ({
+      agent_id: agent,
+      branch,
+      status: 'UNKNOWN',
+      files_touched: ['scripts/validate-swarm-ledger.test.mjs'],
+      tests_passed: null,
+      evidence_hash: null,
+      next_delta: 'No follow-up; this receipt is an isolated test fixture.',
+      timestamp: new Date(timestamp).toISOString(),
+    });
+
+    execFileSync('git', ['checkout', '-qb', 'feature'], { cwd: root });
+    const featureLedger = {
+      ...baseLedger,
+      entries: [...baseLedger.entries, receipt('feature-agent', 'agent/feature/test', latestTimestamp + 1_000)],
+    };
+    writeFileSync(ledgerPath, `${JSON.stringify(featureLedger, null, 2)}\n`);
+    execFileSync('git', ['add', 'kai_ledger.json'], { cwd: root });
+    execFileSync('git', ['commit', '-qm', 'append feature receipt'], { cwd: root });
+
+    execFileSync('git', ['checkout', '-qb', 'main-sim', 'HEAD~1'], { cwd: root });
+    const mainLedger = {
+      ...baseLedger,
+      entries: [...baseLedger.entries, receipt('main-agent', 'agent/main/test', latestTimestamp + 2_000)],
+    };
+    writeFileSync(ledgerPath, `${JSON.stringify(mainLedger, null, 2)}\n`);
+    execFileSync('git', ['add', 'kai_ledger.json'], { cwd: root });
+    execFileSync('git', ['commit', '-qm', 'append newer main receipt'], { cwd: root });
+    execFileSync('git', ['update-ref', 'refs/remotes/origin/main', 'HEAD'], { cwd: root });
+    execFileSync('git', ['checkout', 'feature'], { cwd: root });
+
+    const result = runValidator(root, 'origin/main');
+    assert.equal(result.status, 0, result.stderr);
+    assert.ok(result.stdout.includes(`validated ${featureLedger.entries.length} swarm ledger receipt`));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('swarm ledger validation accepts chronologically interleaved receipts from concurrent branches', () => {
   const root = createGitFixture();
   try {
     const ledgerPath = path.join(root, 'kai_ledger.json');
     const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
-    const lastIndex = ledger.entries.length - 1;
-    const previousTimestamp = Date.parse(ledger.entries[lastIndex - 1].timestamp);
-    const latestTimestamp = Date.parse(ledger.entries[lastIndex].timestamp);
+    const insertionIndex = ledger.entries.findIndex(
+      (entry, index) =>
+        index > 0 &&
+        Date.parse(entry.timestamp) - Date.parse(ledger.entries[index - 1].timestamp) > 60_000
+    );
+    assert.notEqual(insertionIndex, -1, 'fixture should have a timestamp gap for an interleaved receipt');
+    const previousTimestamp = Date.parse(ledger.entries[insertionIndex - 1].timestamp);
+    const latestTimestamp = Date.parse(ledger.entries[insertionIndex].timestamp);
     const interleavedTimestamp = new Date(previousTimestamp + Math.floor((latestTimestamp - previousTimestamp) / 2));
-    ledger.entries.splice(lastIndex, 0, {
+    ledger.entries.splice(insertionIndex, 0, {
       agent_id: 'copilot-test',
       branch: 'agent/copilot-test/concurrent-ledger',
       status: 'UNKNOWN',

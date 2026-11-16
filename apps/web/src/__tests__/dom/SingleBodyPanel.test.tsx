@@ -41,6 +41,18 @@ describe('single body 4×4×4×4 panel', () => {
     expect(screen.getByText('reality/sense/runtime/SUPPORTED')).toBeInTheDocument();
   });
 
+  it('keeps larger rank-four capacities as unknown scenarios, not active contracts', () => {
+    render(<SingleBodyPanel body={fixture} />);
+
+    const capacityPreview = screen.getByRole('region', { name: 'Rank-four matrix capacity scenarios' });
+    expect(capacityPreview).toHaveTextContent('256 addresses');
+    expect(capacityPreview).toHaveTextContent('1,296 addresses');
+    expect(capacityPreview).toHaveTextContent('4,096 addresses');
+    expect(screen.getByText('API CONTRACT · OBSERVED')).toBeInTheDocument();
+    expect(screen.getAllByText('SCENARIO ONLY · UNKNOWN')).toHaveLength(2);
+    expect(capacityPreview).toHaveTextContent('not a maximum');
+  });
+
   it('expands through the API and shows the restored records', async () => {
     const fetchMock = jest.fn(async () => ({
       ok: true,
@@ -74,5 +86,7 @@ describe('single body 4×4×4×4 panel', () => {
 
     expect(screen.getByText(/ROUND TRIP UNKNOWN/)).toBeInTheDocument();
     expect(screen.getByText(/No compressed body observed/)).toBeInTheDocument();
+    expect(screen.getByText('API CONTRACT · NOT OBSERVED')).toBeInTheDocument();
+    expect(screen.getAllByText('SCENARIO ONLY · UNKNOWN')).toHaveLength(2);
   });
 });

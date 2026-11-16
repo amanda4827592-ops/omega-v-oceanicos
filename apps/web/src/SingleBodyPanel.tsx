@@ -27,6 +27,8 @@ const AXES = {
   evidence: ['VERIFIED', 'SUPPORTED', 'UNVERIFIED', 'UNKNOWN'],
 } as const;
 
+const CAPACITY_SIZES = [4, 6, 8] as const;
+
 const EVIDENCE_COLOR: Record<string, string> = {
   VERIFIED: '#06b6d4',
   SUPPORTED: '#38bdf8',
@@ -62,6 +64,7 @@ export function SingleBodyPanel({ body }: Props) {
   const filled = compression?.filled ?? 0;
   const count = compression?.count ?? 0;
   const roundTrip = compression?.expansion?.status ?? 'UNKNOWN';
+  const canonicalObserved = compression?.space?.notation === '4×4×4×4';
 
   const cellMap = useMemo(() => {
     const map = new Map<string, Cell>();
@@ -117,6 +120,35 @@ export function SingleBodyPanel({ body }: Props) {
         <strong>= {capacity} cells</strong>
         <span>{count} records in {filled} cells · {capacity - filled} empty</span>
       </p>
+
+      <section className="single-body-capacity" aria-label="Rank-four matrix capacity scenarios">
+        <div className="single-body-capacity-intro">
+          <strong>Capacity preview · N⁴</strong>
+          <span>Four axes, N coordinates per axis. 8⁴ is the largest previewed, not a maximum.</span>
+        </div>
+        <div className="single-body-capacity-options">
+          {CAPACITY_SIZES.map((size) => {
+            const canonical = size === 4;
+            return (
+              <article
+                className={`single-body-capacity-card${canonical ? ' is-canonical' : ''}`}
+                data-state={canonical && canonicalObserved ? 'observed' : 'unknown'}
+                key={size}
+              >
+                <b>{`${size} × ${size} × ${size} × ${size}`}</b>
+                <strong>{(size ** 4).toLocaleString('en-US')} addresses</strong>
+                <small>
+                  {canonical
+                    ? canonicalObserved
+                      ? 'API CONTRACT · OBSERVED'
+                      : 'API CONTRACT · NOT OBSERVED'
+                    : 'SCENARIO ONLY · UNKNOWN'}
+                </small>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="single-body-meter" role="img" aria-label={`${filled} of ${capacity} cells filled`}>
         <span style={{ width: `${(filled / capacity) * 100}%` }} />
