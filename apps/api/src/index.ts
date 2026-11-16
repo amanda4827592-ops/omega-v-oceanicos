@@ -34,6 +34,7 @@ import { registerMeshValidationRoute } from './mesh-route.js';
 import { KaiMemoryStore } from './kai-memory.js';
 import { registerExecuteRoute } from './execute-route.js';
 import { scanIntent } from './invisible-computer.js';
+import { registerTensorDavRoute } from './tensor-dav-route.js';
 import {
   ENCRYPTION_ALGORITHM,
   appendEvent,
@@ -301,6 +302,7 @@ export function createApp(
   });
   registerMeshValidationRoute(fastify, ledgerMemory, requireReadAccess, jsonError);
   registerExecuteRoute(fastify, kaiMemory, jsonError, attestationSigningKey);
+  registerTensorDavRoute(fastify, jsonError);
 
   fastify.get('/health', async (_request, reply) => {
     let ledgerIntegrity;

@@ -12,6 +12,7 @@ import { OreadConsole } from './OreadConsole';
 import { MoodCodexPanel } from './MoodCodexPanel';
 import { DivergenceAlertsPanel } from './DivergenceAlertsPanel';
 import { ValueNavigatorPanel } from './ValueNavigatorPanel';
+import { TensorDavVisualizer } from './components/TensorDavVisualizer';
 import { ConnectorPanel } from './ConnectorPanel';
 import { WholeEcosystemDashboard } from './WholeEcosystemDashboard';
 import { InvisibleComputer } from './InvisibleComputer';
@@ -791,6 +792,8 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
 
         <InvisibleComputer />
 
+        <TensorDavVisualizer />
+
         {/* Compressed front view: the whole body is summarized here; detailed organs stay in the background workspace. */}
         <section
           aria-label="Compressed whole ecosystem front view"
@@ -1065,4 +1068,3 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
