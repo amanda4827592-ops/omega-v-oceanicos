@@ -11,7 +11,8 @@ export default defineConfig({
       '/api': {
         target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        // Browser calls such as /api/tensor/4 reach Fastify as /tensor/4.
+        rewrite: (path) => path.replace(/^\/api(?=\/)/, ''),
       },
     },
   },

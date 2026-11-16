@@ -33,6 +33,7 @@ import {
 import { registerMeshValidationRoute } from './mesh-route.js';
 import { KaiMemoryStore } from './kai-memory.js';
 import { registerExecuteRoute } from './execute-route.js';
+import { registerTensorDavRoutes } from './tensor-dav-route.js';
 import { scanIntent } from './invisible-computer.js';
 import {
   ENCRYPTION_ALGORITHM,
@@ -251,6 +252,7 @@ export function createApp(
   };
 
   fastify.register(cors, { origin: corsOrigin });
+  registerTensorDavRoutes(fastify);
   fastify.register(async (scope) => {
     await scope.register(rateLimit, { global: false });
     registerOmegaRoutes(scope, omegaCommands, enforceAdminOperatorIdentity, options.omegaCommandAdmissionEvidence);

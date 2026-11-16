@@ -16,6 +16,7 @@ import { ConnectorPanel } from './ConnectorPanel';
 import { WholeEcosystemDashboard } from './WholeEcosystemDashboard';
 import { InvisibleComputer } from './InvisibleComputer';
 import { WaterFlowPanel } from './WaterFlowPanel';
+import { TensorDavVisualizer } from './components/TensorDavVisualizer';
 import { projectCommandWaterFlow } from './water-flow-panel-model';
 import { LifecycleFlow, deriveStageStates, type LifecycleStage } from './LifecycleFlow';
 import { GlobeViewport } from './GlobeViewport';
@@ -790,6 +791,7 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
         </div>
 
         <InvisibleComputer />
+        <TensorDavVisualizer />
 
         {/* Compressed front view: the whole body is summarized here; detailed organs stay in the background workspace. */}
         <section
@@ -1065,4 +1067,3 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
