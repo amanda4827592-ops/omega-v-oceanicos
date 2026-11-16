@@ -44,7 +44,7 @@ export function registerComposioGatewayRoute(
     const toolkit = composioToolkitForTool(toolSlug);
     if (!toolkit) return jsonError(reply, 400, 'COMPOSIO_TOOL_NOT_ALLOWLISTED');
     let args: Record<string, unknown>;
-    try { args = validateComposioArguments(body.arguments); } catch (error) {
+    try { args = validateComposioArguments(toolSlug, body.arguments); } catch (error) {
       return jsonError(reply, 400, 'INVALID_COMPOSIO_ARGUMENTS', {
         reason: String((error as Error)?.message ?? 'ARGUMENTS_INVALID'),
       });

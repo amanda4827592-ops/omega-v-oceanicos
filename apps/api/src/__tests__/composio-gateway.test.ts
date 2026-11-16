@@ -14,7 +14,7 @@ describe('Composio read-only gateway', () => {
   it('keeps provider output UNKNOWN pending independent verification and redacts secrets', async () => {
     const fetchMock = jest.fn<typeof fetch>().mockResolvedValue(response({
       successful: true,
-      data: { repository: { full_name: 'owner/repo', private: true }, access_token: 'must-not-escape', nested: { api_key: 'also-secret', title: 'safe' } },
+      data: { repository: { full_name: 'owner/repo', private: true }, access_token: 'must-not-escape', token: 'bare-token', nested: { api_key: 'also-secret', title: 'safe' } },
     }));
     const app = createApp(':memory:', false, { composioGatewayConfig: config, composioFetch: fetchMock, connectorAdmissionEvidence: admitted });
     try {
@@ -25,6 +25,7 @@ describe('Composio read-only gateway', () => {
       expect(result.statusCode).toBe(200);
       expect(body.status).toBe('UNKNOWN');
       expect(body.result.access_token).toBe('[REDACTED]');
+      expect(body.result.token).toBe('[REDACTED]');
       expect(body.result.nested.api_key).toBe('[REDACTED]');
       expect(body.result.repository.full_name).toBe('owner/repo');
       expect(body.evidenceHash).toMatch(/^[0-9a-f]{64}$/);
@@ -93,6 +94,50 @@ describe('Composio read-only gateway', () => {
       expect(fetchMock).not.toHaveBeenCalled();
     } finally { await app.close(); }
   });
+
+  it('bounds recursive Notion reads and rejects transcript expansion', async () => {
+    const fetchMock = jest.fn<typeof fetch>().mockResolvedValue(response({ successful: true, data: { results: [] } }));
+    const app = createApp(':memory:', false, {
+      composioGatewayConfig: config, composioFetch: fetchMock, connectorAdmissionEvidence: admitted,
+    });
+    try {
+      const tooLarge = await app.inject({
+        method: 'POST', url: '/v1/omega/composio/read',
+        payload: {
+          toolSlug: 'NOTION_FETCH_ALL_BLOCK_CONTENTS',
+          arguments: { block_id: 'page-id', recursive: true, max_blocks: 10000, max_depth: 50 },
+        },
+      });
+      expect(tooLarge.statusCode).toBe(400);
+      expect(tooLarge.json().error).toBe('INVALID_COMPOSIO_ARGUMENTS');
+      expect(fetchMock).not.toHaveBeenCalled();
+
+      const transcript = await app.inject({
+        method: 'POST', url: '/v1/omega/composio/read',
+        payload: {
+          toolSlug: 'NOTION_GET_PAGE_MARKDOWN',
+          arguments: { page_id: 'page-id', include_transcript: true },
+        },
+      });
+      expect(transcript.statusCode).toBe(400);
+      expect(fetchMock).not.toHaveBeenCalled();
+
+      const bounded = await app.inject({
+        method: 'POST', url: '/v1/omega/composio/read',
+        payload: {
+          toolSlug: 'NOTION_FETCH_ALL_BLOCK_CONTENTS',
+          arguments: { block_id: 'page-id', recursive: true },
+        },
+      });
+      expect(bounded.statusCode).toBe(200);
+      expect(bounded.json().status).toBe('UNKNOWN');
+      const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+      const sent = JSON.parse(String(init.body));
+      expect(sent.arguments.max_blocks).toBe(500);
+      expect(sent.arguments.max_depth).toBe(4);
+    } finally { await app.close(); }
+  });
+
   it('preserves UNKNOWN and hides provider error bodies when Composio fails', async () => {
     const fetchMock = jest.fn<typeof fetch>().mockResolvedValue(response({ successful: false, error: 'sensitive provider details should not escape' }, 502));
     const app = createApp(':memory:', false, { composioGatewayConfig: config, composioFetch: fetchMock, connectorAdmissionEvidence: admitted });

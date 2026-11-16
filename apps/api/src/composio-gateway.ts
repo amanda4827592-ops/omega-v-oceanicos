@@ -16,7 +16,7 @@ const TOOLKIT_BY_SLUG: Readonly<Record<string, ComposioToolkit>> = Object.freeze
   NOTION_FETCH_ROW: 'notion',
   NOTION_QUERY_DATABASE_WITH_FILTER: 'notion',
 });
-const SECRET_FIELD = /(api.?key|access.?token|refresh.?token|authorization|password|secret|cookie|credential)/i;
+const SECRET_FIELD = /(token|api.?key|authorization|password|secret|cookie|credential)/i;
 const PINNED_VERSION = /^\d{8}_\d{2}$/;
 const MAX_ARGUMENT_BYTES = 16 * 1024;
 const MAX_RESPONSE_BYTES = 64 * 1024;
@@ -83,12 +83,35 @@ function validateJsonValue(value: unknown, depth = 0): void {
   }
   throw new Error('ARGUMENT_TYPE_INVALID');
 }
-export function validateComposioArguments(value: unknown): Record<string, unknown> {
+export function validateComposioArguments(toolSlug: string, value: unknown): Record<string, unknown> {
+  if (!composioToolkitForTool(toolSlug)) throw new Error('TOOL_NOT_ALLOWLISTED');
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('ARGUMENTS_OBJECT_REQUIRED');
   validateJsonValue(value);
   const serialized = JSON.stringify(value);
   if (Buffer.byteLength(serialized, 'utf8') > MAX_ARGUMENT_BYTES) throw new Error('ARGUMENTS_TOO_LARGE');
-  return value as Record<string, unknown>;
+
+  const bounded = { ...(value as Record<string, unknown>) };
+  const capInteger = (key: string, maximum: number): void => {
+    const candidate = bounded[key];
+    if (candidate === undefined) return;
+    if (typeof candidate !== 'number' || !Number.isInteger(candidate) || candidate < 1 || candidate > maximum) {
+      throw new Error('ARGUMENT_LIMIT_EXCEEDED_' + key.toUpperCase());
+    }
+  };
+  capInteger('page_size', 100);
+  capInteger('per_page', 100);
+  if (toolSlug === 'NOTION_FETCH_ALL_BLOCK_CONTENTS') {
+    if (bounded.recursive === true) {
+      if (bounded.max_blocks === undefined) bounded.max_blocks = 500;
+      if (bounded.max_depth === undefined) bounded.max_depth = 4;
+    }
+    capInteger('max_blocks', 500);
+    capInteger('max_depth', 4);
+  }
+  if (toolSlug === 'NOTION_GET_PAGE_MARKDOWN' && bounded.include_transcript === true) {
+    throw new Error('TRANSCRIPT_EXPANSION_NOT_ALLOWED');
+  }
+  return bounded;
 }
 export function redactComposioData(value: unknown, depth = 0): unknown {
   if (depth > 8) return '[TRUNCATED]';

@@ -75,6 +75,7 @@ The route is intentionally unconfigured when any required value is missing. It r
 - Tool slugs are fixed in source code.
 - Tool arguments must be JSON objects under 16 KiB, bounded by depth, item count, and string length. Secret-like argument keys are rejected.
 - Provider responses are limited to 64 KiB and secret-like response fields are redacted.
+- Pagination is capped at 100 items; recursive Notion block reads default to at most 500 blocks and depth 4. Meeting transcripts are not enabled in this slice.
 - One attempt is made per request, with an 8-second timeout.
 - Provider errors are mapped to stable codes; raw upstream error bodies are never returned.
 - Missing trusted admission evidence means NOT_EXECUTED.
