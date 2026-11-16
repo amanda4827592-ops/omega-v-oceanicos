@@ -36,6 +36,7 @@ import { registerExecuteRoute } from './execute-route.js';
 import { registerTensorDavRoutes } from './tensor-dav-route.js';
 import { registerLocalActionsStatusRoutes } from './local-actions-status-route.js';
 import { scanIntent } from './invisible-computer.js';
+import { registerTensorRoute } from './tensor-route.js';
 import {
   ENCRYPTION_ALGORITHM,
   appendEvent,
@@ -305,6 +306,7 @@ export function createApp(
   });
   registerMeshValidationRoute(fastify, ledgerMemory, requireReadAccess, jsonError);
   registerExecuteRoute(fastify, kaiMemory, jsonError, attestationSigningKey);
+  registerTensorRoute(fastify, ledgerMemory);
 
   fastify.get('/health', async (_request, reply) => {
     let ledgerIntegrity;

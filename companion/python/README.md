@@ -42,6 +42,21 @@ cat ledger.json | python3 companion/python/oceanicos_companion.py
 python3 -m unittest discover -s companion/python -p 'test_*.py'
 ```
 
+## 4D Tensor DAV companion
+
+The NumPy-backed `tensor_server.py` exposes bounded local endpoints for the
+exact contract `T[i,j,k,l] = i + j + k + l`:
+
+```bash
+python3 companion/python/tensor_server.py
+curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/tensor/4
+```
+
+Only sizes `4`, `6`, and `8` are admitted. The Fastify API uses this companion
+when reachable and otherwise uses its deterministic TypeScript fallback; that
+source boundary remains explicit in the returned evidence.
+
 This local companion slice does not claim deployment, external execution, provider authentication, or physical-world observation.
 
 ---
