@@ -379,6 +379,33 @@
       "evidence_hash": null,
       "next_delta": "Run the API test matrix and repository verification after the new per-tool limits; preserve UNKNOWN until they pass.",
       "timestamp": "2026-11-16T03:23:48Z"
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/unified-entity-dav",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/api/src/index.ts",
+        "apps/api/src/route-contract.ts",
+        "apps/api/src/tensor-dav-route.ts",
+        "apps/web/package.json",
+        "apps/web/src/LegacyDashboard.tsx",
+        "apps/web/src/__tests__/dom/TensorDavVisualizer.test.tsx",
+        "apps/web/src/components/TensorDavVisualizer.css",
+        "apps/web/src/components/TensorDavVisualizer.tsx",
+        "apps/web/vite.config.ts",
+        "docs/UNIFIED-ENTITY-ARCHITECTURE.md",
+        "package.json",
+        "packages/verification/src/index.ts",
+        "packages/verification/src/tensor-dav.ts",
+        "packages/verification/tsconfig.json",
+        "tests/integration/tensor-dav.integration.test.ts",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "3bb68de0dd3cbcbaeb9027ed9fd16c2d1350f56ac6ec4ab301eea9a72a657171",
+      "next_delta": "Human-review the local worker branch before any external push or merge.",
+      "timestamp": "2026-11-16T17:42:28Z"
     }
   ]
 }
