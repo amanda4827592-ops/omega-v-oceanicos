@@ -34,6 +34,7 @@ import { registerMeshValidationRoute } from './mesh-route.js';
 import { KaiMemoryStore } from './kai-memory.js';
 import { registerExecuteRoute } from './execute-route.js';
 import { registerTensorDavRoutes } from './tensor-dav-route.js';
+import { registerLocalActionsStatusRoutes } from './local-actions-status-route.js';
 import { scanIntent } from './invisible-computer.js';
 import {
   ENCRYPTION_ALGORITHM,
@@ -275,6 +276,7 @@ export function createApp(
       principal: isReadRequest ? 'read-bearer' : 'admin-bearer',
     };
   });
+  registerLocalActionsStatusRoutes(fastify);
 
   fastify.register(async (scope) => {
     await scope.register(rateLimit, { global: false });

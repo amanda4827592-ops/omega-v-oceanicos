@@ -428,6 +428,22 @@
       "tests_passed": true,
       "evidence_hash": "076e78b06527ac5168464617d7374c7f86ea2e8083e14fb772f5ea531b0cc769",
       "next_delta": "Human-review the pull request; do not merge or deploy from this worker branch."
+    },
+    {
+      "timestamp": "2026-11-17T10:59:47Z",
+      "agent_id": "manus",
+      "branch": "agent/manus/local-actions-read-contract",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/api/src/__tests__/local-actions-status.test.mjs",
+        "apps/api/src/index.ts",
+        "apps/api/src/local-actions-status-route.ts",
+        "apps/api/src/route-contract.ts",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "85bf4fc9b262a8e791c836e5248661ba7e88796001914e64a074fa57674cadda",
+      "next_delta": "Human-review the worker branch before any pull request merge; keep local action execution disabled."
     }
   ]
 }
