@@ -100,6 +100,14 @@ This documentation set is intentionally explicit about what is implemented, what
   handoff, and what must be observed again.
 - **[Oceanicos Total Continuum](../skills/oceanicos-total-continuum/SKILL.md)**
   — one finite pass inside this public repository, then only an observed handoff.
+- **[ΔVRØ HOUSE × OCEANICOS](../skills/dvro-house-oceanicos/SKILL.md)**
+  — the house vessel beside the verification method. Design language is not proof.
+- **[Bounded repository transition](../skills/omega-bounded-repository-transition/SKILL.md)**
+  — pin the commit, inspect the spine, and keep the report outside execution.
+- **[Omega sovereign](../skills/omega-sovereign/SKILL.md)**
+  — human authority stays with the person; the skill does not grant it.
+- **[Unified Entity DAV](../skills/unified-entity-dav/SKILL.md)**
+  — the tensor method for the entity surface already in this repository.
 - **[Whole ecosystem reality compression](./upgrades/WHOLE_ECOSYSTEM_REALITY_COMPRESSION_2026-10-04.md)**
   — source-labeled translation of the supplied Ω∞v architecture into repository
   boundaries and explicit unknowns.
