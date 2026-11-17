@@ -1,19 +1,21 @@
-# 💧 OCEANICOS — Brand System
+# AVRØ HOUSE × OCEANICOS — Brand System
 
 **REALITY, VERIFIED.**
 
 > **One root. One current. Infinite forms.**
 
-This document is the canonical brand language for OCEANICOS across the
-repository, product, website, API, CLI, community, and future surfaces.
+This document is the canonical brand language for AVRØ HOUSE and OCEANICOS
+across the repository, product, website, API, CLI, community, and future surfaces.
 
-**Naming lock:** use `OCEANICOS` for the platform and `Ω∞v` for the engine.
+**Naming lock:** use `AVRØ HOUSE` for the studio, `OCEANICOS` for the platform,
+and `Ω∞v` for the verification engine.
 Do not use the obsolete `Ω∞v Oceanicos Max` suffix in public product copy.
 
 ## 1. Brand core
 
 | Layer | Canonical definition |
 | --- | --- |
+| **Studio / umbrella** | **AVRØ HOUSE** |
 | **Name** | **OCEANICOS** |
 | **Category** | **Verified Intelligence Infrastructure** |
 | **Position** | **The trust + orchestration fabric between intelligence and consequence** |
@@ -54,7 +56,7 @@ INFINITE FORMS.
 ## 5. Brand hierarchy
 
 ```text
-                         Ω∞
+                      AVRØ HOUSE
                           │
                     OCEANICOS
                           │
@@ -75,6 +77,7 @@ INFINITE FORMS.
 
 ### Naming roles
 
+- **AVRØ HOUSE** — the overarching creative and engineering studio identity.
 - **Ω∞** — the enduring mark and conceptual symbol: continuity, recursion, and open-ended evolution.
 - **OCEANICOS** — the platform/ecosystem name.
 - **OMEGA OS** — the surrounding operating environment and execution context.
@@ -213,7 +216,8 @@ Avoid language that implies proof merely because a model produced an answer. `AT
 The same hierarchy should survive across every surface:
 
 ```text
-REPO      → Ω∞ OCEANICOS
+STUDIO    → AVRØ HOUSE
+REPO      → AVRØ HOUSE × OCEANICOS
 PRODUCT   → OCEANICOS
 ENGINE    → Ω∞v
 OS        → OMEGA OS
@@ -229,7 +233,9 @@ Names may be shortened by surface constraints, but the semantic hierarchy should
 ## 14. Final lockup
 
 ```text
-💧 Ω∞ OCEANICOS
+AVRØ HOUSE
+└── 💧 Ω∞ OCEANICOS
+    └── Ω∞v VERIFICATION ENGINE
 
 REALITY, VERIFIED.
 
@@ -240,6 +246,6 @@ INFINITE FORMS.
 
 ## 15. Relationship to the existing Ω∞v architecture
 
-This brand system names the same evidence-bound direction already present in the repository: the runtime exposes a `brand` identity of `Oceanicos Ω∞`, while the repository documentation describes the system as verification-oriented and retains the operational rule **attest, do not assert**. The brand layer therefore standardizes the public identity without changing the underlying execution contract.
+AVRØ HOUSE is the parent studio identity; OCEANICOS remains the platform name, and Ω∞v remains the verification engine. This presentation hierarchy does not change the underlying execution contract. The runtime's existing `brand` identity remains `Oceanicos Ω∞` unless separately updated and verified.
 
 The brand is not a claim that every current implementation detail is complete. Product state, verification state, and deployment state must continue to be reported from evidence.
