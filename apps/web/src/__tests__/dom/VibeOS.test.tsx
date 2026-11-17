@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
 import { VibeOS } from '../../VibeOS';
@@ -103,10 +103,15 @@ describe('Vibe OS surface', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('[UNKNOWN]');
   });
 
-  it('keeps the full dashboard one disclosure away', async () => {
+  it('switches views without losing the conversation draft and restores focus', async () => {
     installFetch();
     const user = userEvent.setup();
     render(<App />);
+
+    const intent = screen.getByRole('textbox', { name: 'Intent' });
+    await user.type(intent, 'Carry this thought across views.');
+    const navigation = screen.getByRole('navigation', { name: 'OCEANICOS views' });
+    expect(within(navigation).getByRole('button', { name: 'Vibe OS' })).toHaveAttribute('aria-current', 'page');
 
     await user.click(screen.getByRole('button', { name: /full system dashboard/i }));
 
@@ -114,8 +119,22 @@ describe('Vibe OS surface', () => {
       expect(screen.getByRole('heading', { level: 1, name: /what shall we make real/i })).toBeInTheDocument()
     );
     expect(screen.getByRole('region', { name: 'Invisible Online Computer' })).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: 'Intent' })).not.toBeInTheDocument();
+    const dashboardNavigation = screen.getByRole('navigation', { name: 'OCEANICOS views' });
+    expect(within(dashboardNavigation).getByRole('button', { name: 'Full system dashboard' })).toHaveAttribute('aria-current', 'page');
+
     await user.click(screen.getByRole('button', { name: /vibe os/i }));
+    const restoredIntent = screen.getByRole('textbox', { name: 'Intent' });
+    expect(restoredIntent).toHaveValue('Carry this thought across views.');
     expect(screen.getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Vibe OS' })));
+  });
+
+  it('does not probe service health when the conversation surface is inactive', () => {
+    const fetchMock = installFetch();
+    render(<VibeOS active={false} />);
+
+    expect(fetchMock).not.toHaveBeenCalledWith('/api/health', expect.anything());
   });
 
   it('shows observed API health, keeps unprobed services UNKNOWN, and opens DAV proof on demand', async () => {

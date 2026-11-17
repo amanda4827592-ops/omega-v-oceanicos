@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { submitIntent, type IntentReceipt, type Verdict } from './vibe-os-api';
 import { TensorDavVisualizer } from './components/TensorDavVisualizer';
+import { ExperienceSwitcher } from './ExperienceSwitcher';
 import './VibeOS.css';
 
 export type ChatMessage = {
@@ -81,7 +82,7 @@ function StatusPill({
   );
 }
 
-export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
+export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: () => void; active?: boolean }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [verifying, setVerifying] = useState(false);
@@ -95,14 +96,16 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let active = true;
+    if (!active) return;
+
+    let mounted = true;
     let controller: AbortController | null = null;
     const probe = async () => {
       controller?.abort();
       const current = new AbortController();
       controller = current;
       const observation = await observeSpineHealth(current.signal);
-      if (active && !current.signal.aborted) {
+      if (mounted && !current.signal.aborted) {
         setSpine(observation);
         setSpineCheckedAt(new Date().toLocaleTimeString());
       }
@@ -110,11 +113,11 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     void probe();
     const interval = window.setInterval(() => void probe(), 15_000);
     return () => {
-      active = false;
+      mounted = false;
       controller?.abort();
       window.clearInterval(interval);
     };
-  }, []);
+  }, [active]);
 
   useEffect(() => {
     const log = logRef.current;
@@ -258,9 +261,12 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
               New chat
             </button>
             {onOpenDashboard && (
-              <button type="button" className="vibe-header-button vibe-header-button--primary" onClick={onOpenDashboard}>
-                Full system dashboard
-              </button>
+              <ExperienceSwitcher
+                active="vibe"
+                onChange={(view) => {
+                  if (view === 'dashboard') onOpenDashboard();
+                }}
+              />
             )}
           </div>
         </header>
