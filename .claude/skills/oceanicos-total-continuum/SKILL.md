@@ -17,6 +17,10 @@ This is the total method for a change that must land in **this** git repository.
 | Kernel sequence | `skills/omega-v-os` |
 | Verification spine and FLOW | `skills/oceanicos-full-stack` |
 | Repair or upgrade | `skills/oceanicos-verified-upgrade` |
+| ΔVRØ HOUSE vessel | `skills/dvro-house-oceanicos` |
+| Repository transition | `skills/omega-bounded-repository-transition` |
+| Sovereign operating frame | `skills/omega-sovereign` |
+| Entity DAV | `skills/unified-entity-dav` |
 
 A skill is a method used during an active task. It is not a person, a hidden process, or proof that a machine, account, wallet, or external system is under this repository's control.
 
