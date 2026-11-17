@@ -401,6 +401,18 @@
       "evidence_hash": "ac11df43bea61a2bcafb30c4aec62321cf74426dcdae8471e50d980aa21363c5",
       "next_delta": "Human-review this local DAV branch; do not merge or deploy without review.",
       "timestamp": "2026-11-16T17:22:44Z"
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/unified-entity-dav",
+      "status": "VERIFIED",
+      "files_touched": [
+        "tests/integration/tensor_dav.integration.test.ts"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "d4ab75d91abeede40fa370b0efda4667a9dfe50bed2c0d21e5923bc557d62f2b",
+      "next_delta": "Human-review the DAV hardening slice; do not merge or deploy without review.",
+      "timestamp": "2026-11-17T02:47:59Z"
     }
   ]
 }
