@@ -12,6 +12,10 @@ test('Tensor DAV verifies all supported sizes and exact projections', () => {
     assert.equal(result.status, 'VERIFIED');
     assert.deepEqual(result.stats, expectedTensorDavStats(size));
     assert.deepEqual([result.projection.length, result.projection[0].length], [size * size, size * size]);
+    assert.equal(result.projection[0][0], 0);
+    assert.equal(result.projection[1][size], 2);
+    assert.equal(result.projection[size][1], 2);
+    assert.equal(result.projection[size * size - 1][size * size - 1], 4 * (size - 1));
     assert.equal(result.receipt?.algorithm, 'sha256');
     assert.match(result.receipt?.digest ?? '', /^[a-f0-9]{64}$/);
   }
