@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -31,6 +31,8 @@ test('Tensor DAV detects a divergent invariant without weakening the result', ()
 test('Tensor DAV API is verified for supported sizes and fail-closed for invalid input', async (t) => {
   const directory = await mkdtemp(join(tmpdir(), 'omega-tensor-dav-'));
   const app = createApp(join(directory, 'api.db'), false);
+  const ledgerPath = join(process.cwd(), 'kai_ledger.json');
+  const ledgerBefore = await readFile(ledgerPath);
   t.after(async () => {
     await app.close();
     await rm(directory, { recursive: true, force: true });
@@ -42,7 +44,11 @@ test('Tensor DAV API is verified for supported sizes and fail-closed for invalid
     assert.equal(body.data.status, 'VERIFIED');
     assert.equal(body.data.stats.checksum, expectedTensorDavStats(size).checksum);
   }
+  const direct = await app.inject({ method: 'GET', url: '/tensor/4' });
+  assert.equal(direct.statusCode, 200);
+  assert.equal(direct.json().data.receipt.status, 'VERIFIED');
   const invalid = await app.inject({ method: 'GET', url: '/api/tensor/5' });
   assert.equal(invalid.statusCode, 400);
   assert.equal(invalid.json().error, 'UNKNOWN');
+  assert.deepEqual(await readFile(ledgerPath), ledgerBefore, 'ordinary tensor GETs must not mutate kai_ledger.json');
 });
