@@ -14,6 +14,7 @@ type TensorReceipt = {
 
 type ErrorReceipt = { success: false; status: 'UNKNOWN' | 'DIVERGENT'; error?: string; issues?: string[] };
 const sizes: TensorSize[] = [4, 6, 8];
+const API_BASE_URL = (import.meta.env?.VITE_API_URL || '/api').replace(/\/$/, '');
 
 export function TensorDavVisualizer() {
   const [size, setSize] = useState<TensorSize>(4);
@@ -26,7 +27,7 @@ export function TensorDavVisualizer() {
     setLoading(true);
     setFailure(null);
     setReceipt(null);
-    fetch(`/api/tensor/${size}`, { signal: controller.signal })
+    fetch(`${API_BASE_URL}/tensor/${size}`, { signal: controller.signal })
       .then(async (response) => {
         const body = await response.json() as TensorReceipt | ErrorReceipt;
         if (!response.ok || body.success !== true) {

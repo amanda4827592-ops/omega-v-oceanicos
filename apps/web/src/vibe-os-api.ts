@@ -1,12 +1,7 @@
 /*
- * The single door from the Vibe OS surface to the sovereign Fastify API.
- *
- * One intent in, one verdict out. Only VERIFIED carries an output and an
- * evidence hash; every other outcome is a fail-closed receipt and the caller
- * must render it as such. Nothing is inferred locally: the field names below
- * mirror what the API actually returns (`response`, `evidence_hash`), while
- * `output`/`hash` are accepted so the documented contract keeps working if the
- * server renames them.
+ * The single door from the Lucid Skin to the Fastify chat API.
+ * The default /api prefix is handled by the Vite proxy; VITE_API_URL can point
+ * directly at the API origin.
  */
 
 export type Verdict = 'VERIFIED' | 'DIVERGENT' | 'UNKNOWN' | 'NOT_EXECUTED';
@@ -19,24 +14,46 @@ export type IntentReceipt = {
   reason: string | null;
 };
 
-/** The published execute endpoint. `/execute` and `/api/execute` are its aliases. */
-export const EXECUTE_PATH = '/v1/execute';
+/** The chat endpoint suffix, served under /api by default or an API origin override. */
+export const EXECUTE_PATH = '/chat';
 
-/**
- * In the dev stack the API is a separate origin (`VITE_API_URL`) or reached
- * through the Vite `/api` proxy, which rewrites to the Fastify service on
- * port 5000 — the local sovereign API.
- */
 const API_BASE_URL = (import.meta.env?.VITE_API_URL || '/api').replace(/\/$/, '');
-
 const OFFLINE = 'Local Brain Offline';
+const SHA256_HEX = /^[0-9a-f]{64}$/i;
 
 function offlineReceipt(reason: string): IntentReceipt {
   return { status: 'UNKNOWN', verified: false, output: null, hash: null, reason: `${OFFLINE} · ${reason}` };
 }
 
+function isVerdict(value: unknown): value is Verdict {
+  return value === 'VERIFIED' || value === 'DIVERGENT' || value === 'UNKNOWN' || value === 'NOT_EXECUTED';
+}
+
+function failureReceipt(payload: any, httpStatus: number): IntentReceipt {
+  const reported = isVerdict(payload?.status) ? payload.status : 'UNKNOWN';
+  // A non-2xx response cannot certify a successful outcome, even if its body
+  // claims VERIFIED. Preserve the repository's explicit failure states.
+  const status: Verdict = httpStatus === 503 || reported === 'VERIFIED' ? 'UNKNOWN' : reported;
+  const detail = typeof payload?.reason === 'string'
+    ? payload.reason
+    : typeof payload?.error === 'string'
+      ? payload.error
+      : Array.isArray(payload?.issues)
+        ? payload.issues.filter((issue: unknown) => typeof issue === 'string').join('; ')
+        : `HTTP ${httpStatus}`;
+  const reason = httpStatus === 503
+    ? `${OFFLINE} · HTTP 503${detail === 'HTTP 503' ? '' : ` · ${detail}`}`
+    : detail === `HTTP ${httpStatus}` ? detail : `${detail} · HTTP ${httpStatus}`;
+  return { status, verified: false, output: null, hash: null, reason };
+}
+
 export function executeUrl(): string {
   return `${API_BASE_URL}${EXECUTE_PATH}`;
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 export async function submitIntent(intent: string, signal?: AbortSignal): Promise<IntentReceipt> {
@@ -44,7 +61,7 @@ export async function submitIntent(intent: string, signal?: AbortSignal): Promis
   try {
     response = await fetch(executeUrl(), {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({ intent }),
       signal,
     });
@@ -52,39 +69,92 @@ export async function submitIntent(intent: string, signal?: AbortSignal): Promis
     return offlineReceipt(err instanceof Error ? err.message : 'request failed');
   }
 
-  // 503 is the fail-closed transport signal; any other non-2xx is also not an
-  // answer, so it is reported the same way rather than dressed up as one.
-  if (!response.ok) return offlineReceipt(`HTTP ${response.status}`);
-
   let payload: any = null;
   try {
     payload = await response.json();
   } catch {
-    return offlineReceipt('unreadable response');
+    return offlineReceipt(`HTTP ${response.status} · unreadable response`);
   }
+  if (!response.ok) return failureReceipt(payload, response.status);
 
   const raw = typeof payload?.status === 'string' ? payload.status : 'UNKNOWN';
-  const status: Verdict =
-    raw === 'VERIFIED' || raw === 'DIVERGENT' || raw === 'NOT_EXECUTED' ? raw : 'UNKNOWN';
-  const output =
-    typeof payload?.output === 'string'
-      ? payload.output
-      : typeof payload?.response === 'string'
-        ? payload.response
-        : null;
-  const hash =
-    typeof payload?.hash === 'string'
-      ? payload.hash
-      : typeof payload?.evidence_hash === 'string'
-        ? payload.evidence_hash
-        : null;
+  const status: Verdict = isVerdict(raw) ? raw : 'UNKNOWN';
+  const output = typeof payload?.output === 'string'
+    ? payload.output
+    : typeof payload?.response === 'string'
+      ? payload.response
+      : null;
+  const hash = typeof payload?.hash === 'string'
+    ? payload.hash
+    : typeof payload?.evidence_hash === 'string'
+      ? payload.evidence_hash
+      : null;
 
-  const verified = status === 'VERIFIED' && Boolean(output);
+  if (status !== 'VERIFIED') {
+    return {
+      status,
+      verified: false,
+      output: null,
+      hash: null,
+      reason: typeof payload?.reason === 'string' ? payload.reason : null,
+    };
+  }
+
+  if (!output) {
+    return {
+      status: 'UNKNOWN',
+      verified: false,
+      output: null,
+      hash: null,
+      reason: 'The VERIFIED API receipt did not include a response body.',
+    };
+  }
+  if (!hash) {
+    return {
+      status: 'UNKNOWN',
+      verified: false,
+      output: null,
+      hash: null,
+      reason: 'The VERIFIED API receipt did not include a SHA-256 digest.',
+    };
+  }
+  if (!SHA256_HEX.test(hash)) {
+    return {
+      status: 'DIVERGENT',
+      verified: false,
+      output: null,
+      hash: null,
+      reason: 'The API supplied a malformed SHA-256 digest.',
+    };
+  }
+
+  let observedHash: string;
+  try {
+    observedHash = await sha256Hex(output);
+  } catch {
+    return {
+      status: 'UNKNOWN',
+      verified: false,
+      output: null,
+      hash: null,
+      reason: 'SHA-256 verification is unavailable in this browser.',
+    };
+  }
+  if (observedHash !== hash.toLowerCase()) {
+    return {
+      status: 'DIVERGENT',
+      verified: false,
+      output: null,
+      hash: null,
+      reason: 'The response body does not match the supplied SHA-256 digest.',
+    };
+  }
+
   return {
-    status: verified ? 'VERIFIED' : status === 'VERIFIED' ? 'UNKNOWN' : status,
-    verified,
-    output: verified ? output : null,
-    hash: verified ? hash : null,
+    status: 'VERIFIED',
+    verified: true,
+    output,
+    hash: observedHash,
     reason: typeof payload?.reason === 'string' ? payload.reason : null,
   };
 }
