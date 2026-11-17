@@ -180,6 +180,8 @@ export interface TensorDavStats {
 /** Observed Tensor DAV payload before verification status is admitted. */
 export interface TensorObservation {
   readonly size: TensorDavSize;
+  readonly shape_4d: readonly [number, number, number, number];
+  readonly shape_2d: readonly [number, number];
   readonly projection: readonly (readonly number[])[];
   readonly stats: TensorDavStats;
 }

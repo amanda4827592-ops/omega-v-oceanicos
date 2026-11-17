@@ -11,6 +11,8 @@ test('Tensor DAV verifies all supported sizes and exact projections', () => {
     const result = computeTensorDav(size);
     assert.equal(result.status, 'VERIFIED');
     assert.deepEqual(result.stats, expectedTensorDavStats(size));
+    assert.deepEqual(result.shape_4d, [size, size, size, size]);
+    assert.deepEqual(result.shape_2d, [size * size, size * size]);
     assert.deepEqual([result.projection.length, result.projection[0].length], [size * size, size * size]);
     assert.equal(result.projection[0][0], 0);
     assert.equal(result.projection[1][size], 2);
@@ -46,6 +48,8 @@ test('Tensor DAV API is verified for supported sizes and fail-closed for invalid
     assert.equal(response.statusCode, 200);
     const body = response.json();
     assert.equal(body.data.status, 'VERIFIED');
+    assert.deepEqual(body.data.shape_4d, [size, size, size, size]);
+    assert.deepEqual(body.data.shape_2d, [size * size, size * size]);
     assert.equal(body.data.stats.checksum, expectedTensorDavStats(size).checksum);
   }
   const direct = await app.inject({ method: 'GET', url: '/tensor/4' });

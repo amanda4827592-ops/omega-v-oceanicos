@@ -20,6 +20,8 @@ const isTensorDavSize = (value: number): value is TensorDavSize =>
 const canonicalReceiptPayload = (payload: Omit<TensorDavPayload, 'receipt'>): string =>
   JSON.stringify({
     size: payload.size,
+    shape_4d: payload.shape_4d,
+    shape_2d: payload.shape_2d,
     projection: payload.projection,
     stats: payload.stats,
     status: payload.status,
@@ -47,6 +49,8 @@ export const computeTensorDav = (size: number): TensorDavPayload => {
     }),
   );
   const values = projection.flat();
+  const shape_4d = [size, size, size, size] as const;
+  const shape_2d = [size * size, size * size] as const;
   const stats: TensorDavStats = {
     minVal: Math.min(...values),
     maxVal: Math.max(...values),
@@ -55,6 +59,8 @@ export const computeTensorDav = (size: number): TensorDavPayload => {
   };
   const candidate: Omit<TensorDavPayload, 'receipt'> = {
     size,
+    shape_4d,
+    shape_2d,
     projection,
     stats,
     status: 'UNKNOWN',
@@ -75,17 +81,25 @@ export const verifyTensorDav = (
   }
   const expected = expectedTensorDavStats(candidate.size);
   const expectedDimension = candidate.size * candidate.size;
+  const shapesMatch = candidate.shape_4d.length === 4
+    && candidate.shape_4d.every((dimension) => dimension === candidate.size)
+    && candidate.shape_2d[0] === expectedDimension
+    && candidate.shape_2d[1] === expectedDimension;
   const dimensionsMatch = candidate.projection.length === expectedDimension
     && candidate.projection.every((row) => row.length === expectedDimension);
   const statsMatch = candidate.stats.minVal === expected.minVal
     && candidate.stats.maxVal === expected.maxVal
     && candidate.stats.mean === expected.mean
     && candidate.stats.checksum === expected.checksum;
-  if (!dimensionsMatch || !statsMatch) {
+  if (!shapesMatch || !dimensionsMatch || !statsMatch) {
     return {
       ...candidate,
       status: 'DIVERGENT',
-      reason: !dimensionsMatch ? 'projection dimensions diverge from tensor size' : 'tensor statistical invariant diverged',
+      reason: !shapesMatch
+        ? 'tensor shapes diverge from tensor size'
+        : !dimensionsMatch
+          ? 'projection dimensions diverge from tensor size'
+          : 'tensor statistical invariant diverged',
     };
   }
   return { ...candidate, status: 'VERIFIED', reason: null };
