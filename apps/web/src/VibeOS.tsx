@@ -1,42 +1,121 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
-import { submitIntent } from './vibe-os-api';
+import { submitIntent, type IntentReceipt, type Verdict } from './vibe-os-api';
+import { TensorDavVisualizer } from './components/TensorDavVisualizer';
 import './VibeOS.css';
-
-/*
- * The Vibe OS — one sidebar, one conversation, one input.
- *
- * Every assistant bubble is the receipt of one intent: VERIFIED carries the
- * API's output and the first 8 characters of its evidence hash, and every
- * other outcome is a fail-closed bubble. Nothing here asserts what the API did
- * not return.
- */
 
 export type ChatMessage = {
   role: 'user' | 'ai';
   content: string;
   verified: boolean;
   hash?: string;
-  /** The API's own reason for a fail-closed answer, kept as disclosure. */
+  /** The API's own reason for a fail-closed or observed result. */
   detail?: string;
+  status?: Verdict | 'OBSERVED';
 };
 
-const VERIFYING = '[Verifying against kai_ledger...]';
+type LiveState = 'OBSERVED' | 'UNKNOWN';
+type HealthObservation = { status: LiveState; detail: string };
 
-// The fail-closed headline is the receipt's own verdict, never a cause we did not
-// observe: an offline transport answers UNKNOWN, a KAI Shield block answers DIVERGENT.
-// The API's reason sits underneath and says which one happened.
-function failClosedCopy(status: string): string {
-  return `[${status}]`;
+const VERIFYING = '[Verifying against kai_ledger...]';
+const API_BASE_URL = (import.meta.env?.VITE_API_URL || '/api').replace(/\/$/, '');
+
+function apiUrl(path: string): string {
+  return `${API_BASE_URL}${path}`;
+}
+
+async function observeSpineHealth(signal?: AbortSignal): Promise<HealthObservation> {
+  try {
+    const response = await fetch(apiUrl('/health'), {
+      headers: { accept: 'application/json' },
+      signal,
+    });
+    return response.ok
+      ? { status: 'OBSERVED', detail: `GET /health · HTTP ${response.status}` }
+      : { status: 'UNKNOWN', detail: `GET /health · HTTP ${response.status}` };
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { status: 'UNKNOWN', detail: 'Health observation cancelled.' };
+    }
+    return {
+      status: 'UNKNOWN',
+      detail: `GET /health unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+    };
+  }
+}
+
+function receiptMessage(receipt: IntentReceipt): ChatMessage {
+  if (receipt.verified) {
+    return {
+      role: 'ai',
+      content: receipt.output ?? '',
+      verified: true,
+      hash: receipt.hash ?? undefined,
+      status: 'VERIFIED',
+    };
+  }
+  return {
+    role: 'ai',
+    content: `[${receipt.status}]`,
+    verified: false,
+    detail: receipt.reason ?? undefined,
+    status: receipt.status,
+  };
+}
+
+function StatusPill({
+  label,
+  status,
+  detail,
+}: {
+  label: string;
+  status: LiveState | Verdict;
+  detail: string;
+}) {
+  return (
+    <div className="vibe-status" aria-label={`${label} status`} title={detail}>
+      <span className={`vibe-status-dot vibe-status-dot--${status.toLowerCase()}`} aria-hidden="true" />
+      <span className="vibe-status-label">{label}</span>
+      <strong className={`vibe-status-value vibe-status-value--${status.toLowerCase()}`}>{status}</strong>
+      <small>{detail}</small>
+    </div>
+  );
 }
 
 export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [spine, setSpine] = useState<HealthObservation>({
+    status: 'UNKNOWN',
+    detail: 'No health response observed yet.',
+  });
+  const [spineCheckedAt, setSpineCheckedAt] = useState<string | null>(null);
+  const [kaiStatus, setKaiStatus] = useState<Verdict>('UNKNOWN');
+  const [davOpen, setDavOpen] = useState(false);
   const logRef = useRef<HTMLDivElement | null>(null);
 
-  // Pin the conversation to its newest line. Assigning scrollTop works in every
-  // environment (jsdom included); Element.scrollTo does not.
+  useEffect(() => {
+    let active = true;
+    let controller: AbortController | null = null;
+    const probe = async () => {
+      controller?.abort();
+      const current = new AbortController();
+      controller = current;
+      const observation = await observeSpineHealth(current.signal);
+      if (active && !current.signal.aborted) {
+        setSpine(observation);
+        setSpineCheckedAt(new Date().toLocaleTimeString());
+      }
+    };
+    void probe();
+    const interval = window.setInterval(() => void probe(), 15_000);
+    return () => {
+      active = false;
+      controller?.abort();
+      window.clearInterval(interval);
+    };
+  }, []);
+
   useEffect(() => {
     const log = logRef.current;
     if (log) log.scrollTop = log.scrollHeight;
@@ -51,24 +130,9 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     setVerifying(true);
 
     const receipt = await submitIntent(intent);
+    setKaiStatus(receipt.status);
+    setMessages((previous) => [...previous, receiptMessage(receipt)]);
     setVerifying(false);
-
-    setMessages((previous) => [
-      ...previous,
-      receipt.verified
-        ? {
-            role: 'ai',
-            content: receipt.output ?? '',
-            verified: true,
-            hash: receipt.hash ?? undefined,
-          }
-        : {
-            role: 'ai',
-            content: failClosedCopy(receipt.status),
-            verified: false,
-            detail: receipt.reason ?? undefined,
-          },
-    ]);
   };
 
   const onSubmit = (event: FormEvent) => {
@@ -87,128 +151,259 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     if (verifying) return;
     setMessages([]);
     setDraft('');
+    setKaiStatus('UNKNOWN');
+  };
+
+  const beginQuickAction = (label: string) => {
+    setMessages((previous) => [...previous, { role: 'user', content: label, verified: false }]);
+    setVerifying(true);
+  };
+
+  const runHealthCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Verify System Health');
+    const observation = await observeSpineHealth();
+    setSpine(observation);
+    setSpineCheckedAt(new Date().toLocaleTimeString());
+    setMessages((previous) => [
+      ...previous,
+      {
+        role: 'ai',
+        content: observation.status === 'OBSERVED'
+          ? 'The Fastify health endpoint responded.'
+          : '[UNKNOWN]',
+        verified: false,
+        status: observation.status,
+        detail: observation.detail,
+      },
+    ]);
+    setVerifying(false);
+  };
+
+  const runLedgerCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Check Ledger State');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/block/tip'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/block/tip · HTTP ${response.status}`,
+        };
+      } else if (payload?.integrity?.valid === true) {
+        const height = Number.isFinite(payload.integrity.height) ? ` · height ${payload.integrity.height}` : '';
+        result = {
+          role: 'ai',
+          content: `Ledger endpoint response observed: integrity valid${height}.`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/block/tip · endpoint response only; not a deployment claim.',
+        };
+      } else if (payload?.integrity?.valid === false) {
+        result = {
+          role: 'ai',
+          content: '[DIVERGENT]',
+          verified: false,
+          status: 'DIVERGENT',
+          detail: typeof payload.integrity.reason === 'string'
+            ? payload.integrity.reason
+            : 'The API reports that the ledger integrity check is not valid.',
+        };
+      } else {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: 'GET /v1/block/tip returned no recognized integrity observation.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/block/tip unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
   };
 
   const empty = messages.length === 0 && !verifying;
 
   return (
     <div className="vibe-os">
-      <aside className="vibe-sidebar" aria-label="Vibe OS sidebar">
-        <div className="vibe-brand">
-          <span className="vibe-brand-mark" aria-hidden="true">
-            ≈
-          </span>
-          OCEANICOS
-        </div>
-
-        <button type="button" className="vibe-new" onClick={newChat} disabled={verifying}>
-          + New chat
-        </button>
-
-        <p className="vibe-sidebar-note">
-          One intent at a time. Answers are checked against kai_ledger before they are shown.
-        </p>
-
-        <div className="vibe-sidebar-foot">
-          <span className="vibe-sovereign">
-            <span className="vibe-sovereign-dot" aria-hidden="true" />
-            local sovereign API
-          </span>
-          {onOpenDashboard && (
-            <button type="button" className="vibe-disclose" onClick={onOpenDashboard}>
-              Full system dashboard →
-            </button>
-          )}
-        </div>
-      </aside>
-
-      <div className="vibe-main">
+      <div className="vibe-shell">
         <header className="vibe-topbar">
-          <span className="vibe-topbar-title">Vibe OS</span>
-          <span>
-            {messages.length === 0 ? 'New session' : `${messages.length} messages`}
+          <div className="vibe-brand" aria-label="OCEANICOS Lucid Skin">
+            <span className="vibe-brand-mark" aria-hidden="true">≈</span>
+            <span>OCEANICOS</span>
+            <span className="vibe-brand-divider" aria-hidden="true">/</span>
+            <span className="vibe-brand-subtitle">Lucid Skin</span>
+          </div>
+          <div className="vibe-header-actions">
+            <button type="button" className="vibe-header-button" onClick={newChat} disabled={verifying}>
+              New chat
+            </button>
             {onOpenDashboard && (
-              <>
-                {' · '}
-                <button type="button" className="vibe-topbar-dashboard" onClick={onOpenDashboard}>
-                  dashboard
-                </button>
-              </>
-            )}
-          </span>
-        </header>
-
-        <div className="vibe-log" ref={logRef} role="log" aria-live="polite" aria-label="Conversation">
-          <div className="vibe-thread">
-            {empty && (
-              <div className="vibe-empty">
-                <h1>What shall we make real?</h1>
-                <p>Describe one intent. It is verified against the ledger, or it fails closed.</p>
-              </div>
-            )}
-
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`vibe-message vibe-message--${message.role === 'user' ? 'user' : 'ai'}`}
-              >
-                {message.role === 'user' ? (
-                  <div className="vibe-bubble vibe-bubble--user">{message.content}</div>
-                ) : message.verified ? (
-                  <>
-                    <div className="vibe-bubble vibe-bubble--ai">{message.content}</div>
-                    <span className="vibe-badge">
-                      <span aria-hidden="true">🔒</span> Verified
-                      {message.hash && (
-                        <span className="vibe-badge-hash">{message.hash.slice(0, 8)}</span>
-                      )}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <div className="vibe-bubble vibe-bubble--fail" role="alert">
-                      {message.content}
-                    </div>
-                    {message.detail && <p className="vibe-detail">{message.detail}</p>}
-                  </>
-                )}
-              </div>
-            ))}
-
-            {verifying && (
-              <div className="vibe-message vibe-message--ai">
-                <div className="vibe-bubble vibe-bubble--ai vibe-bubble--pending" role="status">
-                  {VERIFYING}
-                </div>
-              </div>
+              <button type="button" className="vibe-header-button vibe-header-button--primary" onClick={onOpenDashboard}>
+                Full system dashboard
+              </button>
             )}
           </div>
-        </div>
+        </header>
 
-        <div className="vibe-composer-wrap">
-          <form className="vibe-composer" onSubmit={onSubmit}>
-            <textarea
-              className="vibe-input"
-              aria-label="Intent"
-              rows={1}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={onKeyDown}
-              maxLength={2000}
-              disabled={verifying}
-              placeholder="Ask anything — it will be verified, not asserted."
+        <section className="vibe-current" aria-label="Top Current live service status">
+          <div className="vibe-current-heading">
+            <span className="vibe-current-kicker">TOP CURRENT</span>
+            <span className="vibe-current-note">
+              {spineCheckedAt ? `Health observed ${spineCheckedAt}` : 'Waiting for first health observation'}
+            </span>
+          </div>
+          <div className="vibe-status-grid">
+            <StatusPill label="Fastify Spine" status={spine.status} detail={spine.detail} />
+            <StatusPill
+              label="Local LLM · 11434"
+              status="UNKNOWN"
+              detail="No browser-safe health probe is exposed; the current API does not use Ollama."
             />
-            <button
-              type="submit"
-              className="vibe-send"
-              aria-label="Send intent"
-              disabled={verifying || !draft.trim()}
-            >
-              ↑
-            </button>
-          </form>
-          <p className="vibe-footnote">ATT TEST · DON&apos;T ASSERT · UNKNOWN IS PRESERVED</p>
-        </div>
+            <StatusPill
+              label="KAI Shield"
+              status={kaiStatus}
+              detail={kaiStatus === 'UNKNOWN' ? 'No current chat receipt observed.' : `Latest execute receipt: ${kaiStatus}.`}
+            />
+          </div>
+          <p className="vibe-current-disclaimer">HTTP reachability and API receipts are scoped observations, not production-health claims.</p>
+        </section>
+
+        <main className="vibe-main">
+          <div className="vibe-log" ref={logRef} role="log" aria-live="polite" aria-label="Conversation">
+            <div className="vibe-thread">
+              {empty && (
+                <div className="vibe-empty">
+                  <span className="vibe-empty-mark" aria-hidden="true">≈</span>
+                  <p className="vibe-empty-eyebrow">ONE INTENT · ONE OBSERVABLE RESPONSE</p>
+                  <h1>What shall we make real?</h1>
+                  <p>Describe one intent. The API returns a bounded receipt; unobserved claims stay unknown.</p>
+                </div>
+              )}
+
+              {messages.map((message, index) => (
+                <div
+                  key={`${index}-${message.role}`}
+                  className={`vibe-message vibe-message--${message.role}`}
+                >
+                  {message.role === 'user' ? (
+                    <div className="vibe-bubble vibe-bubble--user">{message.content}</div>
+                  ) : message.verified ? (
+                    <>
+                      <div className="vibe-bubble vibe-bubble--ai">{message.content}</div>
+                      <span className="vibe-badge" aria-label="API receipt verified with SHA-256 evidence hash">
+                        <span aria-hidden="true">🔒</span> Verified
+                        {message.hash && <span className="vibe-badge-hash">{message.hash.slice(0, 8)}</span>}
+                      </span>
+                    </>
+                  ) : message.status === 'OBSERVED' ? (
+                    <>
+                      <div className="vibe-bubble vibe-bubble--observation" role="status">{message.content}</div>
+                      {message.detail && <p className="vibe-detail">{message.detail}</p>}
+                    </>
+                  ) : (
+                    <>
+                      <div className="vibe-bubble vibe-bubble--fail" role="alert">{message.content}</div>
+                      {message.detail && <p className="vibe-detail">{message.detail}</p>}
+                    </>
+                  )}
+                </div>
+              ))}
+
+              {verifying && (
+                <div className="vibe-message vibe-message--ai">
+                  <div className="vibe-bubble vibe-bubble--pending" role="status">{VERIFYING}</div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <section className="vibe-proof" aria-label="DAV proof drawer">
+            <div className="vibe-proof-trigger-row">
+              <div>
+                <span className="vibe-proof-kicker">VISUAL PROOF</span>
+                <p>Deterministic projection · read only · no ledger write</p>
+              </div>
+              <button
+                type="button"
+                className="vibe-proof-toggle"
+                aria-expanded={davOpen}
+                aria-controls="lucid-dav-drawer"
+                onClick={() => setDavOpen((open) => !open)}
+              >
+                {davOpen ? 'Close DAV proof' : 'Open DAV proof'}
+                <span aria-hidden="true">{davOpen ? ' −' : ' +'}</span>
+              </button>
+            </div>
+            {davOpen && (
+              <div id="lucid-dav-drawer" className="vibe-proof-drawer">
+                <TensorDavVisualizer />
+              </div>
+            )}
+          </section>
+
+          <div className="vibe-composer-wrap">
+            <div className="vibe-actions" role="group" aria-label="Quick actions">
+              <button
+                type="button"
+                className="vibe-action"
+                aria-expanded={davOpen}
+                aria-controls="lucid-dav-drawer"
+                onClick={() => setDavOpen(true)}
+                disabled={verifying}
+              >
+                Inspect 4×4×4×4 Tensor
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runLedgerCheck()} disabled={verifying}>
+                Check Ledger State
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runHealthCheck()} disabled={verifying}>
+                Verify System Health
+              </button>
+            </div>
+            <form className="vibe-composer" onSubmit={onSubmit}>
+              <textarea
+                className="vibe-input"
+                aria-label="Intent"
+                rows={1}
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={onKeyDown}
+                maxLength={2000}
+                disabled={verifying}
+                placeholder="Ask anything — the API receipt will be shown without upgrading unknowns."
+              />
+              <button
+                type="submit"
+                className="vibe-send"
+                aria-label="Send intent"
+                disabled={verifying || !draft.trim()}
+              >
+                ↑
+              </button>
+            </form>
+            <p className="vibe-footnote">ATTEST, DON&apos;T ASSERT · UNKNOWN IS PRESERVED · NO EXECUTION CLAIM WITHOUT A RECEIPT</p>
+          </div>
+        </main>
       </div>
     </div>
   );

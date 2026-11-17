@@ -306,11 +306,12 @@ export function registerExecuteRoute(
     };
   };
 
-  // `/execute` is what the Vite dev proxy targets after rewriting `/api/*`;
-  // `/api/execute` is the published endpoint. `/v1/execute` is the surface the
-  // Vibe OS client posts to. All three are one handler. The same prefixes serve
-  // memory reads and the after-the-fact reconciliation.
-  for (const path of ['/execute', '/api/execute', '/v1/execute']) fastify.post(path, executeHandler);
+  // `/execute` and `/chat` are what the Vite dev proxy targets after rewriting
+  // `/api/*`; `/api/execute` and `/api/chat` are published endpoints. `/v1/execute`
+  // is the compatibility surface. Every execution path shares one handler.
+  for (const path of ['/execute', '/api/execute', '/v1/execute', '/chat', '/api/chat']) {
+    fastify.post(path, executeHandler);
+  }
   for (const path of ['/kai/memory', '/api/kai/memory']) fastify.get(path, memoryHandler);
   for (const path of ['/kai/memory/:id', '/api/kai/memory/:id']) {
     fastify.get(path, memoryDetailHandler);
