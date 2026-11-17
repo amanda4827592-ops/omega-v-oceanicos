@@ -444,6 +444,24 @@
       "tests_passed": true,
       "evidence_hash": "85bf4fc9b262a8e791c836e5248661ba7e88796001914e64a074fa57674cadda",
       "next_delta": "Human-review the worker branch before any pull request merge; keep local action execution disabled."
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/oceanicos-front-flow",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/web/src/App.tsx",
+        "apps/web/src/ExperienceSwitcher.css",
+        "apps/web/src/ExperienceSwitcher.tsx",
+        "apps/web/src/LegacyDashboard.tsx",
+        "apps/web/src/VibeOS.tsx",
+        "apps/web/src/__tests__/dom/VibeOS.test.tsx",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "1190e83ef8ee8412f050e9a6aaac56726d74b7190ace6893b9f830491f5d7c78",
+      "next_delta": "Human-review the shared experience switch at narrow/mobile widths before any external publication.",
+      "timestamp": "2026-11-17T12:01:50Z"
     }
   ]
 }
