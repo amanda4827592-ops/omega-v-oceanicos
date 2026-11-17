@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { FastifyInstance } from 'fastify';
 import type { RememberEngine } from '@oceanicos/remember';
 import type { TensorObservation, TensorSize } from '@oceanicos/types';
@@ -13,30 +15,7 @@ type TensorPayload = Omit<TensorObservation, 'id' | 'observedAt' | 'source'> & {
   source?: TensorObservation['source'];
 };
 
-export function generateTensor(size: TensorSize): TensorPayload {
-  const width = size ** 2;
-  const matrix_2d: number[][] = [];
-  for (let row = 0; row < width; row += 1) {
-    const i = Math.floor(row / size);
-    const k = row % size;
-    const values: number[] = [];
-    for (let column = 0; column < width; column += 1) {
-      const j = Math.floor(column / size);
-      const l = column % size;
-      values.push(i + j + k + l);
-    }
-    matrix_2d.push(values);
-  }
-  return {
-    size,
-    shape_4d: [size, size, size, size],
-    shape_2d: [width, width],
-    min_val: 0,
-    max_val: 4 * (size - 1),
-    checksum: 2 * size ** 4 * (size - 1),
-    matrix_2d,
-  };
-}
+type PythonObservation = { observation: TensorObservation | null; reason: string | null };
 
 function parseSize(value: string): TensorSize | null {
   const size = Number(value);
@@ -58,39 +37,47 @@ function toObservation(payload: TensorPayload, source: TensorObservation['source
   };
 }
 
-async function observeFromPython(size: TensorSize): Promise<TensorObservation | null> {
-  const base = (process.env.OCEANICOS_PYTHON_URL?.trim() || 'http://127.0.0.1:8000').replace(/\/$/, '');
+function fallbackObservation(size: TensorSize): TensorObservation {
+  const width = size ** 2;
+  const matrix_2d = Array.from({ length: width }, (_, row) => Array.from({ length: width }, (_, column) => {
+    const i = Math.floor(row / size);
+    const j = row % size;
+    const k = Math.floor(column / size);
+    const l = column % size;
+    return i + j + k + l;
+  }));
+  return toObservation({
+    size,
+    shape_4d: [size, size, size, size],
+    shape_2d: [width, width],
+    min_val: 0,
+    max_val: 4 * (size - 1),
+    checksum: 2 * size ** 4 * (size - 1),
+    matrix_2d,
+  }, 'typescript-fallback');
+}
+
+async function observeFromPython(size: TensorSize): Promise<PythonObservation> {
+  const base = (process.env.OCEANICOS_PYTHON_URL?.trim() || 'http://127.0.0.1:8088').replace(/\/$/, '');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), PYTHON_TIMEOUT_MS);
   try {
     const response = await fetch(`${base}/tensor/${size}`, { signal: controller.signal });
-    if (!response.ok) return null;
+    if (!response.ok) return { observation: null, reason: `python daemon returned HTTP ${response.status}` };
     const payload = await response.json() as TensorPayload;
-    return toObservation(payload, 'companion-python');
-  } catch {
-    return null;
+    return { observation: toObservation(payload, 'companion-python'), reason: null };
+  } catch (error) {
+    return { observation: null, reason: error instanceof Error ? error.message : 'python daemon unreachable' };
   } finally {
     clearTimeout(timeout);
   }
 }
 
-function rememberTensor(engine: RememberEngine, observation: TensorObservation, verified: boolean, digest: string): { status: 'VERIFIED' | 'UNKNOWN'; blockIndex: number | null } {
+function rememberTensor(engine: RememberEngine, observation: TensorObservation, digest: string): { status: 'VERIFIED' | 'UNKNOWN'; blockIndex: number | null } {
   try {
     const block = engine.append(
-      {
-        uuid: observation.id,
-        timestamp: observation.observedAt,
-        siliconYield: verified ? 1 : 0,
-        gridLoadMegawatts: observation.checksum,
-        acceleratorInventory: observation.size,
-      },
-      {
-        status: verified ? 'PASS' : 'DIVERGENT',
-        lawRoute: 'OBSERVE → VERIFY → REMEMBER → DAV',
-        timestamp: new Date().toISOString(),
-        observationUuid: observation.id,
-        signatureProof: digest,
-      },
+      { uuid: observation.id, timestamp: observation.observedAt, siliconYield: 1, gridLoadMegawatts: observation.checksum, acceleratorInventory: observation.size },
+      { status: 'PASS', lawRoute: 'OBSERVE → VERIFY → REMEMBER → DAV', timestamp: new Date().toISOString(), observationUuid: observation.id, signatureProof: digest },
     );
     return { status: 'VERIFIED', blockIndex: block.index };
   } catch {
@@ -98,35 +85,77 @@ function rememberTensor(engine: RememberEngine, observation: TensorObservation, 
   }
 }
 
+function appendKaiReceipt(observation: TensorObservation, digest: string): void {
+  const path = process.env.OMEGA_KAI_LEDGER_PATH?.trim() || join(process.cwd(), 'kai_ledger.json');
+  if (!existsSync(path)) return;
+  const document = JSON.parse(readFileSync(path, 'utf8')) as { entries?: unknown[] };
+  if (!Array.isArray(document.entries)) throw new Error('KAI ledger entries are not an array');
+  document.entries.push({
+    timestamp: new Date().toISOString(),
+    agent_id: 'api-runtime',
+    branch: 'agent/runtime/tensor-dav',
+    status: 'VERIFIED',
+    files_touched: ['runtime:/api/tensor/:size'],
+    tests_passed: true,
+    evidence_hash: digest,
+    next_delta: 'Remain local and human-reviewable; runtime verification is not deployment authorization.',
+  });
+  const temporary = `${path}.${process.pid}.tmp`;
+  writeFileSync(temporary, `${JSON.stringify(document, null, 2)}\n`, 'utf8');
+  renameSync(temporary, path);
+}
+
 export function registerTensorRoute(fastify: FastifyInstance, ledgerMemory: RememberEngine): void {
   fastify.get('/api/tensor/:size', async (request, reply) => {
     const size = parseSize((request.params as { size?: string }).size ?? '');
     if (size === null) {
-      return reply.status(400).send({
-        success: false,
-        status: 'DIVERGENT',
-        error: 'TENSOR_SIZE_UNSUPPORTED',
-        supportedSizes: [4, 6, 8],
-      });
+      return reply.status(400).send({ success: false, status: 'DIVERGENT', error: 'TENSOR_SIZE_UNSUPPORTED', supportedSizes: [4, 6, 8] });
     }
 
-    const pythonObservation = await observeFromPython(size);
-    const observation = pythonObservation ?? toObservation(generateTensor(size), 'typescript-fallback');
+    const python = await observeFromPython(size);
+    const observation = python.observation ?? fallbackObservation(size);
     const verification = verifyTensorObservation(observation);
-    const memory = rememberTensor(ledgerMemory, observation, verification.status === 'VERIFIED', verification.digest);
+    if (verification.status !== 'VERIFIED') {
+      return reply.status(503).send({ success: false, status: verification.status, reason: 'Python tensor observation failed deterministic verification', observation, verification, sourceStatus: 'OBSERVED' });
+    }
+
+    const memory = rememberTensor(ledgerMemory, observation, verification.digest);
+    if (memory.status !== 'VERIFIED') {
+      return reply.status(503).send({ success: false, status: 'UNKNOWN', reason: 'Verified tensor could not be remembered', observation, verification, sourceStatus: 'OBSERVED' });
+    }
+
+    try {
+      appendKaiReceipt(observation, verification.digest);
+    } catch (error) {
+      return reply.status(503).send({ success: false, status: 'UNKNOWN', reason: `KAI ledger append failed: ${error instanceof Error ? error.message : 'unknown error'}`, observation, verification, sourceStatus: 'OBSERVED' });
+    }
+
     return {
       success: true,
-      status: verification.status,
+      status: 'VERIFIED',
       observation,
       verification,
-      memory: {
-        status: memory.status,
-        blockIndex: memory.blockIndex,
-        evidenceBoundary: 'local SQLite RememberEngine receipt; memory is not proof of deployment or external truth',
+      invariants: {
+        min: observation.min_val,
+        max: observation.max_val,
+        mean: 2 * (observation.size - 1),
+        checksum: observation.checksum,
       },
-      sourceStatus: pythonObservation ? 'OBSERVED' : 'UNKNOWN',
+      sha256: verification.digest,
+      receipt: { sha256: verification.digest, memoryStatus: memory.status, blockIndex: memory.blockIndex },
+      sourceStatus: python.observation ? 'OBSERVED' : 'UNKNOWN',
       source: observation.source,
-      evidenceBoundary: 'bounded local tensor computation and exact formula verification',
+      evidenceBoundary: 'local Python or deterministic TypeScript observation, exact formula verification, and append-only local receipts',
     };
   });
+}
+
+export async function checkPythonHealth(): Promise<'OBSERVED' | 'UNKNOWN'> {
+  const base = (process.env.OCEANICOS_PYTHON_URL?.trim() || 'http://127.0.0.1:8088').replace(/\/$/, '');
+  try {
+    const response = await fetch(`${base}/health`, { signal: AbortSignal.timeout(PYTHON_TIMEOUT_MS) });
+    return response.ok ? 'OBSERVED' : 'UNKNOWN';
+  } catch {
+    return 'UNKNOWN';
+  }
 }

@@ -22,6 +22,7 @@ import { LifecycleFlow, deriveStageStates, type LifecycleStage } from './Lifecyc
 import { GlobeViewport } from './GlobeViewport';
 import { bindGlobeEvidence } from './globe-shell';
 import { DAVMatrixVisualizer } from './DAVMatrixVisualizer';
+import { LocalChatPanel } from './LocalChatPanel';
 import { omegaApprovalRequest } from './omega-approval-request';
 import {
   theme,
@@ -793,6 +794,7 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
 
         <InvisibleComputer />
         <TensorDavVisualizer />
+        <LocalChatPanel />
         <DAVMatrixVisualizer />
 
         {/* Compressed front view: the whole body is summarized here; detailed organs stay in the background workspace. */}

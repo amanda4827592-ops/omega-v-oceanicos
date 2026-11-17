@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
-"""Bounded NumPy companion for the 4D DAV tensor contract."""
+"""FastAPI NumPy companion for the bounded 4D DAV tensor contract."""
 from __future__ import annotations
-import json
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse
+
+import os
+
 import numpy as np
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 
 SUPPORTED_SIZES = {4, 6, 8}
+app = FastAPI(title="Oceanicos Python Tensor Daemon", version="1.0")
 
 
 def tensor_payload(size: int) -> dict[str, object]:
@@ -26,36 +29,27 @@ def tensor_payload(size: int) -> dict[str, object]:
     }
 
 
-class Handler(BaseHTTPRequestHandler):
-    def _send(self, status: int, payload: dict[str, object]) -> None:
-        encoded = json.dumps(payload, separators=(",", ":")).encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Content-Length", str(len(encoded)))
-        self.end_headers()
-        self.wfile.write(encoded)
-
-    def do_GET(self) -> None:  # noqa: N802
-        path = urlparse(self.path).path
-        if path == "/health":
-            self._send(200, {"status": "ok", "service": "oceanicos-python-tensor-companion", "numpy": np.__version__})
-            return
-        if path.startswith("/tensor/"):
-            try:
-                size = int(path.rsplit("/", 1)[-1])
-                self._send(200, tensor_payload(size))
-            except (ValueError, TypeError):
-                self._send(400, {"status": "DIVERGENT", "error": "TENSOR_SIZE_UNSUPPORTED", "supportedSizes": [4, 6, 8]})
-            return
-        self._send(404, {"status": "UNKNOWN", "error": "NOT_FOUND"})
-
-    def log_message(self, format: str, *args: object) -> None:
-        return
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "OBSERVED", "service": "python-tensor-daemon"}
 
 
-def serve(host: str = "127.0.0.1", port: int = 8000) -> None:
-    ThreadingHTTPServer((host, port), Handler).serve_forever()
+@app.get("/tensor/{size}", response_model=None)
+def tensor(size: int) -> dict[str, object] | JSONResponse:
+    if size not in SUPPORTED_SIZES:
+        return JSONResponse(
+            status_code=400,
+            content={"status": "DIVERGENT", "error": "TENSOR_SIZE_UNSUPPORTED", "supportedSizes": sorted(SUPPORTED_SIZES)},
+        )
+    return tensor_payload(size)
 
 
 if __name__ == "__main__":
-    serve()
+    import uvicorn
+
+    uvicorn.run(
+        "tensor_server:app",
+        host=os.getenv("OCEANICOS_PYTHON_HOST", "127.0.0.1"),
+        port=int(os.getenv("OCEANICOS_PYTHON_PORT", "8088")),
+        reload=False,
+    )
