@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 type TensorSize = 4 | 6 | 8;
 type TensorResult = {
   size: TensorSize;
+  shape_4d: [number, number, number, number];
+  shape_2d: [number, number];
   projection: number[][];
   stats: { minVal: number; maxVal: number; mean: number; checksum: number };
   status: 'VERIFIED' | 'DIVERGENT' | 'UNKNOWN';
@@ -93,7 +95,9 @@ export function TensorDavVisualizer() {
               <div style={{ color: '#67e8f9', letterSpacing: '0.1em', fontSize: '10px' }}>OBSERVATION</div>
               <p>{hover ? `hover [row ${hover.row}, col ${hover.column}] → i+j+k+l = ${hover.value}` : 'Hover a cell to inspect coordinates.'}</p>
               <dl style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '6px' }}>
+                <dt>4D shape</dt><dd>{result.shape_4d.join('×')}</dd>
                 <dt>Projection</dt><dd>{size * size}×{size * size}</dd>
+                <dt>2D shape</dt><dd>{result.shape_2d.join('×')}</dd>
                 <dt>Minimum</dt><dd>{result.stats.minVal}</dd>
                 <dt>Maximum</dt><dd>{result.stats.maxVal}</dd>
                 <dt>Mean</dt><dd>{result.stats.mean}</dd>
