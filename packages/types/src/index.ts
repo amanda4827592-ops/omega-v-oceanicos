@@ -168,6 +168,33 @@ export interface VerificationReceipt {
   readonly digest: string;
 }
 
+/** Supported deterministic Tensor DAV dimensions. */
+export type TensorDavSize = 4 | 6 | 8;
+/** Statistical invariants for a flattened deterministic tensor projection. */
+export interface TensorDavStats {
+  readonly minVal: number;
+  readonly maxVal: number;
+  readonly mean: number;
+  readonly checksum: number;
+}
+/** Observed Tensor DAV payload before verification status is admitted. */
+export interface TensorObservation {
+  readonly size: TensorDavSize;
+  readonly projection: readonly (readonly number[])[];
+  readonly stats: TensorDavStats;
+}
+export interface TensorDavReceipt {
+  readonly algorithm: 'sha256';
+  readonly digest: string;
+  readonly status: 'VERIFIED';
+}
+/** Verification result and receipt for a Tensor DAV observation. */
+export interface TensorVerification {
+  readonly status: 'VERIFIED' | 'DIVERGENT' | 'UNKNOWN';
+  readonly reason: string | null;
+  readonly receipt: TensorDavReceipt | null;
+}
+
 export interface ChangeTransaction {
   readonly stateBefore: Record<string, unknown>;
   readonly intent: string;

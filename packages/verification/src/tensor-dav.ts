@@ -1,30 +1,18 @@
 import { createHash } from 'node:crypto';
+import type {
+  TensorDavReceipt as SharedTensorDavReceipt,
+  TensorDavSize as SharedTensorDavSize,
+  TensorDavStats as SharedTensorDavStats,
+  TensorObservation,
+  TensorVerification,
+} from '@oceanicos/types';
 
 export const TENSOR_DAV_SIZES = [4, 6, 8] as const;
-export type TensorDavSize = (typeof TENSOR_DAV_SIZES)[number];
-export type TensorDavStatus = 'VERIFIED' | 'DIVERGENT' | 'UNKNOWN';
-
-export type TensorDavStats = {
-  minVal: number;
-  maxVal: number;
-  mean: number;
-  checksum: number;
-};
-
-export type TensorDavReceipt = {
-  algorithm: 'sha256';
-  digest: string;
-  status: 'VERIFIED';
-};
-
-export type TensorDavPayload = {
-  size: TensorDavSize;
-  projection: number[][];
-  stats: TensorDavStats;
-  status: TensorDavStatus;
-  reason: string | null;
-  receipt: TensorDavReceipt | null;
-};
+export type TensorDavSize = SharedTensorDavSize;
+export type TensorDavStatus = TensorVerification['status'];
+export type TensorDavStats = SharedTensorDavStats;
+export type TensorDavReceipt = SharedTensorDavReceipt;
+export type TensorDavPayload = TensorObservation & TensorVerification;
 
 const isTensorDavSize = (value: number): value is TensorDavSize =>
   TENSOR_DAV_SIZES.includes(value as TensorDavSize);
