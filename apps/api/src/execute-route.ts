@@ -319,4 +319,50 @@ export function registerExecuteRoute(
   for (const path of ['/kai/memory/:id/reconcile', '/api/kai/memory/:id/reconcile']) {
     fastify.post(path, reconcileHandler);
   }
+
+  const companionVoiceHandler = async (_request: any, reply: any) => {
+    try {
+      const companionUrl = process.env.OMEGA_COMPANION_URL || 'http://localhost:8088';
+      const response = await fetch(`${companionUrl}/voice`, {
+        headers: { accept: 'application/json' },
+        signal: AbortSignal.timeout(3000),
+      });
+      const data = await response.json();
+      return reply.status(response.status).send(data);
+    } catch (err) {
+      return reply.status(503).send({
+        success: false,
+        status: 'UNKNOWN',
+        error: 'COMPANION_UNAVAILABLE',
+        detail: err instanceof Error ? err.message : 'Companion offline',
+      });
+    }
+  };
+
+  const companionTensorHandler = async (request: any, reply: any) => {
+    const size = request.params?.n;
+    try {
+      const companionUrl = process.env.OMEGA_COMPANION_URL || 'http://localhost:8088';
+      const response = await fetch(`${companionUrl}/tensor/${size}`, {
+        headers: { accept: 'application/json' },
+        signal: AbortSignal.timeout(3000),
+      });
+      const data = await response.json();
+      return reply.status(response.status).send(data);
+    } catch (err) {
+      return reply.status(503).send({
+        success: false,
+        status: 'UNKNOWN',
+        error: 'COMPANION_UNAVAILABLE',
+        detail: err instanceof Error ? err.message : 'Companion offline',
+      });
+    }
+  };
+
+  for (const path of ['/v1/companion/voice', '/api/v1/companion/voice', '/companion/voice']) {
+    fastify.get(path, companionVoiceHandler);
+  }
+  for (const path of ['/v1/companion/tensor/:n', '/api/v1/companion/tensor/:n', '/companion/tensor/:n']) {
+    fastify.get(path, companionTensorHandler);
+  }
 }

@@ -295,7 +295,17 @@ export async function executeElion(
   authorityLevel: AuthorityLevel,
   useExternalModel = false
 ): Promise<ElionResult> {
-  const apiKey = useExternalModel ? process.env.OMEGA_LLM_API_KEY?.trim() : '';
+  const configuredBaseUrl = process.env.OMEGA_LLM_BASE_URL?.trim();
+  const isLocalOllama = Boolean(
+    configuredBaseUrl?.includes('11434') ||
+    process.env.OMEGA_LLM_PROVIDER === 'ollama'
+  );
+
+  let apiKey = useExternalModel ? process.env.OMEGA_LLM_API_KEY?.trim() : '';
+  if (!apiKey && useExternalModel && isLocalOllama) {
+    apiKey = 'ollama';
+  }
+
   if (!apiKey) {
     return {
       output: composeLocalElionResponse(intent, authorityLevel),
@@ -304,11 +314,11 @@ export async function executeElion(
     };
   }
 
-  const baseUrl = (process.env.OMEGA_LLM_BASE_URL?.trim() || DEFAULT_MODEL_BASE_URL).replace(
+  const baseUrl = (configuredBaseUrl || DEFAULT_MODEL_BASE_URL).replace(
     /\/$/,
     ''
   );
-  const model = process.env.OMEGA_LLM_MODEL?.trim() || DEFAULT_MODEL;
+  const model = process.env.OMEGA_LLM_MODEL?.trim() || (isLocalOllama ? 'qwen2.5:0.5b' : DEFAULT_MODEL);
 
   try {
     const response = await fetch(`${baseUrl}/chat/completions`, {
