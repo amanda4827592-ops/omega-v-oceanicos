@@ -18,8 +18,12 @@ its source.
 | `oceanicos-verified-upgrade` | `7c85422294d544464abc18ac4f946ea0269ca278ebefbe7fa1cf945e7bbf2c9a` | 2026-10-16 |
 | `omega-v-os` | `6ed3f35d0085b8c3d7256cb65c3a8e49a24f860d90c7b940509ccfaf35480513` | 2026-10-16 |
 | `lucid-continuum` | `57a34241ff3d52ed143da49f1a9a04380743c2adf09bf9916553146915d711da` | 2026-10-16 |
-| `oceanicos-total-continuum` | `23aae4defff33f608b6ab1419a19e05b550565b8c44bc86aca3a31e24fa15086` | 2026-10-24 |
+| `oceanicos-total-continuum` | `e02b6da61854fe7f2811767d98c26e9bf6379489c254adc1ac23dd21119c4b7b` | 2026-11-17 |
 | `kaixelionxomega` | `ab59d4fb7cd81a9ce489720f7f5044336736a913f2f706733fda24c69874679f` | 2026-10-30 |
+| `unified-entity-dav` | `aba51534af0d709160d6eb1e3f2ca21ca88cd2ce332489541b9c1e39ccd99ec4` | 2026-11-17 |
+| `omega-sovereign` | `d3f7e4a419a17150d9a6617ac80662859456d70de1977393f9133bf02c04e008` | 2026-11-17 |
+| `omega-bounded-repository-transition` | `2bf2bbe3825091964c3f109dfee8e7a48be860ab942a32b57bb1072b1367e71d` | 2026-11-17 |
+| `dvro-house-oceanicos` | `ce29223a14810f0158d36b244eed7ef6af66b7a4f258571dc8717dd917b39cdb` | 2026-11-17 |
 
 Verify an installed skill still matches what was recorded:
 
@@ -165,6 +169,23 @@ Installed 2026-10-24. Byte-identical to `skills/oceanicos-total-continuum/SKILL.
 Installed 2026-10-30. Byte-identical to `skills/kaixelionxomega/SKILL.md`. The KAI → ELION → OMEGA loop compresses a verified cycle into one review candidate. `compressTowardUpgrade` always reports `NOT_EXECUTED`. A candidate id is not an upgrade.
 
 ---
+
+
+## dvro-house-oceanicos
+
+Supplied 2026-11-17. Byte-identical to `skills/dvro-house-oceanicos/SKILL.md`. ΔVRØ HOUSE is the vessel; Ω∞v OCEANICOS is the verification method. Neither is proof of consciousness, authority, or a running system.
+
+## omega-bounded-repository-transition
+
+Supplied 2026-11-17. Byte-identical to `skills/omega-bounded-repository-transition/SKILL.md`. A transition report and SHA-256 manifest are records. Installing this skill did not run that audit and did not change runtime.
+
+## omega-sovereign
+
+Supplied 2026-11-17. Byte-identical to `skills/omega-sovereign/SKILL.md`. The human remains the source. The skill does not grant external authority.
+
+## unified-entity-dav
+
+Supplied 2026-11-17. Byte-identical to `skills/unified-entity-dav/SKILL.md`. The entity tensor surface already has a repository implementation. This file is the method, not a new claim that every gate in the method was rerun for this install.
 
 ## Whole-ecosystem alignment
 

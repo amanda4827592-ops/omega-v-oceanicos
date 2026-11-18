@@ -462,6 +462,61 @@
       "evidence_hash": "1190e83ef8ee8412f050e9a6aaac56726d74b7190ace6893b9f830491f5d7c78",
       "next_delta": "Human-review the shared experience switch at narrow/mobile widths before any external publication.",
       "timestamp": "2026-11-17T12:01:50Z"
+    },
+    {
+      "timestamp": "2026-11-17T18:37:52Z",
+      "agent_id": "manus",
+      "branch": "agent/manus/avro-house-brand",
+      "status": "VERIFIED",
+      "files_touched": [
+        "README.md",
+        "apps/web/public/avro-house-emblem.jpg",
+        "apps/web/src/VibeOS.css",
+        "apps/web/src/VibeOS.tsx",
+        "apps/web/src/__tests__/dom/VibeOS.test.tsx",
+        "docs/BRAND.md",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "3df058ade41ec940324afa80b0bde65899e47076d9abc9eb1c7930cefc14a39d",
+      "next_delta": "Human-review the pull request; do not merge or deploy from this worker branch."
+    },
+    {
+      "timestamp": "2026-11-17T22:46:38Z",
+      "agent_id": "grok",
+      "branch": "agent/grok/continuum",
+      "status": "VERIFIED",
+      "files_touched": [
+        ".claude/skills/README.md",
+        ".claude/skills/dvro-house-oceanicos/SKILL.md",
+        ".claude/skills/oceanicos-total-continuum/SKILL.md",
+        ".claude/skills/omega-bounded-repository-transition/SKILL.md",
+        ".claude/skills/omega-bounded-repository-transition/scripts/create_sha256_manifest.py",
+        ".claude/skills/omega-bounded-repository-transition/templates/transition-report.md",
+        ".claude/skills/omega-sovereign/SKILL.md",
+        ".claude/skills/omega-sovereign/references/dav-oceanicos-matrix.md",
+        ".claude/skills/omega-sovereign/references/origin-case.md",
+        ".claude/skills/omega-sovereign/references/skill-map.md",
+        ".claude/skills/unified-entity-dav/SKILL.md",
+        "README.md",
+        "docs/README.md",
+        "kai_ledger.json",
+        "scripts/validate-skill-contracts.mjs",
+        "skills/dvro-house-oceanicos/SKILL.md",
+        "skills/oceanicos-total-continuum/SKILL.md",
+        "skills/omega-bounded-repository-transition/SKILL.md",
+        "skills/omega-bounded-repository-transition/scripts/create_sha256_manifest.py",
+        "skills/omega-bounded-repository-transition/templates/transition-report.md",
+        "skills/omega-sovereign/SKILL.md",
+        "skills/omega-sovereign/references/dav-oceanicos-matrix.md",
+        "skills/omega-sovereign/references/origin-case.md",
+        "skills/omega-sovereign/references/skill-map.md",
+        "skills/unified-entity-dav/SKILL.md",
+        "tests/integration/skill-install-contract.integration.test.ts"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "f91da5c87f69812989e6d7f9975745bfaf566a10adfea46b2d7100e919e8dfc4",
+      "next_delta": "Human-review the installed continuum skills. The bounded-transition audit script was not run against the repository. Full pnpm test, deployment, and merge were not run. upgrade.execution stays NOT_EXECUTED."
     }
   ]
 }

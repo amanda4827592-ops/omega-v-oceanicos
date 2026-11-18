@@ -250,11 +250,18 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     <div className="vibe-os">
       <div className="vibe-shell">
         <header className="vibe-topbar">
-          <div className="vibe-brand" aria-label="OCEANICOS Lucid Skin">
-            <span className="vibe-brand-mark" aria-hidden="true">≈</span>
-            <span>OCEANICOS</span>
-            <span className="vibe-brand-divider" aria-hidden="true">/</span>
-            <span className="vibe-brand-subtitle">Lucid Skin</span>
+          <div className="vibe-brand">
+            <img
+              className="vibe-brand-emblem"
+              src="/avro-house-emblem.jpg"
+              alt="AVRØ HOUSE emblem with the Ω∞v symbol, tensor grid, and SHA-256 lock mark"
+              width="168"
+              height="92"
+            />
+            <span className="vibe-brand-caption">
+              <span>OCEANICOS <small>PLATFORM</small></span>
+              <span>Ω∞v <small>VERIFICATION ENGINE</small></span>
+            </span>
           </div>
           <div className="vibe-header-actions">
             <button type="button" className="vibe-header-button" onClick={newChat} disabled={verifying}>

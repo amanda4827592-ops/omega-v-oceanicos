@@ -16,6 +16,9 @@ describe('Vibe OS surface', () => {
     expect(screen.getByRole('heading', { level: 1, name: /what shall we make real/i })).toBeInTheDocument();
     expect(screen.getByRole('log', { name: 'Conversation' })).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Intent' })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /AVRØ HOUSE emblem/i })).toBeInTheDocument();
+    expect(screen.getByText('PLATFORM')).toBeInTheDocument();
+    expect(screen.getByText('VERIFICATION ENGINE')).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Invisible Online Computer' })).not.toBeInTheDocument();
     await waitFor(() => expect(screen.getByLabelText('Fastify Spine status')).toHaveTextContent('OBSERVED'));
   });
