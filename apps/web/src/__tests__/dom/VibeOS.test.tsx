@@ -244,4 +244,28 @@ describe('Vibe OS surface', () => {
       digestSpy.mockRestore();
     }
   });
+
+  it('observes interactive system mood and allows running mood check', async () => {
+    installFetch({
+      '/api/v1/mood': () =>
+        json({
+          success: true,
+          status: 'MAX GOOD-O',
+          evaluation: {
+            state: 'HIGH_INTEGRITY',
+            confidence: 1,
+            verificationHealth: 1,
+            description: 'High integrity: 100% hash chain validity',
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await waitFor(() => expect(screen.getByLabelText('System Mood status')).toHaveTextContent('OBSERVED'));
+    expect(screen.getByRole('button', { name: /✦ Mood Autopilot/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Check Mood State' }));
+    expect(await screen.findByText(/Mood observed: MAX GOOD-O/i)).toBeInTheDocument();
+  });
 });
