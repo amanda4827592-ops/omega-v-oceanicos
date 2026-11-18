@@ -1,14 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
-title OCEANICOS Ω∞v — Sovereign Desktop App Launcher
+title ΔVRØ HOUSE × Ω∞v OCEANICOS — Sovereign Desktop Application
 
 echo ===================================================================
-echo     OCEANICOS Ω∞v — WATER INTELLIGENCE SOVEREIGN DESKTOP APP
-echo     Deus Ex Machina // Tri-Surface Engine (Ports 3000, 5000)
+echo     ΔVRØ HOUSE × Ω∞v OCEANICOS — SOVEREIGN DESKTOP APPLICATION
+echo     One Root · One Current · Infinite Forms · Ports 3000, 5000
 echo ===================================================================
 echo.
 
-cd /d "C:\Users\pc\OMEGA V\omega-v-oceanicos"
+cd /d "%~dp0"
 
 echo [1/3] Verifying Fastify API service (:5000)...
 netstat -ano | findstr ":5000 " | findstr "LISTENING" >nul 2>&1
