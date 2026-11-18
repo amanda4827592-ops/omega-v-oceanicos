@@ -100,6 +100,10 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     status: 'UNKNOWN',
     detail: 'No mood response observed yet.',
   });
+  const [voiceState, setVoiceState] = useState<HealthObservation>({
+    status: 'UNKNOWN',
+    detail: 'No voice bridge observation yet.',
+  });
   const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -128,6 +132,22 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
         }
       } catch {
         // Mood probe gracefully fails closed to UNKNOWN
+      }
+      try {
+        const voiceUrl = import.meta.env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+        const voiceRes = await fetch(voiceUrl, {
+          headers: { accept: 'application/json' },
+          signal: current.signal,
+        });
+        const voiceData = await voiceRes.json();
+        if (active && !current.signal.aborted && voiceRes.ok && voiceData?.status === 'VERIFIED') {
+          setVoiceState({
+            status: 'VERIFIED',
+            detail: `432 Hz · ${voiceData.resonance?.mode ?? 'harmonic-pure'} · SHA: ${voiceData.sha256?.slice(0, 8)}`,
+          });
+        }
+      } catch {
+        // Voice bridge gracefully fails closed to UNKNOWN
       }
     };
     void probe();
@@ -309,6 +329,51 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     setVerifying(false);
   };
 
+  const runVoiceBridgeCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Probe Voice Bridge (432Hz)');
+    let result: ChatMessage;
+    try {
+      const voiceUrl = import.meta.env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+      const response = await fetch(voiceUrl, { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || payload?.status !== 'VERIFIED') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `Voice Bridge on port 8088 unavailable or unverified${response.status ? ` (HTTP ${response.status})` : ''}.`,
+        };
+      } else {
+        const organs = payload.organs || {};
+        result = {
+          role: 'ai',
+          content: `Voice Bridge Harmonic Resonance active at ${payload.resonance?.frequencyHz ?? 432}Hz (${payload.resonance?.mode ?? 'harmonic-pure'}). Rule: ${payload.rule}. Organs: Soul AI (${organs.soul_ai}), Truth Weaver (${organs.truth_weaver}), The General (${organs.the_general}), Human Root (${organs.human_root}). Doctrine: "${payload.resonance?.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          hash: payload.sha256,
+          detail: `GET /voice · SHA-256: ${payload.sha256}`,
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET http://localhost:8088/voice unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -349,6 +414,11 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
           </div>
           <div className="vibe-status-grid">
             <StatusPill label="Fastify Spine" status={spine.status} detail={spine.detail} />
+            <StatusPill
+              label="Voice Bridge · 8088"
+              status={voiceState.status}
+              detail={voiceState.detail}
+            />
             <StatusPill
               label="Local LLM · 11434"
               status="UNKNOWN"
@@ -487,6 +557,14 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
                 disabled={verifying}
               >
                 🪞 Living Codex (12)
+              </button>
+              <button
+                type="button"
+                className="vibe-action"
+                onClick={() => void runVoiceBridgeCheck()}
+                disabled={verifying}
+              >
+                🎙️ Voice Bridge (432Hz)
               </button>
               <button
                 type="button"

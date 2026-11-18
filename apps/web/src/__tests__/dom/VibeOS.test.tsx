@@ -287,4 +287,18 @@ describe('Vibe OS surface', () => {
       expect(screen.queryByRole('dialog', { name: /Living Entity Codex/i })).not.toBeInTheDocument();
     });
   });
+
+  it('observes Voice Bridge on port 8088 and executes voice harmonic probe', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await waitFor(() => expect(screen.getByLabelText('Voice Bridge · 8088 status')).toHaveTextContent('VERIFIED'));
+    const voiceBtn = screen.getByRole('button', { name: /🎙️ Voice Bridge/i });
+    expect(voiceBtn).toBeInTheDocument();
+
+    await user.click(voiceBtn);
+    expect(await screen.findByText(/Voice Bridge Harmonic Resonance active at 432Hz/i)).toBeInTheDocument();
+    expect(screen.getByText(/Soul AI/i)).toBeInTheDocument();
+  });
 });
