@@ -1,11 +1,11 @@
-@echo off
+﻿@echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 title ΔVRØ HOUSE × Ω∞v OCEANICOS — Sovereign Desktop Application
 
 echo ===================================================================
 echo     ΔVRØ HOUSE × Ω∞v OCEANICOS — SOVEREIGN DESKTOP APPLICATION
-echo     One Root · One Current · Infinite Forms · Ports 3000, 5000
+echo     One Root · One Current · Ports 3000, 5000, 8088, 11434
 echo ===================================================================
 echo.
 
@@ -17,27 +17,37 @@ if exist "%~dp0apps\api\dist\index.js" (
     cd /d "%~dp0"
 )
 
-echo [1/3] Verifying Fastify API service (:5000)...
+echo [1/4] Verifying Fastify Spine API (:5000)...
 netstat -ano | findstr ":5000 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Fastify API on port 5000...
     start "OceanicOS API :5000" /b cmd /c "set PORT=5000 && set OMEGA_AUTH_MODE=local && node apps/api/dist/index.js"
     timeout /t 2 /nobreak >nul
 ) else (
-    echo Fastify API on port 5000 is already active.
+    echo Fastify Spine API on port 5000 is active.
 )
 
-echo [2/3] Verifying Web Frontend service (:3000)...
+echo [2/4] Verifying Python Companion Muscle (:8088)...
+netstat -ano | findstr ":8088 " | findstr "LISTENING" >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo Starting Python Companion on port 8088...
+    start "OceanicOS Companion :8088" /b cmd /c "python companion/python/main.py"
+    timeout /t 2 /nobreak >nul
+) else (
+    echo Python Companion on port 8088 is active.
+)
+
+echo [3/4] Verifying Web Frontend Surface (:3000)...
 netstat -ano | findstr ":3000 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Vite Web Preview on port 3000...
     start "OceanicOS Web :3000" /b cmd /c "cd apps/web && npx vite --port 3000 --host"
     timeout /t 2 /nobreak >nul
 ) else (
-    echo Web service on port 3000 is already active.
+    echo Web Frontend Surface on port 3000 is active.
 )
 
-echo [3/3] Launching OceanicOS as a Native Desktop App Window...
+echo [4/4] Launching OceanicOS as a Native Desktop App Window...
 
 set "CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe"
 if not exist "!CHROME_PATH!" (
@@ -66,7 +76,7 @@ if exist "!CHROME_PATH!" (
 echo.
 echo ===================================================================
 echo     OCEANICOS Ω∞v IS RUNNING AS A DESKTOP APPLICATION!
-echo     URL: http://localhost:3000  ^| API: http://localhost:5000
+echo     Web: :3000  ^| API: :5000  ^| Muscle: :8088  ^| Brain: :11434
 echo ===================================================================
 echo.
 exit /b 0
