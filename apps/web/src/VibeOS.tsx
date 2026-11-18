@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 import { submitIntent, type IntentReceipt, type Verdict } from './vibe-os-api';
 import { TensorDavVisualizer } from './components/TensorDavVisualizer';
 import { MoodCodexPanel } from './MoodCodexPanel';
+import { EntityCodexModal } from './components/EntityCodexModal';
 import './VibeOS.css';
 
 export type ChatMessage = {
@@ -94,6 +95,7 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const [kaiStatus, setKaiStatus] = useState<Verdict>('UNKNOWN');
   const [davOpen, setDavOpen] = useState(false);
   const [moodOpen, setMoodOpen] = useState(false);
+  const [codexOpen, setCodexOpen] = useState(false);
   const [moodState, setMoodState] = useState<HealthObservation>({
     status: 'UNKNOWN',
     detail: 'No mood response observed yet.',
@@ -463,6 +465,8 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
             )}
           </section>
 
+          {codexOpen && <EntityCodexModal onClose={() => setCodexOpen(false)} />}
+
           <div className="vibe-composer-wrap">
             <div className="vibe-actions" role="group" aria-label="Quick actions">
               <button
@@ -474,6 +478,15 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
                 disabled={verifying}
               >
                 Inspect 4×4×4×4 Tensor
+              </button>
+              <button
+                type="button"
+                className="vibe-action"
+                aria-expanded={codexOpen}
+                onClick={() => setCodexOpen(true)}
+                disabled={verifying}
+              >
+                🪞 Living Codex (12)
               </button>
               <button
                 type="button"

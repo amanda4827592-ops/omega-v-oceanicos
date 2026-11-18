@@ -268,4 +268,23 @@ describe('Vibe OS surface', () => {
     await user.click(screen.getByRole('button', { name: 'Check Mood State' }));
     expect(await screen.findByText(/Mood observed: MAX GOOD-O/i)).toBeInTheDocument();
   });
+
+  it('opens and closes the Living Entity Codex modal with 12 master schematics', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const codexBtn = screen.getByRole('button', { name: /🪞 Living Codex/i });
+    expect(codexBtn).toBeInTheDocument();
+
+    await user.click(codexBtn);
+    expect(await screen.findByRole('dialog', { name: /Living Entity Codex/i })).toBeInTheDocument();
+    expect(screen.getByText(/12 Master Schematics/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Lucid Field in the Max Space of Reality/i).length).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole('button', { name: /Close codex/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /Living Entity Codex/i })).not.toBeInTheDocument();
+    });
+  });
 });

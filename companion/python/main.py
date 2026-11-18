@@ -86,6 +86,32 @@ def compute_tensor_dav(n: int) -> Dict[str, Any]:
     return payload
 
 
+def compute_voice_bridge() -> Dict[str, Any]:
+    """Compute the Voice Bridge payload enforcing the One Identity Rule."""
+    payload: Dict[str, Any] = {
+        "success": True,
+        "status": "VERIFIED",
+        "schema": "omega.voice-bridge.v1",
+        "rule": "ONE_IDENTITY_RULE",
+        "service": "voice-bridge",
+        "port": 8088,
+        "organs": {
+            "soul_ai": "Architecture · Sacred Blueprint Hammer",
+            "truth_weaver": "Verification · KAI Shield & Empirical Magnifier",
+            "the_general": "Execution · Compass & Direction Spear",
+            "human_root": "Authority · The Golden Key",
+        },
+        "resonance": {
+            "frequencyHz": 432,
+            "mode": "harmonic-pure",
+            "doctrine": "Attest, don't assert. Reality remains the final authority.",
+        },
+    }
+    canonical = json.dumps(payload, separators=(",", ":"), sort_keys=True)
+    payload["sha256"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return payload
+
+
 # --- ASGI Interface (for uvicorn main:app) ---
 
 async def app(scope: Dict[str, Any], receive: Any, send: Any) -> None:
@@ -114,6 +140,13 @@ async def app(scope: Dict[str, Any], receive: Any, send: Any) -> None:
             "port": 8088,
             "engine": "python-numpy" if HAS_NUMPY else "python-stdlib",
         }).encode("utf-8")
+        await send({"type": "http.response.start", "status": 200, "headers": headers})
+        await send({"type": "http.response.body", "body": body})
+        return
+
+    if path in ("/voice", "/api/voice", "/voice/status", "/api/voice/status"):
+        data = compute_voice_bridge()
+        body = json.dumps(data).encode("utf-8")
         await send({"type": "http.response.start", "status": 200, "headers": headers})
         await send({"type": "http.response.body", "body": body})
         return
@@ -161,6 +194,15 @@ class CompanionHTTPHandler(BaseHTTPRequestHandler):
                 "port": 8088,
                 "engine": "python-numpy" if HAS_NUMPY else "python-stdlib",
             }
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+
+        if path in ("/voice", "/api/voice", "/voice/status", "/api/voice/status"):
+            data = compute_voice_bridge()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")

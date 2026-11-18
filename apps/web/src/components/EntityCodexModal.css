@@ -1,0 +1,169 @@
+.codex-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 9, 15, 0.88);
+  backdrop-filter: blur(12px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.codex-modal-card {
+  background: #070e17;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1040px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(56, 189, 248, 0.12);
+}
+
+.codex-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.codex-modal-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.codex-modal-badge {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.codex-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.35rem;
+  cursor: pointer;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.codex-modal-close:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.codex-modal-body {
+  padding: 1.5rem 1.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.codex-schematic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.codex-schematic-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.codex-schematic-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.15);
+}
+
+.codex-schematic-card--active {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 1px #38bdf8, 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.codex-schematic-preview {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: #020617;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.codex-schematic-info {
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.codex-schematic-index {
+  font-size: 0.68rem;
+  color: #38bdf8;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.codex-schematic-name {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #f1f5f9;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.codex-schematic-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.codex-viewer-hero {
+  background: #020617;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.codex-viewer-image {
+  max-width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.codex-viewer-caption {
+  margin-top: 0.75rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+}
