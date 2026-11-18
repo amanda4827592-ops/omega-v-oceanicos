@@ -2,6 +2,24 @@
 
 **Status:** Architecture contract for the bounded tensor DAV slice. This document describes the requested topology; naming a layer does not establish that an external service is running or that it has authority.
 
+## The Continuum Equation
+
+\[
+ \mathbf{\Delta VR\emptyset \text{ HOUSE}} := \underbrace{\Omega_{\text{React } (:3000)}}_{\text{The Surface (UI)}} \left( \underbrace{\Sigma_{\text{KAI (SHA-256)}}}_{\text{The Immune System}} \left[ \underbrace{\Theta_{\text{Fastify } (:5000)}}_{\text{The Bounded Spine}} \left( \lambda x. \underbrace{\Psi_{\text{Ollama } (:11434) \oplus \text{Python } (:8088)}}_{\text{The Local Brain \& Muscle}} \Big( \underbrace{\Delta_{\text{Human Root}} + \emptyset_{\text{Compute}}}_{\text{Intent + Void}} \Big) \right) \right] \right) \xrightarrow{\text{Evaluate}} \underbrace{T[i,j,k,l] = i+j+k+l}_{\text{The DAV Mathematical Law}}
+\]
+
+Where each bracket maps directly to a verified layer in the operational stack:
+
+| Symbol | Layer | Port / Interface | Epistemic Invariant |
+| --- | --- | --- | --- |
+| **`Ω`** | **Surface (Outer Vessel)** | `:3000` (Vite / VibeOS) | Human-facing glass, visual inspection, progressive disclosure |
+| **`Σ`** | **KAI Immune System** | SHA-256 / `kai_ledger.json` | Hash chain integrity, shield validation, tamper evidence |
+| **`Θ`** | **Spine** | `:5000` (Fastify API) | Event loop, deterministic routing, rate limiting, SSE telemetry |
+| **`λx.Ψ`** | **Brain** | `:11434` / LLM Adapter | Multi-turn reasoning, bounded intent analysis (`executeElion`) |
+| **`Δ`** | **Root** | Repository / Workspace | Measured reality state, file changes, code and tests |
+| **`∅`** | **Compute** | Deterministic Kernel | Zero-entropy computation, invariant checks, pure arithmetic |
+| **`DAV`** | **Tensor Projection** | $T[i,j,k,l] = i + j + k + l$ | $N^2 \times N^2$ deterministic 4-tensor slice ($N \in \{4, 6, 8\}$) |
+
 ## Five-layer contract
 
 | Layer | Name | Components and boundary |

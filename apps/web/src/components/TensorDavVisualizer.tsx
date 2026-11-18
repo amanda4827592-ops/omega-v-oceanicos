@@ -21,12 +21,22 @@ export function TensorDavVisualizer() {
   const [receipt, setReceipt] = useState<TensorReceipt | null>(null);
   const [failure, setFailure] = useState<ErrorReceipt | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedCell, setSelectedCell] = useState<{
+    row: number;
+    column: number;
+    i: number;
+    j: number;
+    k: number;
+    l: number;
+    value: number;
+  } | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setFailure(null);
     setReceipt(null);
+    setSelectedCell(null);
     fetch(`${API_BASE_URL}/tensor/${size}`, { signal: controller.signal })
       .then(async (response) => {
         const body = await response.json() as TensorReceipt | ErrorReceipt;
@@ -86,6 +96,21 @@ export function TensorDavVisualizer() {
             <span>MEAN <strong>{receipt.invariants.mean}</strong></span>
             <span>CHECKSUM <strong>{receipt.invariants.checksum.toLocaleString('en-US')}</strong></span>
           </div>
+          {selectedCell && (
+            <div className="tensor-dav__inspector" aria-label="Selected tensor coordinate">
+              <span>COORDINATE: <strong>T[{selectedCell.i}, {selectedCell.j}, {selectedCell.k}, {selectedCell.l}]</strong></span>
+              <span>PROJECTION: <strong>row {selectedCell.row}, col {selectedCell.column}</strong></span>
+              <span>VALUE: <strong>{selectedCell.value}</strong></span>
+              <button
+                type="button"
+                className="tensor-dav__inspector-close"
+                onClick={() => setSelectedCell(null)}
+                aria-label="Clear coordinate selection"
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <div className="tensor-dav__heatmap-wrap" aria-label={`${size ** 2} by ${size ** 2} tensor projection heatmap`}>
             <div className="tensor-dav__heatmap" style={{ '--tensor-columns': receipt.projection.columns } as CSSProperties}>
               {receipt.values.flatMap((values, row) => values.map((cellValue, column) => {
@@ -94,14 +119,22 @@ export function TensorDavVisualizer() {
                 const k = Math.floor(column / size);
                 const l = column % size;
                 const hue = 164 - (cellValue / receipt.invariants.max) * 145;
+                const isSelected = selectedCell?.row === row && selectedCell?.column === column;
                 return (
                   <span
                     key={`${row}-${column}`}
-                    className="tensor-dav__cell"
+                    className={`tensor-dav__cell${isSelected ? ' tensor-dav__cell--selected' : ''}`}
                     style={{ backgroundColor: `hsl(${hue} 68% ${24 + (cellValue / receipt.invariants.max) * 27}%)` }}
                     title={`row ${row}, column ${column} · T[${i},${j},${k},${l}] = ${i}+${j}+${k}+${l} = ${cellValue}`}
                     aria-label={`row ${row}, column ${column}, value ${i} plus ${j} plus ${k} plus ${l} equals ${cellValue}`}
                     tabIndex={0}
+                    onClick={() => setSelectedCell({ row, column, i, j, k, l, value: cellValue })}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedCell({ row, column, i, j, k, l, value: cellValue });
+                      }
+                    }}
                   >
                     {cellValue}
                   </span>

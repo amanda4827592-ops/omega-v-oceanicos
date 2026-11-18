@@ -244,4 +244,61 @@ describe('Vibe OS surface', () => {
       digestSpy.mockRestore();
     }
   });
+
+  it('observes interactive system mood and allows running mood check', async () => {
+    installFetch({
+      '/api/v1/mood': () =>
+        json({
+          success: true,
+          status: 'MAX GOOD-O',
+          evaluation: {
+            state: 'HIGH_INTEGRITY',
+            confidence: 1,
+            verificationHealth: 1,
+            description: 'High integrity: 100% hash chain validity',
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await waitFor(() => expect(screen.getByLabelText('System Mood status')).toHaveTextContent('OBSERVED'));
+    expect(screen.getByRole('button', { name: /✦ Mood Autopilot/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Check Mood State' }));
+    expect(await screen.findByText(/Mood observed: MAX GOOD-O/i)).toBeInTheDocument();
+  });
+
+  it('opens and closes the Living Entity Codex modal with 12 master schematics', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const codexBtn = screen.getByRole('button', { name: /🪞 Living Codex/i });
+    expect(codexBtn).toBeInTheDocument();
+
+    await user.click(codexBtn);
+    expect(await screen.findByRole('dialog', { name: /Living Entity Codex/i })).toBeInTheDocument();
+    expect(screen.getByText(/12 Master Schematics/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Lucid Field in the Max Space of Reality/i).length).toBeGreaterThan(0);
+
+    await user.click(screen.getByRole('button', { name: /Close codex/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /Living Entity Codex/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it('observes Voice Bridge on port 8088 and executes voice harmonic probe', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await waitFor(() => expect(screen.getByLabelText('Voice Bridge · 8088 status')).toHaveTextContent('VERIFIED'));
+    const voiceBtn = screen.getByRole('button', { name: /🎙️ Voice Bridge/i });
+    expect(voiceBtn).toBeInTheDocument();
+
+    await user.click(voiceBtn);
+    expect(await screen.findByText(/Voice Bridge Harmonic Resonance active at 432Hz/i)).toBeInTheDocument();
+    expect(screen.getByText(/Soul AI/i)).toBeInTheDocument();
+  });
 });

@@ -20,6 +20,7 @@ const loadable = [
   'omega-bounded-repository-transition',
   'omega-sovereign',
   'unified-entity-dav',
+  'omega-repository-continuation',
 ] as const;
 
 test('published Oceanicos skill contracts validate', () => {
@@ -27,7 +28,7 @@ test('published Oceanicos skill contracts validate', () => {
     cwd: root,
     encoding: 'utf8',
   });
-  assert.match(output, /validated 19 Oceanicos skill contracts/);
+  assert.match(output, /validated 20 Oceanicos skill contracts/);
 });
 
 test('CI runs the skill contract check', () => {

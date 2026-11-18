@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { submitIntent, type IntentReceipt, type Verdict } from './vibe-os-api';
 import { TensorDavVisualizer } from './components/TensorDavVisualizer';
+import { MoodCodexPanel } from './MoodCodexPanel';
+import { EntityCodexModal } from './components/EntityCodexModal';
 import './VibeOS.css';
 
 export type ChatMessage = {
@@ -13,7 +15,7 @@ export type ChatMessage = {
   status?: Verdict | 'OBSERVED';
 };
 
-type LiveState = 'OBSERVED' | 'UNKNOWN';
+type LiveState = 'OBSERVED' | 'UNKNOWN' | 'VERIFIED';
 type HealthObservation = { status: LiveState; detail: string };
 
 const VERIFYING = '[Verifying against kai_ledger...]';
@@ -92,6 +94,16 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const [spineCheckedAt, setSpineCheckedAt] = useState<string | null>(null);
   const [kaiStatus, setKaiStatus] = useState<Verdict>('UNKNOWN');
   const [davOpen, setDavOpen] = useState(false);
+  const [moodOpen, setMoodOpen] = useState(false);
+  const [codexOpen, setCodexOpen] = useState(false);
+  const [moodState, setMoodState] = useState<HealthObservation>({
+    status: 'UNKNOWN',
+    detail: 'No mood response observed yet.',
+  });
+  const [voiceState, setVoiceState] = useState<HealthObservation>({
+    status: 'UNKNOWN',
+    detail: 'No voice bridge observation yet.',
+  });
   const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -105,6 +117,37 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
       if (active && !current.signal.aborted) {
         setSpine(observation);
         setSpineCheckedAt(new Date().toLocaleTimeString());
+      }
+      try {
+        const moodRes = await fetch(apiUrl('/v1/mood'), {
+          headers: { accept: 'application/json' },
+          signal: current.signal,
+        });
+        const moodData = await moodRes.json();
+        if (active && !current.signal.aborted && moodRes.ok && moodData?.success) {
+          setMoodState({
+            status: moodData.evaluation?.state === 'HIGH_INTEGRITY' ? 'OBSERVED' : 'UNKNOWN',
+            detail: `${moodData.status} · ${moodData.evaluation?.description ?? 'Mood observed.'}`,
+          });
+        }
+      } catch {
+        // Mood probe gracefully fails closed to UNKNOWN
+      }
+      try {
+        const voiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+        const voiceRes = await fetch(voiceUrl, {
+          headers: { accept: 'application/json' },
+          signal: current.signal,
+        });
+        const voiceData = await voiceRes.json();
+        if (active && !current.signal.aborted && voiceRes.ok && voiceData?.status === 'VERIFIED') {
+          setVoiceState({
+            status: 'VERIFIED',
+            detail: `432 Hz · ${voiceData.resonance?.mode ?? 'harmonic-pure'} · SHA: ${voiceData.sha256?.slice(0, 8)}`,
+          });
+        }
+      } catch {
+        // Voice bridge gracefully fails closed to UNKNOWN
       }
     };
     void probe();
@@ -241,6 +284,96 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     setVerifying(false);
   };
 
+  const runMoodCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Check Mood State');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/mood'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/mood · HTTP ${response.status}`,
+        };
+      } else {
+        const desc = payload.evaluation?.description ?? 'System mood observed.';
+        const health = payload.evaluation?.verificationHealth != null ? ` · Health ${payload.evaluation.verificationHealth}` : '';
+        const conf = payload.evaluation?.confidence != null ? ` · Confidence ${payload.evaluation.confidence}` : '';
+        result = {
+          role: 'ai',
+          content: `Mood observed: ${payload.status} (${payload.evaluation?.state ?? 'OPTIMAL'}). ${desc}${health}${conf}.`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/mood · telemetry evaluation only; not a deployment claim.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/mood unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
+  const runVoiceBridgeCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Probe Voice Bridge (432Hz)');
+    let result: ChatMessage;
+    try {
+      const voiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+      const response = await fetch(voiceUrl, { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || payload?.status !== 'VERIFIED') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `Voice Bridge on port 8088 unavailable or unverified${response.status ? ` (HTTP ${response.status})` : ''}.`,
+        };
+      } else {
+        const organs = payload.organs || {};
+        result = {
+          role: 'ai',
+          content: `Voice Bridge Harmonic Resonance active at ${payload.resonance?.frequencyHz ?? 432}Hz (${payload.resonance?.mode ?? 'harmonic-pure'}). Rule: ${payload.rule}. Organs: Soul AI (${organs.soul_ai}), Truth Weaver (${organs.truth_weaver}), The General (${organs.the_general}), Human Root (${organs.human_root}). Doctrine: "${payload.resonance?.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          hash: payload.sha256,
+          detail: `GET /voice · SHA-256: ${payload.sha256}`,
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET http://localhost:8088/voice unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -282,9 +415,19 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
           <div className="vibe-status-grid">
             <StatusPill label="Fastify Spine" status={spine.status} detail={spine.detail} />
             <StatusPill
+              label="Voice Bridge · 8088"
+              status={voiceState.status}
+              detail={voiceState.detail}
+            />
+            <StatusPill
               label="Local LLM · 11434"
               status="UNKNOWN"
               detail="No browser-safe health probe is exposed; the current API does not use Ollama."
+            />
+            <StatusPill
+              label="System Mood"
+              status={moodState.status}
+              detail={moodState.detail}
             />
             <StatusPill
               label="KAI Shield"
@@ -368,6 +511,32 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
             )}
           </section>
 
+          <section className="vibe-proof" aria-label="Interactive mood codex drawer">
+            <div className="vibe-proof-trigger-row">
+              <div>
+                <span className="vibe-proof-kicker">AUTOPILOT & TELEMETRY</span>
+                <p>Interactive Mood Codex · Finite planning · MAX GOOD-O state</p>
+              </div>
+              <button
+                type="button"
+                className="vibe-proof-toggle"
+                aria-expanded={moodOpen}
+                aria-controls="lucid-mood-drawer"
+                onClick={() => setMoodOpen((open) => !open)}
+              >
+                {moodOpen ? 'Close Mood Codex' : 'Open Mood Codex'}
+                <span aria-hidden="true">{moodOpen ? ' −' : ' +'}</span>
+              </button>
+            </div>
+            {moodOpen && (
+              <div id="lucid-mood-drawer" className="vibe-proof-drawer">
+                <MoodCodexPanel />
+              </div>
+            )}
+          </section>
+
+          {codexOpen && <EntityCodexModal onClose={() => setCodexOpen(false)} />}
+
           <div className="vibe-composer-wrap">
             <div className="vibe-actions" role="group" aria-label="Quick actions">
               <button
@@ -379,6 +548,36 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
                 disabled={verifying}
               >
                 Inspect 4×4×4×4 Tensor
+              </button>
+              <button
+                type="button"
+                className="vibe-action"
+                aria-expanded={codexOpen}
+                onClick={() => setCodexOpen(true)}
+                disabled={verifying}
+              >
+                🪞 Living Codex (12)
+              </button>
+              <button
+                type="button"
+                className="vibe-action"
+                onClick={() => void runVoiceBridgeCheck()}
+                disabled={verifying}
+              >
+                🎙️ Voice Bridge (432Hz)
+              </button>
+              <button
+                type="button"
+                className="vibe-action"
+                aria-expanded={moodOpen}
+                aria-controls="lucid-mood-drawer"
+                onClick={() => setMoodOpen(true)}
+                disabled={verifying}
+              >
+                ✦ Mood Autopilot
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runMoodCheck()} disabled={verifying}>
+                Check Mood State
               </button>
               <button type="button" className="vibe-action" onClick={() => void runLedgerCheck()} disabled={verifying}>
                 Check Ledger State

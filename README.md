@@ -6,7 +6,7 @@
 
 <p align="center"><strong>AVRØ HOUSE is the studio. OCEANICOS is the platform. Ω∞v is the verification engine.</strong></p>
 
-<p align="center">REALITY, VERIFIED. · ATTEST, DON&apos;T ASSERT.</p>
+<p align="center">REALITY, VERIFIED. · (Δ + Ø) = ΔVRØ HOUSE · ATTEST, DON&apos;T ASSERT.</p>
 
 <p align="center">
   <a href="docs/BRAND.md">Brand system</a> ·

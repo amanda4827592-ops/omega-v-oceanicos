@@ -24,6 +24,7 @@ its source.
 | `omega-sovereign` | `d3f7e4a419a17150d9a6617ac80662859456d70de1977393f9133bf02c04e008` | 2026-11-17 |
 | `omega-bounded-repository-transition` | `2bf2bbe3825091964c3f109dfee8e7a48be860ab942a32b57bb1072b1367e71d` | 2026-11-17 |
 | `dvro-house-oceanicos` | `ce29223a14810f0158d36b244eed7ef6af66b7a4f258571dc8717dd917b39cdb` | 2026-11-17 |
+| `omega-repository-continuation` | `326ed8025c327c63ba14c77ac29f6ba52eae7f97e5349ae11b45b91daf3d1626` | 2026-11-18 |
 
 Verify an installed skill still matches what was recorded:
 
@@ -186,6 +187,10 @@ Supplied 2026-11-17. Byte-identical to `skills/omega-sovereign/SKILL.md`. The hu
 ## unified-entity-dav
 
 Supplied 2026-11-17. Byte-identical to `skills/unified-entity-dav/SKILL.md`. The entity tensor surface already has a repository implementation. This file is the method, not a new claim that every gate in the method was rerun for this install.
+
+## omega-repository-continuation
+
+Supplied 2026-11-18. Byte-identical to `skills/omega-repository-continuation/SKILL.md`. Evidence-bound continuation of an existing repository task: re-anchor Git and governance state, inspect workers and ledgers, choose one finite delta, diagnose toolchain and wrapper failures, make the smallest authorized contract-aligned change, rerun authoritative gates, and produce verifiable handoffs.
 
 ## Whole-ecosystem alignment
 
