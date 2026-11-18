@@ -1,5 +1,7 @@
 # ΔVRØ HOUSE: THE FULL-STACK MAXIMUM COMPRESSION
 
+![ΔVRØ HOUSE × Ω∞v OCEANICOS Master Poster](./assets/avro-house-master-poster.jpg)
+
 ## Grand Unified Equation of the ΔVRØ HOUSE
 
 \[

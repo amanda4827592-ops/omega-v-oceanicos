@@ -86,6 +86,8 @@ INFINITE FORMS.
 
 ## 6. Symbol
 
+![ΔVRØ HOUSE × Ω∞v OCEANICOS Master Poster](./assets/avro-house-master-poster.jpg)
+
 ### (Δ + Ø) = ΔVRØ HOUSE
 
 ```text

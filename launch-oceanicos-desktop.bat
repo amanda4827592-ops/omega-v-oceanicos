@@ -1,4 +1,4 @@
-﻿@echo off
+@echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 title ΔVRØ HOUSE × Ω∞v OCEANICOS — Sovereign Desktop Application
