@@ -15,7 +15,7 @@ export type ChatMessage = {
   status?: Verdict | 'OBSERVED';
 };
 
-type LiveState = 'OBSERVED' | 'UNKNOWN';
+type LiveState = 'OBSERVED' | 'UNKNOWN' | 'VERIFIED';
 type HealthObservation = { status: LiveState; detail: string };
 
 const VERIFYING = '[Verifying against kai_ledger...]';
@@ -134,7 +134,7 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
         // Mood probe gracefully fails closed to UNKNOWN
       }
       try {
-        const voiceUrl = import.meta.env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+        const voiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
         const voiceRes = await fetch(voiceUrl, {
           headers: { accept: 'application/json' },
           signal: current.signal,
@@ -334,7 +334,7 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     beginQuickAction('Probe Voice Bridge (432Hz)');
     let result: ChatMessage;
     try {
-      const voiceUrl = import.meta.env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+      const voiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
       const response = await fetch(voiceUrl, { headers: { accept: 'application/json' } });
       let payload: any = null;
       try {
