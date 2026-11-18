@@ -8,7 +8,13 @@ echo     One Root · One Current · Infinite Forms · Ports 3000, 5000
 echo ===================================================================
 echo.
 
-cd /d "%~dp0"
+if exist "%~dp0apps\api\dist\index.js" (
+    cd /d "%~dp0"
+) else if exist "C:\Users\pc\OMEGA V\omega-v-oceanicos\apps\api\dist\index.js" (
+    cd /d "C:\Users\pc\OMEGA V\omega-v-oceanicos"
+) else (
+    cd /d "%~dp0"
+)
 
 echo [1/3] Verifying Fastify API service (:5000)...
 netstat -ano | findstr ":5000 " | findstr "LISTENING" >nul 2>&1
