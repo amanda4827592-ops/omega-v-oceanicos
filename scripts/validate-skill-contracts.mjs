@@ -23,6 +23,7 @@ const skills = [
   'omega-bounded-repository-transition',
   'omega-sovereign',
   'unified-entity-dav',
+  'omega-repository-continuation',
 ];
 const required = [
   'POSSIBLE',

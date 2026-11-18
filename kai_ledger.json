@@ -1,5 +1,5 @@
 {
-  "protocol": "\u03a9V\u00d8\u00d8S-SWARM/1",
+  "protocol": "ΩVØØS-SWARM/1",
   "checksum": "30013030",
   "doctrine": "ATTEST, DON'T ASSERT. UNKNOWN PRESERVED.",
   "append_only": true,
@@ -9,7 +9,7 @@
     "UNKNOWN",
     "NOT_EXECUTED"
   ],
-  "rule": "Append only. Never rewrite or delete an entry. On conflict keep both receipts, ordered by timestamp. See SWARM_PROTOCOL.md \u00a7VI.",
+  "rule": "Append only. Never rewrite or delete an entry. On conflict keep both receipts, ordered by timestamp. See SWARM_PROTOCOL.md §VI.",
   "entries": [
     {
       "timestamp": "2026-11-08T16:03:00Z",
@@ -25,7 +25,7 @@
       ],
       "tests_passed": null,
       "evidence_hash": null,
-      "next_delta": "Claim one domain from SWARM_PROTOCOL.md \u00a7III, branch as agent/<platform>/<task>, and append your own receipt."
+      "next_delta": "Claim one domain from SWARM_PROTOCOL.md §III, branch as agent/<platform>/<task>, and append your own receipt."
     },
     {
       "timestamp": "2026-11-11T08:18:22Z",
@@ -36,7 +36,7 @@
         "apps/web/src/InvisibleComputer.tsx",
         "apps/web/src/InvisibleComputer.css",
         "apps/web/src/__tests__/dom/InvisibleComputer.test.tsx",
-        "\u03a9V\u00d8\u00d8S/ASSIGNMENTS/002-beta-invisible-computer-workspace.md",
+        "ΩVØØS/ASSIGNMENTS/002-beta-invisible-computer-workspace.md",
         "kai_ledger.json"
       ],
       "tests_passed": true,
@@ -351,7 +351,7 @@
       "branch": "agent/chatgpt/composio-readonly-gateway",
       "status": "UNKNOWN",
       "files_touched": [
-        "\u03a9V\u00d8\u00d8S/ASSIGNMENTS/004-alpha-composio-readonly-gateway.md",
+        "ΩVØØS/ASSIGNMENTS/004-alpha-composio-readonly-gateway.md",
         "apps/api/src/composio-gateway.ts",
         "apps/api/src/composio-gateway-route.ts",
         "apps/api/src/index.ts",
@@ -499,6 +499,28 @@
       "tests_passed": true,
       "evidence_hash": "f91da5c87f69812989e6d7f9975745bfaf566a10adfea46b2d7100e919e8dfc4",
       "next_delta": "Human-review the installed continuum skills. The bounded-transition audit script was not run against the repository. Full pnpm test, deployment, and merge were not run. upgrade.execution stays NOT_EXECUTED."
+    },
+    {
+      "timestamp": "2026-11-18T09:42:00Z",
+      "agent_id": "antigravity",
+      "branch": "agent/manus/avro-house-tensor-desktop",
+      "status": "VERIFIED",
+      "files_touched": [
+        ".claude/skills/README.md",
+        ".claude/skills/omega-repository-continuation/SKILL.md",
+        "apps/web/src/__tests__/dom/TensorDavVisualizer.test.tsx",
+        "apps/web/src/components/TensorDavVisualizer.css",
+        "apps/web/src/components/TensorDavVisualizer.tsx",
+        "launch-oceanicos-desktop.bat",
+        "scripts/oceanicos-audit.mjs",
+        "scripts/validate-skill-contracts.mjs",
+        "skills/omega-repository-continuation/SKILL.md",
+        "tests/integration/skill-install-contract.integration.test.ts",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "20833492ad94daf15fd79194db6bf72196b83361a35e5cb58a17231f735df3d8",
+      "next_delta": "Human-review the AVRØ HOUSE desktop launcher, interactive tensor visualizer, and compressed omega-repository-continuation skill on clean origin/main baseline."
     }
   ]
 }

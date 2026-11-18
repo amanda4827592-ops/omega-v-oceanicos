@@ -71,6 +71,31 @@
   font: 9px 'DM Mono', monospace;
 }
 .tensor-dav__summary strong { color: #d8f4e9; }
+.tensor-dav__inspector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  border: 1px solid #00ffaa;
+  border-radius: 6px;
+  background: rgba(0, 255, 170, 0.08);
+  color: #c9f8e8;
+  font: 11px 'DM Mono', monospace;
+  flex-wrap: wrap;
+}
+.tensor-dav__inspector strong { color: #00ffaa; }
+.tensor-dav__inspector-close {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #8ce8c8;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+}
+.tensor-dav__inspector-close:hover { color: #ffffff; }
 .tensor-dav__heatmap-wrap {
   max-width: 100%;
   max-height: 430px;
@@ -95,6 +120,11 @@
 }
 .tensor-dav__cell:hover,
 .tensor-dav__cell:focus-visible { outline: 2px solid #f2ffe6; z-index: 1; }
+.tensor-dav__cell--selected {
+  outline: 2px solid #00ffaa !important;
+  z-index: 2;
+  box-shadow: 0 0 8px rgba(0, 255, 170, 0.6);
+}
 .tensor-dav__state { color: #a5d7c8; font: 12px 'DM Mono', monospace; }
 .tensor-dav__error {
   display: flex;
