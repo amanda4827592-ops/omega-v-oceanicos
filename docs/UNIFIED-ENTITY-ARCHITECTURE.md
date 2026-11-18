@@ -2,6 +2,24 @@
 
 **Status:** Architecture contract for the bounded tensor DAV slice. This document describes the requested topology; naming a layer does not establish that an external service is running or that it has authority.
 
+## The Continuum Equation
+
+\[
+\mathbf{\Omega_{\infty v}} := \Omega\Big(\Sigma\big[\Theta(\lambda x.\Psi(\Delta + \emptyset))\big]\Big) \quad \Big/ \quad \Delta\text{VRØ HOUSE} := \Omega
+\]
+
+Where each bracket maps directly to a verified layer in the operational stack:
+
+| Symbol | Layer | Port / Interface | Epistemic Invariant |
+| --- | --- | --- | --- |
+| **`Ω`** | **Surface (Outer Vessel)** | `:3000` (Vite / VibeOS) | Human-facing glass, visual inspection, progressive disclosure |
+| **`Σ`** | **KAI Immune System** | SHA-256 / `kai_ledger.json` | Hash chain integrity, shield validation, tamper evidence |
+| **`Θ`** | **Spine** | `:5000` (Fastify API) | Event loop, deterministic routing, rate limiting, SSE telemetry |
+| **`λx.Ψ`** | **Brain** | `:11434` / LLM Adapter | Multi-turn reasoning, bounded intent analysis (`executeElion`) |
+| **`Δ`** | **Root** | Repository / Workspace | Measured reality state, file changes, code and tests |
+| **`∅`** | **Compute** | Deterministic Kernel | Zero-entropy computation, invariant checks, pure arithmetic |
+| **`DAV`** | **Tensor Projection** | $T[i,j,k,l] = i + j + k + l$ | $N^2 \times N^2$ deterministic 4-tensor slice ($N \in \{4, 6, 8\}$) |
+
 ## Five-layer contract
 
 | Layer | Name | Components and boundary |
