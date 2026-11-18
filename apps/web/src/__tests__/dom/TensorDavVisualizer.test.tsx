@@ -31,11 +31,17 @@ describe('TensorDavVisualizer', () => {
     render(<TensorDavVisualizer />);
     expect(await screen.findByLabelText('SHA-256 verified')).toBeInTheDocument();
     expect(screen.getByText('1,536')).toBeInTheDocument();
-    expect(screen.getByLabelText('row 0, column 0, value 0 plus 0 plus 0 plus 0 equals 0')).toBeInTheDocument();
+    const cell0 = screen.getByLabelText('row 0, column 0, value 0 plus 0 plus 0 plus 0 equals 0');
+    expect(cell0).toBeInTheDocument();
+
+    await userEvent.click(cell0);
+    expect(await screen.findByLabelText('Selected tensor coordinate')).toBeInTheDocument();
+    expect(screen.getByText('T[0, 0, 0, 0]')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: '6×6×6×6' }));
     await waitFor(() => expect(fetchMock.mock.calls.at(-1)?.[0]).toBe('/api/tensor/6'));
     expect(await screen.findByText('36 × 36 projection')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Selected tensor coordinate')).not.toBeInTheDocument();
   });
 
   it('keeps UNKNOWN visible and does not show a verified badge on API failure', async () => {
