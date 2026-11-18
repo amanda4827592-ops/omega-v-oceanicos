@@ -8,6 +8,20 @@ import { fileURLToPath } from 'node:url';
 
 const script = resolve(fileURLToPath(new URL('.', import.meta.url)), 'elion-veral.sh');
 
+const bashExecutable = process.platform === 'win32'
+  ? ['C:\\Program Files\\Git\\bin\\bash.exe', 'C:\\Program Files\\Git\\usr\\bin\\bash.exe', 'bash'].find((candidate) => {
+      try {
+        const res = spawnSync(candidate, ['--version']);
+        return res.status === 0;
+      } catch {
+        return false;
+      }
+    }) ?? 'bash'
+  : 'bash';
+
+const toPosix = (p) => (process.platform === 'win32' ? p.replace(/\\/g, '/') : p);
+const pathSep = process.platform === 'win32' ? ';' : ':';
+
 function installFakePnpm(directory) {
   const executable = join(directory, 'pnpm');
   writeFileSync(
@@ -55,20 +69,26 @@ function runOrchestrator({ failOn } = {}) {
     mkdirSync(state);
     mkdirSync(bin);
     installFakePnpm(bin);
-    const result = spawnSync('bash', [script], {
+    const result = spawnSync(bashExecutable, [toPosix(script)], {
       encoding: 'utf8',
       env: {
         ...process.env,
-        PATH: `${bin}:${originalPath ?? ''}`,
-        FAKE_PNPM_STATE: state,
-        FAKE_PNPM_CALLS: calls,
+        PATH: `${bin}${pathSep}${originalPath ?? ''}`,
+        FAKE_PNPM_STATE: toPosix(state),
+        FAKE_PNPM_CALLS: toPosix(calls),
         ...(failOn ? { FAKE_PNPM_FAIL: failOn } : {}),
       },
       timeout: 15_000,
     });
+    let recordedCalls = [];
+    try {
+      recordedCalls = readFileSync(calls, 'utf8').trim().split('\n').filter(Boolean);
+    } catch {
+      recordedCalls = [];
+    }
     return {
       result,
-      calls: readFileSync(calls, 'utf8').trim().split('\n').filter(Boolean),
+      calls: recordedCalls,
     };
   } finally {
     if (originalPath === undefined) delete process.env.PATH;
