@@ -17,7 +17,17 @@ if exist "%~dp0apps\api\dist\index.js" (
     cd /d "%~dp0"
 )
 
-echo [1/4] Verifying Fastify Spine API (:5000)...
+echo [1/4] Verifying Ollama Compute Brain (:11434)...
+netstat -ano | findstr ":11434 " | findstr "LISTENING" >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo Starting Ollama inference engine on port 11434...
+    start "OceanicOS Brain :11434" /b cmd /c "ollama serve"
+    timeout /t 2 /nobreak >nul
+) else (
+    echo Ollama Compute Brain on port 11434 is active.
+)
+
+echo [2/4] Verifying Fastify Spine API (:5000)...
 netstat -ano | findstr ":5000 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Fastify API on port 5000...
@@ -27,7 +37,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo Fastify Spine API on port 5000 is active.
 )
 
-echo [2/4] Verifying Python Companion Muscle (:8088)...
+echo [3/4] Verifying Python Companion Muscle (:8088)...
 netstat -ano | findstr ":8088 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Python Companion on port 8088...
@@ -37,7 +47,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo Python Companion on port 8088 is active.
 )
 
-echo [3/4] Verifying Web Frontend Surface (:3000)...
+echo [4/4] Verifying Web Frontend Surface (:3000)...
 netstat -ano | findstr ":3000 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
     echo Starting Vite Web Preview on port 3000...
@@ -47,7 +57,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo Web Frontend Surface on port 3000 is active.
 )
 
-echo [4/4] Launching OceanicOS as a Native Desktop App Window...
+echo Launching OceanicOS as a Native Desktop App Window...
 
 set "CHROME_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe"
 if not exist "!CHROME_PATH!" (
