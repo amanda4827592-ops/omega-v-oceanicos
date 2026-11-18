@@ -1,12 +1,12 @@
 <p align="center">
-  <img src="apps/web/public/omega-mark.svg" alt="Ω∞v OCEANICOS" width="88" height="88" />
+  <img src="apps/web/public/avro-house-emblem.jpg" alt="AVRØ HOUSE emblem with the Ω∞v tensor projection and SHA-256 lock mark" width="840" />
 </p>
 
-<h1 align="center">OCEANICOS</h1>
+<h1 align="center">AVRØ HOUSE × OCEANICOS</h1>
 
-<p align="center"><strong>REALITY, VERIFIED.</strong></p>
+<p align="center"><strong>AVRØ HOUSE is the studio. OCEANICOS is the platform. Ω∞v is the verification engine.</strong></p>
 
-<p align="center">Ω∞v is the verification engine. OCEANICOS is the platform.</p>
+<p align="center">REALITY, VERIFIED. · ATTEST, DON&apos;T ASSERT.</p>
 
 <p align="center">
   <a href="docs/BRAND.md">Brand system</a> ·
@@ -18,8 +18,6 @@
 
 [![Verification Pipeline](https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml/badge.svg)](https://github.com/starofgodmayomi-droid/omega-v-oceanicos/actions/workflows/verify.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-
-![A luminous emerald current crossing a deep ocean toward the horizon](docs/assets/oceanicos-readme-hero.jpg)
 
 > **Attest, don't assert. Evidence before trust. Verification before evolution.**
 
@@ -65,11 +63,16 @@ and what remains only a proposal or local evidence state.
 - 💠 **[Ω∞v OS](skills/omega-v-os/SKILL.md)** — the ƆCEANiC_OS sequence as a finite kernel
 - 🔁 **[Lucid Continuum](skills/lucid-continuum/SKILL.md)** — handoff across passes without invented memory
 - 🔁 **[Oceanicos Total Continuum](skills/oceanicos-total-continuum/SKILL.md)** — one finite pass inside this public repository, then only an observed handoff
+- 🏠 **[ΔVRØ HOUSE × OCEANICOS](skills/dvro-house-oceanicos/SKILL.md)** — house vessel and verification method, kept distinct from proof
+- 📌 **[Bounded repository transition](skills/omega-bounded-repository-transition/SKILL.md)** — pin a commit, inspect, and write an evidence-bound report
+- 🛡️ **[Omega sovereign](skills/omega-sovereign/SKILL.md)** — human-rooted operating frame; symbols are not authority
+- 🧊 **[Unified Entity DAV](skills/unified-entity-dav/SKILL.md)** — the entity tensor method; a diagram is not a running service
 - 🌐 **[Full-stack reality-access handoff](docs/upgrades/FULL_STACK_REALITY_ACCESS_2026-09-28.md)** — connector taxonomy without implicit ownership or authority
 - 🗺️ **[Repository inventory](docs/REPO_INVENTORY.md)** — workspace vs disk (current evidence)
 - ⚙️ **[Development Setup](docs/DEVELOPMENT.md)** — Get the project running locally
 | | Meaning |
 | --- | --- |
+| **Studio** | AVRØ HOUSE — the creative and engineering house for its projects |
 | **Platform** | OCEANICOS — one ecosystem body with many bounded capabilities |
 | **Engine** | Ω∞v — the verification and evidence loop |
 | **Core loop** | Observe → Verify → Remember |
@@ -395,6 +398,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process.
 
 ## Brand meaning
 
+- **AVRØ HOUSE** is the overarching studio identity for the repository's public-facing projects.
 - **Ω∞** is the mark: continuity, recursion, and open-ended evolution.
 - **Ω∞v** is the verification engine and kernel identity.
 - **OCEANICOS** is the platform and ecosystem body.
