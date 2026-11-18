@@ -23,6 +23,18 @@ describe('Vibe OS surface', () => {
     await waitFor(() => expect(screen.getByLabelText('Fastify Spine status')).toHaveTextContent('OBSERVED'));
   });
 
+  it('explains the app/model boundary without claiming a live provider connection', () => {
+    installFetch();
+    render(<VibeOS active={false} />);
+
+    const disclosure = screen.getByRole('note', { name: 'AI model and provider boundary' });
+    expect(disclosure).toHaveTextContent(/OCEANICOS is a chat-enabled application/i);
+    expect(disclosure).toHaveTextContent(/not the ChatGPT or Manus assistant service/i);
+    expect(disclosure).toHaveTextContent(/local deterministic composer by default/i);
+    expect(disclosure).toHaveTextContent(/explicit opt-in/i);
+    expect(disclosure).toHaveTextContent(/provider availability is not live-verified/i);
+  });
+
   it('posts the intent to /api/chat, shows the verifying line, then the verified output', async () => {
     let release: ((response: FakeResponse) => void) | null = null;
     const pending = new Promise<FakeResponse>((resolve) => {

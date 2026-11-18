@@ -298,6 +298,12 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               detail={kaiStatus === 'UNKNOWN' ? 'No current chat receipt observed.' : `Latest execute receipt: ${kaiStatus}.`}
             />
           </div>
+          <p className="vibe-model-disclosure" role="note" aria-label="AI model and provider boundary">
+            <strong>What powers this?</strong> OCEANICOS is a chat-enabled application and verification workflow—not the
+            ChatGPT or Manus assistant service, and not itself a foundation model. Vibe OS sends only your intent and
+            uses the local deterministic composer by default. The separate Invisible Computer offers an explicit
+            opt-in for a server-configured OpenAI-compatible model; provider availability is not live-verified here.
+          </p>
           <p className="vibe-current-disclaimer">HTTP reachability and API receipts are scoped observations, not production-health claims.</p>
         </section>
 
