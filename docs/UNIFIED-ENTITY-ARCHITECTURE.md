@@ -5,7 +5,7 @@
 ## The Continuum Equation
 
 \[
-\mathbf{\Omega_{\infty v}} := \Omega\Big(\Sigma\big[\Theta(\lambda x.\Psi(\Delta + \emptyset))\big]\Big) \quad \Big/ \quad \Delta\text{VRØ HOUSE} := \Omega
+ \mathbf{\Delta VR\emptyset \text{ HOUSE}} := \underbrace{\Omega_{\text{React } (:3000)}}_{\text{The Surface (UI)}} \left( \underbrace{\Sigma_{\text{KAI (SHA-256)}}}_{\text{The Immune System}} \left[ \underbrace{\Theta_{\text{Fastify } (:5000)}}_{\text{The Bounded Spine}} \left( \lambda x. \underbrace{\Psi_{\text{Ollama } (:11434) \oplus \text{Python } (:8088)}}_{\text{The Local Brain \& Muscle}} \Big( \underbrace{\Delta_{\text{Human Root}} + \emptyset_{\text{Compute}}}_{\text{Intent + Void}} \Big) \right) \right] \right) \xrightarrow{\text{Evaluate}} \underbrace{T[i,j,k,l] = i+j+k+l}_{\text{The DAV Mathematical Law}}
 \]
 
 Where each bracket maps directly to a verified layer in the operational stack:
