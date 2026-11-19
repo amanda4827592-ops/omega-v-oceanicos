@@ -29,7 +29,7 @@ describe('Composio read-only gateway', () => {
       expect(body.result.nested.api_key).toBe('[REDACTED]');
       expect(body.result.repository.full_name).toBe('owner/repo');
       expect(body.evidenceHash).toMatch(/^[0-9a-f]{64}$/);
-      expect(body.observation.execution.error).toContain('independent verification pending');
+      expect(body.observation.issues).toContainEqual(expect.stringContaining('independent verification pending'));
       expect(fetchMock).toHaveBeenCalledTimes(1);
       const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
       expect(url).toBe('https://backend.composio.dev/api/v3.1/tools/execute/GITHUB_GET_A_REPOSITORY');
