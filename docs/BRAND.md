@@ -86,6 +86,18 @@ INFINITE FORMS.
 
 ## 6. Symbol
 
+![ΔVRØ HOUSE × Ω∞v OCEANICOS Master Poster](./assets/avro-house-master-poster.jpg)
+
+### (Δ + Ø) = ΔVRØ HOUSE
+
+```text
+(Δ + Ø) := ΔVRØ HOUSE
+```
+
+- **Δ (Delta)**: Finite, verified transformation — observable actions, measurable outcomes, real-world consequence.
+- **Ø (Void / Ground State)**: The invariant origin and zero-entropy root — empty vessel, stillness, pure observer.
+- **ΔVRØ HOUSE**: The sovereign synthesis — where the ground state (Ø) hosts the verified delta (Δ) in one unified vessel.
+
 ### Ω∞
 
 ```text

@@ -320,6 +320,32 @@
   line-height: 1.65;
 }
 
+.vibe-prompt-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.vibe-starter {
+  padding: 6px 14px;
+  border: 1px solid var(--vibe-line);
+  border-radius: 999px;
+  background: var(--vibe-surface);
+  color: var(--vibe-ink-muted);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.vibe-starter:hover {
+  border-color: var(--vibe-current);
+  color: var(--vibe-ink);
+  background: rgba(140, 232, 200, 0.08);
+}
+
 .vibe-message {
   display: flex;
   flex-direction: column;
@@ -410,6 +436,15 @@
   color: var(--vibe-ink-dim);
 }
 
+.vibe-badge-engine {
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+
 .vibe-proof {
   margin: 0 12px 16px;
   border: 1px solid var(--vibe-line);
@@ -480,6 +515,24 @@
   border-color: var(--vibe-current);
   background: rgba(140, 232, 200, 0.075);
   color: var(--vibe-current);
+}
+
+.vibe-model-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+  font-size: 11.5px;
+  font-family: 'DM Mono', ui-monospace, monospace;
+  color: var(--vibe-ink-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.vibe-model-toggle input[type="checkbox"] {
+  accent-color: var(--vibe-current);
+  cursor: pointer;
 }
 
 .vibe-composer {

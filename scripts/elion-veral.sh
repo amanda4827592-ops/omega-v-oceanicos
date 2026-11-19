@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# (Δ + Ø) := ΔVRØ HOUSE
+# Δ (ELION: Parallel Build Execution) + Ø (VERAL: Invariant Serial Verification Gates)
 set -Eeuo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

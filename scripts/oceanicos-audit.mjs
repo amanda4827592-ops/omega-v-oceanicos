@@ -1,7 +1,8 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = new URL('..', import.meta.url).pathname;
+const root = fileURLToPath(new URL('..', import.meta.url));
 const requiredFiles = [
   'README.md',
   'CHARTER.md',
@@ -28,21 +29,6 @@ const packageDirectories = (await readdir(packageRoot, { withFileTypes: true }))
   .map((entry) => entry.name)
   .sort();
 
-const packageNames = new Map();
-for (const directory of packageDirectories) {
-  const manifestPath = join(packageRoot, directory, 'package.json');
-  try {
-    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
-    if (!manifest.name) failures.push(`package has no name: packages/${directory}`);
-    if (packageNames.has(manifest.name)) {
-      failures.push(`duplicate package name: ${manifest.name}`);
-    }
-    packageNames.set(manifest.name, directory);
-  } catch {
-    failures.push(`package manifest missing or invalid: packages/${directory}/package.json`);
-  }
-}
-
 const workspaceFile = await readFile(join(root, 'pnpm-workspace.yaml'), 'utf8');
 const workspacePatterns = [...workspaceFile.matchAll(/^\s*-\s*['"]([^'"]+)['"]\s*$/gm)].map(
   (match) => match[1],
@@ -56,6 +42,21 @@ const workspacePackageDirectories = packageDirectories.filter((directory) =>
 const excludedPackageDirectories = packageDirectories.filter(
   (directory) => !workspacePackageDirectories.includes(directory),
 );
+
+const packageNames = new Map();
+for (const directory of workspacePackageDirectories) {
+  const manifestPath = join(packageRoot, directory, 'package.json');
+  try {
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    if (!manifest.name) failures.push(`package has no name: packages/${directory}`);
+    if (packageNames.has(manifest.name)) {
+      failures.push(`duplicate package name: ${manifest.name}`);
+    }
+    packageNames.set(manifest.name, directory);
+  } catch {
+    failures.push(`package manifest missing or invalid: packages/${directory}/package.json`);
+  }
+}
 
 const rootManifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 for (const script of ['build', 'test', 'typecheck', 'verify:full', 'smoke:api']) {

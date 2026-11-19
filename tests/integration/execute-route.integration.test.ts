@@ -510,3 +510,97 @@ test('compression names one unexecuted upgrade only for a verified digest', () =
   assert.equal(unknown.selected, null);
   assert.equal(unknown.execution, 'NOT_EXECUTED');
 });
+
+test('ELION connects to local Ollama on port 11434 when configured without requiring external api key', async () => {
+  const previousBaseUrl = process.env.OMEGA_LLM_BASE_URL;
+  const previousProvider = process.env.OMEGA_LLM_PROVIDER;
+  const previousKey = process.env.OMEGA_LLM_API_KEY;
+  const originalFetch = globalThis.fetch;
+  const providerCalls: Array<{ url: string; authorization: string | null }> = [];
+
+  delete process.env.OMEGA_LLM_API_KEY;
+  process.env.OMEGA_LLM_BASE_URL = 'http://localhost:11434/v1';
+  process.env.OMEGA_LLM_PROVIDER = 'ollama';
+
+  globalThis.fetch = async (input, init) => {
+    providerCalls.push({
+      url: String(input),
+      authorization: new Headers(init?.headers).get('authorization'),
+    });
+    return new Response(
+      JSON.stringify({
+        choices: [{ message: { content: 'Local Ollama bounded response.' } }],
+      }),
+      { status: 200, headers: { 'content-type': 'application/json' } }
+    );
+  };
+
+  const app = createApp(':memory:', false);
+  try {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/execute',
+      payload: { intent: 'Test local Ollama integration', useExternalModel: true },
+    });
+    const body = response.json();
+    assert.equal(body.status, 'VERIFIED');
+    assert.equal(body.engine, 'llm:qwen2.5:0.5b');
+    assert.equal(providerCalls.length, 1);
+    assert.equal(providerCalls[0].url, 'http://localhost:11434/v1/chat/completions');
+    assert.equal(providerCalls[0].authorization, 'Bearer ollama');
+  } finally {
+    process.env.OMEGA_LLM_BASE_URL = previousBaseUrl;
+    process.env.OMEGA_LLM_PROVIDER = previousProvider;
+    if (previousKey !== undefined) process.env.OMEGA_LLM_API_KEY = previousKey;
+    else delete process.env.OMEGA_LLM_API_KEY;
+    globalThis.fetch = originalFetch;
+    await app.close();
+  }
+});
+
+test('Spine API gateways companion voice and tensor routes to port 8088', async () => {
+  const app = createApp(':memory:', false);
+  try {
+    const voiceRes = await app.inject({
+      method: 'GET',
+      url: '/v1/companion/voice',
+    });
+    assert.ok(voiceRes.statusCode === 200 || voiceRes.statusCode === 503);
+    if (voiceRes.statusCode === 200) {
+      assert.equal(voiceRes.json().status, 'VERIFIED');
+    }
+
+    const tensorRes = await app.inject({
+      method: 'GET',
+      url: '/v1/companion/tensor/4',
+    });
+    assert.ok(tensorRes.statusCode === 200 || tensorRes.statusCode === 503);
+    if (tensorRes.statusCode === 200) {
+      assert.equal(tensorRes.json().size, 4);
+    }
+  } finally {
+    await app.close();
+  }
+});
+
+test('Spine API gateways LLM health probe on port 11434', async () => {
+  const app = createApp(':memory:', false);
+  try {
+    const llmRes = await app.inject({
+      method: 'GET',
+      url: '/v1/llm/health',
+    });
+    assert.ok(llmRes.statusCode === 200 || llmRes.statusCode === 503);
+    const body = llmRes.json();
+    if (llmRes.statusCode === 200) {
+      assert.equal(body.status, 'VERIFIED');
+      assert.equal(body.success, true);
+      assert.ok(body.model);
+    } else {
+      assert.equal(body.status, 'UNKNOWN');
+      assert.equal(body.success, false);
+    }
+  } finally {
+    await app.close();
+  }
+});
