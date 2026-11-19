@@ -743,4 +743,43 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Action: "review the divergent evidence and preserve the conflict; no retry or authorization was performed"/i)).toBeInTheDocument();
     expect(screen.getByText(/Epistemic law: "preserve the conflict; never fabricate consensus"/i)).toBeInTheDocument();
   });
+
+  it('observes Single Body 4x4x4x4 Compression and displays lossless cell projection', async () => {
+    installFetch({
+      '/api/v1/ecosystem/body': () =>
+        json({
+          success: true,
+          status: 'VERIFIED',
+          fixpoint: {
+            equation: 'omega.ecosystem-body.fixpoint.v1',
+            status: 'VERIFIED',
+          },
+          compression: {
+            space: {
+              notation: '4×4×4×4',
+              rank: 4,
+              capacity: 256,
+            },
+            count: 7,
+            filled: 7,
+            digest: 'b52fcb6c8b59a88423973a84fae8646f7fde49b396921927617f09d85020fbf0',
+            expansion: {
+              status: 'VERIFIED',
+              lossless: true,
+            },
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const compBtn = screen.getByRole('button', { name: /🧊 Single Body \(4×4×4×4\)/i });
+    expect(compBtn).toBeInTheDocument();
+
+    await user.click(compBtn);
+    expect(await screen.findByText(/Single Body 4×4×4×4 Compression: 7\/256 cells \(4×4×4×4 rank 4\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Digest: b52fcb6c8b\.\.\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Expansion: VERIFIED \(lossless: YES\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fixpoint: omega\.ecosystem-body\.fixpoint\.v1 \(VERIFIED\)/i)).toBeInTheDocument();
+  });
 });
