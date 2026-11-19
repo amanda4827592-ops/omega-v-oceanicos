@@ -59,3 +59,11 @@ Halt and say why, rather than working around the gate, when the change would:
 ## Return
 
 Report baseline, slice, what ran, the label, what remains `UNKNOWN` or `NOT_EXECUTED`, and the rollback. If the next upgrade is not justified by the observation, do not invent one.
+
+## Continuum contract
+
+Treat this skill as one bounded organ in the repository continuum. Preserve the shared flow while keeping domain authority and specialist detail local:
+
+`SOURCE → INTENT → AUTHORITY → ADMIT → BOUNDED ACTION → OBSERVE → RECONCILE → ATTEST → PROVENANCE → NEXT FINITE Δ`
+
+Keep capability separate from authority, proposal separate from execution, test separate from runtime, and memory or hashes separate from truth. Preserve `UNKNOWN`, `DIVERGENT`, `NOT_EXECUTED`, and `REVIEW`; a handoff must carry intent, scope, authority, current state, evidence, uncertainty, recovery, and one next finite step. This skill may guide or route work but never grants permission for external mutation, and `∞` means repeated finite transitions rather than unlimited autonomy.

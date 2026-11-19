@@ -79,3 +79,11 @@ Keep the active loop small: **one active Δ → one bounded action → one obser
 6. Select one bounded next experiment. Never infer money, demand, deployment, or health from a proposal, score, test, signature, or match alone.
 
 For human-sensitive or external activity, read the relevant safeguards and obtain the required consent/authority before action. This skill itself grants no authority.
+
+## Continuum contract
+
+Treat this skill as one bounded organ in the repository continuum. Preserve the shared flow while keeping domain authority and specialist detail local:
+
+`SOURCE → INTENT → AUTHORITY → ADMIT → BOUNDED ACTION → OBSERVE → RECONCILE → ATTEST → PROVENANCE → NEXT FINITE Δ`
+
+Keep capability separate from authority, proposal separate from execution, test separate from runtime, and memory or hashes separate from truth. Preserve `UNKNOWN`, `DIVERGENT`, `NOT_EXECUTED`, and `REVIEW`; a handoff must carry intent, scope, authority, current state, evidence, uncertainty, recovery, and one next finite step. This skill may guide or route work but never grants permission for external mutation, and `∞` means repeated finite transitions rather than unlimited autonomy.

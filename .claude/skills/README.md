@@ -10,16 +10,16 @@ its source.
 | skill                                 | sha256 of `SKILL.md`                                               | installed  |
 | ------------------------------------- | ------------------------------------------------------------------ | ---------- |
 | `omega-v-ufi`                         | `3ef1fda3a9e84115495948c5f9510b22b946442a5847f701c1e922628e73bc45` | 2026-08-16 |
-| `omega-global-good-fullstack`         | `094759e83a3aec27b6884c3b55e19b8021f8771a40d6f036e334c0e2e15af79b` | 2026-08-27 |
+| `omega-global-good-fullstack`         | `614471d49a982060646e9a4b974079f31428ae8b6aed27356b7cb67820706b4f` | 2026-08-27 |
 | `omega-global-good-fullstack-builder` | `96d5c00b13c80d343230f301c9c87b08f6d12278d541e06480db818749c40422` | 2026-08-27 |
 | `omega-full-stack-max`                | `ec5b6a72fd453e20243813424991be79d0f718e301e18b9e54ed0417f5082cd1` | 2026-08-28 |
-| `oceanicos-full-stack-companion` | `7db7f5b030dc3ff5d5bef8f56eef407e5c9c9afa64472e4b5663bd7e8b07a222` | 2026-10-16 |
-| `oceanicos-max-space-full-stack` | `c3c5f8fa7a0b59d87dd4d1395b2422493eaded4f9a9296223699e4c5f369e65b` | 2026-10-16 |
-| `oceanicos-verified-upgrade` | `7c85422294d544464abc18ac4f946ea0269ca278ebefbe7fa1cf945e7bbf2c9a` | 2026-10-16 |
-| `omega-v-os` | `6ed3f35d0085b8c3d7256cb65c3a8e49a24f860d90c7b940509ccfaf35480513` | 2026-10-16 |
-| `lucid-continuum` | `57a34241ff3d52ed143da49f1a9a04380743c2adf09bf9916553146915d711da` | 2026-10-16 |
-| `oceanicos-total-continuum` | `23aae4defff33f608b6ab1419a19e05b550565b8c44bc86aca3a31e24fa15086` | 2026-10-24 |
-| `kaixelionxomega` | `ab59d4fb7cd81a9ce489720f7f5044336736a913f2f706733fda24c69874679f` | 2026-10-30 |
+| `oceanicos-full-stack-companion` | `6f4fd63f97eb92781ef0506d40caff56b134030433c5dd964db5e78937d17dfe` | 2026-10-16 |
+| `oceanicos-max-space-full-stack` | `1e1a39acd0cb4bdb41a2fd981a59d7bc124120b17522bcd813c03b0070702656` | 2026-10-16 |
+| `oceanicos-verified-upgrade` | `3dd43d6efd413fe24928417dd863140103a69e139eab8c71f8a2d18ecdbb408f` | 2026-10-16 |
+| `omega-v-os` | `7e496410e495927e57da41b22e40e5ffd840531cb67c2dd6bc5cefd1359d849f` | 2026-10-16 |
+| `lucid-continuum` | `fe0440013c3dbe7c98d2409c62559b90154f3f420d16a6969d3af737461a0093` | 2026-10-16 |
+| `oceanicos-total-continuum` | `ef7f92fa74294fd6ed9dfd4f8b24bfe069910fa1627b8e13052f3fd4d0947547` | 2026-10-24 |
+| `kaixelionxomega` | `3e0a4802974d1b16aad253ef2a0d328e2a4c76c7f9694fd78037ae915529a97e` | 2026-10-30 |
 
 Verify an installed skill still matches what was recorded:
 

@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = process.cwd();
-const skills = [
+const legacySkills = new Set([
   'voice-bridge',
   'oread-pidgin-harmonizer',
   'kai-companion',
@@ -19,8 +19,29 @@ const skills = [
   'oceanicos-verified-upgrade',
   'oceanicos-total-continuum',
   'kaixelionxomega',
+]);
+const skills = [
+  'full-stack-computer-mode',
+  'kai-companion',
+  'kaixelion-omega',
+  'kaixelionxomega',
+  'lucid-continuum',
+  'lucid-full-stack',
+  'oceanicos-framework',
+  'oceanicos-full-stack-companion',
+  'oceanicos-full-stack',
+  'oceanicos-max-space-full-stack',
+  'oceanicos-total-continuum',
+  'oceanicos-value-navigator',
+  'oceanicos-verified-upgrade',
+  'omega-global-good-fullstack',
+  'omega-mirror-water-universal-body',
+  'omega-reality-first',
+  'omega-v-os',
+  'oread-pidgin-harmonizer',
+  'voice-bridge',
 ];
-const required = [
+const legacyRequired = [
   'POSSIBLE',
   'AUTHORITY',
   'OBSERV',
@@ -29,6 +50,7 @@ const required = [
   'UNKNOWN',
   'NOT_EXECUTED',
 ];
+const continuumRequired = ['CONTINUUM CONTRACT', 'NEXT FINITE'];
 
 for (const skill of skills) {
   const path = join(root, 'skills', skill, 'SKILL.md');
@@ -45,7 +67,7 @@ for (const skill of skills) {
   }
   const name = source.match(/^name:\s*(.+)$/m)?.[1]?.trim();
   if (name !== skill) throw new Error(`${skill}: frontmatter name must match directory`);
-  for (const token of required) {
+  for (const token of [...continuumRequired, ...(legacySkills.has(skill) ? legacyRequired : [])]) {
     if (!normalized.includes(token)) throw new Error(`${skill}: missing contract token ${token}`);
   }
 }

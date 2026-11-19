@@ -137,3 +137,11 @@ For simulations return: **states → rule → bounds → trace → provenance/st
 For engineering return: **scope → current evidence → contract/data model → affected surfaces → one slice → implementation → exact checks → limitations → rollback → one next transition**.
 
 > This is bounded symbolic/local evidence. It is not observation of the physical universe, proof of cosmology or infinity, evidence of consciousness, or proof of execution in an external world.
+
+## Continuum contract
+
+Treat this skill as one bounded organ in the repository continuum. Preserve the shared flow while keeping domain authority and specialist detail local:
+
+`SOURCE → INTENT → AUTHORITY → ADMIT → BOUNDED ACTION → OBSERVE → RECONCILE → ATTEST → PROVENANCE → NEXT FINITE Δ`
+
+Keep capability separate from authority, proposal separate from execution, test separate from runtime, and memory or hashes separate from truth. Preserve `UNKNOWN`, `DIVERGENT`, `NOT_EXECUTED`, and `REVIEW`; a handoff must carry intent, scope, authority, current state, evidence, uncertainty, recovery, and one next finite step. This skill may guide or route work but never grants permission for external mutation, and `∞` means repeated finite transitions rather than unlimited autonomy.

@@ -83,3 +83,11 @@ Tests, CI, signatures, and attestations prove only the artifact they cover. Real
 ## Done means
 
 The intended behavior is present or explicitly `NOT_EXECUTED`. Affected contracts still agree. The relevant check ran, or it is labeled `UNKNOWN`. Rollback is named when the change can hurt data or access. Secrets stayed out of the record. The next observable consequence is named, or it is honestly absent.
+
+## Continuum contract
+
+Treat this skill as one bounded organ in the repository continuum. Preserve the shared flow while keeping domain authority and specialist detail local:
+
+`SOURCE → INTENT → AUTHORITY → ADMIT → BOUNDED ACTION → OBSERVE → RECONCILE → ATTEST → PROVENANCE → NEXT FINITE Δ`
+
+Keep capability separate from authority, proposal separate from execution, test separate from runtime, and memory or hashes separate from truth. Preserve `UNKNOWN`, `DIVERGENT`, `NOT_EXECUTED`, and `REVIEW`; a handoff must carry intent, scope, authority, current state, evidence, uncertainty, recovery, and one next finite step. This skill may guide or route work but never grants permission for external mutation, and `∞` means repeated finite transitions rather than unlimited autonomy.

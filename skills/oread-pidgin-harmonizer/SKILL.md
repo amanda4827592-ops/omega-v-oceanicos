@@ -64,3 +64,11 @@ For a build, name the owner/input, dependency, stop condition, expected output, 
 ## Repository alignment
 
 For Ω∞v work, treat `CHARTER.md` and `docs/spec/OCEANICOS-OPERATIONAL-PROTOCOL.md` as the implementation contract. Any protocol-boundary change must update affected tests, evidence, and specification. Keep symbolic content in copy, prompts, or metadata rather than hidden authority paths, and preserve dissent and provenance without exposing secrets or unnecessary personal data.
+
+## Continuum contract
+
+Treat this skill as one bounded organ in the repository continuum. Preserve the shared flow while keeping domain authority and specialist detail local:
+
+`SOURCE → INTENT → AUTHORITY → ADMIT → BOUNDED ACTION → OBSERVE → RECONCILE → ATTEST → PROVENANCE → NEXT FINITE Δ`
+
+Keep capability separate from authority, proposal separate from execution, test separate from runtime, and memory or hashes separate from truth. Preserve `UNKNOWN`, `DIVERGENT`, `NOT_EXECUTED`, and `REVIEW`; a handoff must carry intent, scope, authority, current state, evidence, uncertainty, recovery, and one next finite step. This skill may guide or route work but never grants permission for external mutation, and `∞` means repeated finite transitions rather than unlimited autonomy.
