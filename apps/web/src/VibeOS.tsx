@@ -1008,6 +1008,58 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     setVerifying(false);
   };
 
+  const runSingleBodyCompressionCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Single Body (4×4×4×4)');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/ecosystem/body'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || !payload?.compression) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/ecosystem/body · HTTP ${response.status}`,
+        };
+      } else {
+        const c = payload.compression;
+        const notation = c.space?.notation ?? '4×4×4×4';
+        const rank = c.space?.rank ?? 4;
+        const capacity = c.space?.capacity ?? 256;
+        const filled = c.filled ?? 7;
+        const digest = typeof c.digest === 'string' ? `${c.digest.slice(0, 10)}...` : 'n/a';
+        const expansionStatus = c.expansion?.status ?? 'VERIFIED';
+        const lossless = c.expansion?.lossless ? 'YES' : 'NO';
+        const fixpointEq = payload.fixpoint?.equation ?? 'omega.ecosystem-body.fixpoint.v1';
+        const fixpointStatus = payload.fixpoint?.status ?? 'VERIFIED';
+        result = {
+          role: 'ai',
+          content: `Single Body 4×4×4×4 Compression: ${filled}/${capacity} cells (${notation} rank ${rank}) · Digest: ${digest} · Expansion: ${expansionStatus} (lossless: ${lossless}) · Fixpoint: ${fixpointEq} (${fixpointStatus}).`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/ecosystem/body · 4×4×4×4 single body compression; declared projection, not inferred truth.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/ecosystem/body unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1333,6 +1385,9 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
               </button>
               <button type="button" className="vibe-action" onClick={() => void runDivergenceLedgerCheck()} disabled={verifying}>
                 🛡️ Divergence Ledger
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runSingleBodyCompressionCheck()} disabled={verifying}>
+                🧊 Single Body (4×4×4×4)
               </button>
             </div>
             <label className="vibe-model-toggle">
