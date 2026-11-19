@@ -77,3 +77,46 @@ Detail: [docs/ECOSYSTEM-BODY-EQUATION.md](docs/ECOSYSTEM-BODY-EQUATION.md).
 On 2026-11-06 the human supplied one system directive and asked for it to be saved as `ECOSYSTEM_BODY.md`. The bytes are stored verbatim at [ΩVØØS/CORE/ECOSYSTEM_BODY.md](ΩVØØS/CORE/ECOSYSTEM_BODY.md). That file is the supplied prompt. It does not replace the fixpoint in this file.
 
 `30013030` is still a symbol. This repository does not verify it. Reading the prompt does not put a runtime online. [ΩVØØS/backend_magic.ts](ΩVØØS/backend_magic.ts) returns the prompt's receipt shape and fails closed: a self-hash of a local sentence stays `UNKNOWN`, not `VERIFIED`. The function does not write a ledger.
+
+---
+
+### CONVERSATION COMPRESSION → ONE FULL-STACK BODY
+
+The conversation compresses into one bounded meaning: **human intent enters through explicit authority, crosses audit and identity rails, is admitted by KAI, moves through the bounded API and optional local capabilities, reaches the surface, and returns through observation, reconciliation, evidence, and one finite next delta.**
+
+```text
+ΔRoot
+  → Rails(Audit ⊕ Identity)
+  → ΣKAI admission / verification
+  → Θ(:5000) bounded API spine
+  → Ψ(:11434 ⊕ :8088) optional local capability channels
+  → F_Glober(L(N,D)) capability plane
+  → Ω(:3000) surface
+  → OBSERVE → RECONCILE → ATTEST → REMEMBER → NEXT Δ
+```
+
+The global or frontier model layer is capability, not authority. The optional model and tensor channels are not assumed to exist merely because the architecture names them. A surface, model response, hash, test, receipt, or memory entry cannot promote `UNKNOWN` to `VERIFIED`; only the applicable observed contract can do that.
+
+The DAV kernel remains the bounded mathematical heart:
+
+```text
+T[i,j,k,l] = i + j + k + l
+checksum(N) = 2 × N⁴ × (N − 1)
+```
+
+For the supported sizes, the expected checksums are `N=4 → 1,536`, `N=6 → 12,960`, and `N=8 → 57,344`. These values prove only the scoped tensor calculation and canonical digest when independently observed; they do not prove model quality, production health, universal intelligence, or real-world value.
+
+The value expression is retained as a decision heuristic, not an empirical law until its terms have units and measurement rules:
+
+```text
+V = (Outcome × Evidence) − (Cost + Risk)
+```
+
+The scaling expression remains `REVIEW` because both growth and decay interpretations have appeared. Do not implement or attest either one until the intended form and units are selected:
+
+```text
+L(N,D) = E + A·N^α + B·D^β   # growth/load interpretation
+L(N,D) = E + A/N^α + B/D^β   # decay/error interpretation
+```
+
+This compression is a documentation contract only. It does not start `:3000`, `:5000`, `:8088`, or `:11434`; activate Ollama or external connectors; grant authority; append a ledger receipt; commit, push, merge, deploy, or claim production health. The repository body is the implementation and provenance surface, not the whole of reality.
