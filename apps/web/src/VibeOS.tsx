@@ -1060,6 +1060,82 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     setVerifying(false);
   };
 
+  const runPipelineProbe = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Change Pipeline');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/pipeline'), {
+        method: 'POST',
+        headers: { accept: 'application/json', 'content-type': 'application/json' },
+        body: JSON.stringify({
+          compile: {
+            intent: 'vibeos pipeline probe',
+            subject: 'vibeos:probe',
+            stateBefore: 'S0',
+            evidenceRefs: [{ id: 'e1', kind: 'probe', source: 'vibeos', digest: 'sha256:probe' }],
+            policyRefs: [{ id: 'policy:probe', version: '1', requirement: 'gates' }],
+            workerPlan: [{
+              workerId: 'vibeos-probe',
+              version: '1.0.0',
+              capability: 'local-state',
+              mode: 'local-mutating',
+              approvalRequired: false,
+            }],
+            transition: { requestedStateAfter: 'S0', consequence: 'observe-only', dryRun: true },
+            observation: { observerId: 'vibeos', targets: ['vibeos:probe'], evidenceRequired: ['state'] },
+          },
+          admission: {},
+          authority: 'human:vibeos-probe',
+          policy: 'policy:probe',
+          changeId: 'vibeos-pipeline-probe',
+          waterFlowMaxSteps: 1,
+        }),
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      const pipeline = payload?.pipeline;
+      if (!response.ok || !payload?.success || !pipeline || typeof pipeline.stage !== 'string') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `POST /v1/pipeline · HTTP ${response.status}`,
+        };
+      } else {
+        const reason = typeof pipeline.haltReason === 'string' && pipeline.haltReason ? pipeline.haltReason : 'none';
+        const execution = typeof pipeline.executionStatus === 'string' && pipeline.executionStatus
+          ? pipeline.executionStatus
+          : 'ABSENT';
+        const reality = typeof pipeline.realityStatus === 'string' && pipeline.realityStatus
+          ? pipeline.realityStatus
+          : 'ABSENT';
+        result = {
+          role: 'ai',
+          content: `Change pipeline: stage ${pipeline.stage} · halted ${pipeline.halted === true ? 'YES' : 'NO'} · reason ${reason} · authorized ${pipeline.authorized === true ? 'YES' : 'NO'} · execution ${execution} · reality ${reality}.`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'POST /v1/pipeline · dry-run probe; server owns admission; this observation is not an upgrade.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `POST /v1/pipeline unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1388,6 +1464,9 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
               </button>
               <button type="button" className="vibe-action" onClick={() => void runSingleBodyCompressionCheck()} disabled={verifying}>
                 🧊 Single Body (4×4×4×4)
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runPipelineProbe()} disabled={verifying}>
+                🔁 Change Pipeline
               </button>
             </div>
             <label className="vibe-model-toggle">

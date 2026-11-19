@@ -794,4 +794,50 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Expansion: VERIFIED \(lossless: YES\)/i)).toBeInTheDocument();
     expect(screen.getByText(/Fixpoint: omega\.ecosystem-body\.fixpoint\.v1 \(VERIFIED\)/i)).toBeInTheDocument();
   });
+
+  it('observes the change pipeline dry run and does not treat it as an upgrade', async () => {
+    const fetchMock = installFetch({
+      '/api/v1/pipeline': () =>
+        json({
+          success: true,
+          pipeline: {
+            stage: 'ADMIT',
+            halted: true,
+            haltReason: 'DENIED',
+            authorized: false,
+            executionStatus: null,
+            realityStatus: null,
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const pipelineBtn = screen.getByRole('button', { name: /🔁 Change Pipeline/i });
+    expect(pipelineBtn).toBeInTheDocument();
+
+    await user.click(pipelineBtn);
+    expect(await screen.findByText(/Change pipeline: stage ADMIT · halted YES · reason DENIED · authorized NO · execution ABSENT · reality ABSENT/i)).toBeInTheDocument();
+    expect(screen.getByText(/dry-run probe; server owns admission; this observation is not an upgrade/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText('API receipt verified with SHA-256 evidence hash')).not.toBeInTheDocument();
+    const [, init] = fetchMock.mock.calls.find((call) => call[0] === '/api/v1/pipeline') ?? [];
+    expect(init).toEqual(expect.objectContaining({ method: 'POST' }));
+    const body = JSON.parse((init as { body: string }).body);
+    expect(body.admission).toEqual({});
+    expect(body.compile.transition.dryRun).toBe(true);
+    expect(body.waterFlowMaxSteps).toBe(1);
+    expect(JSON.stringify(body)).not.toMatch(/authorityVerified|policySatisfied|observedState|handlerStateAfter/);
+  });
+
+  it('fails closed when the change pipeline response is not a pipeline', async () => {
+    installFetch({
+      '/api/v1/pipeline': () => json({ success: false, error: 'MISSING_COMPILE' }, { status: 400 }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    await user.click(screen.getByRole('button', { name: /🔁 Change Pipeline/i }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('[UNKNOWN]');
+    expect(screen.getByText(/POST \/v1\/pipeline · HTTP 400/i)).toBeInTheDocument();
+  });
 });
