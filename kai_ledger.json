@@ -1089,6 +1089,20 @@
       "evidence_hash": "a02df4be0be23f06402ef00ce30dbcabf776256fa75d6af7e756e8ae749ddee3",
       "next_delta": "Human-review PR #634 and its refreshed hosted checks before any merge.",
       "timestamp": "2026-11-19T16:11:04.959Z"
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/dvro-ai-identity-clarity",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/api/src/index.ts",
+        "kai_ledger.json",
+        "tests/integration/api-route-contract.integration.test.ts"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "7035904509b7e3e7507b0db48dcfc4d449922297358006cd68c21e094ee28c80",
+      "next_delta": "Restore the API Jest suite as a supported Node 22 gate without disabling diagnostics, addressing its ESM loading and validateSceneInput failures.",
+      "timestamp": "2026-11-20T05:55:37.174Z"
     }
   ]
 }
