@@ -2482,3 +2482,42 @@ FLOW THROUGH THE WHOLE ECOSYSTEM. DISCOVER THE CURRENT REALITY. VERIFY THE EVIDE
 **INITIAL STATUS:** architecture specified; live implementation and connectivity not yet verified by this handoff.
 
 <!-- END PRESERVED USER SOURCE: pasted_content.txt -->
+
+
+## 11. ΔVRØ HOUSE × OCEANICOS House Entity equation
+
+> **Documentation status:** this section is a design reference only. It is not executable, does not grant authority, and does not replace TypeScript contracts, human authorization, tests, deployment configuration, or observed runtime evidence.
+
+```text
+ΔVRØ HOUSE := Y(Ω_:3000(Σ_KAI[Θ_:5000(Δ_Root ⊕ [Ψ_:11434⊕:8088 ⊗ (G_Ground ⊕ C_Think ⊕ O_Canvas)])])) | DAV T[i,j,k,l] = i+j+k+l → Attested Reality
+```
+
+This notation compresses a proposed relationship among the AVRØ HOUSE studio, the
+OCEANICOS platform, the Ω∞v verification method, local compute, and external
+specialized workers. It is a conceptual map—not a claim that those services are
+connected, available, trusted, or running in this repository.
+
+### Symbol key and evidence boundary
+
+| Symbol | Documented meaning | Evidence boundary |
+| --- | --- | --- |
+| `ΔVRØ HOUSE` | Studio vessel and system boundary | Repository identity and documentation only |
+| `Δ_Root` | Human operator and source of consequential intent | Human approval is required; symbols do not authorize actions |
+| `Ψ_:11434⊕:8088` | Proposed local model and tensor-compute layer | Not assumed available unless independently observed |
+| `G_Ground ⊕ C_Think ⊕ O_Canvas` | Google, Claude, and ChatGPT as untrusted external workers | No provider connection or output is implied by this document |
+| `Θ_:5000` | Fastify API spine | Verify through API health and route contracts |
+| `Σ_KAI` | Verification and evidence boundary | Only implemented checks, receipts, and tests count as proof |
+| `Ω_:3000` | React web surface | The dashboard and verifier are deployed separately from this notation |
+| `Y(...)` | Bounded continuation of observed work | Never means unlimited autonomy or authority |
+
+### Implementation boundary
+
+The equation is intentionally kept separate from executable routing. Any future
+multi-engine dispatch must be introduced as an explicit, typed, tested feature with
+human-approved provider configuration, bounded failure behavior, and independently
+observed evidence. This document alone must never be used as a trigger for network
+calls, local process execution, credential use, financial mutation, or deployment.
+
+The governing repository rule remains: **ATTEST, DON'T ASSERT.** A signature proves
+the integrity of signed fields for a key; it does not by itself prove the truth of
+the underlying observation, authorization, or external-world outcome.

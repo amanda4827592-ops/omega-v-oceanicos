@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "path": "/", "title": "OCEANICOS Dashboard" },
+    { "path": "/verify", "title": "Ed25519 Browser Verifier" }
+  ]
+}
