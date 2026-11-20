@@ -1,0 +1,84 @@
+.verifier-shell {
+  min-height: 100vh;
+  padding: 34px clamp(20px, 5vw, 76px) 24px;
+  background: radial-gradient(circle at 80% 0%, #123631 0, #071312 42%, #050b0b 100%);
+  color: #e9f4f2;
+  font-family: Manrope, sans-serif;
+}
+.verifier-header {
+  max-width: 1180px;
+  margin: 0 auto 34px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+  border-bottom: 1px solid #1b3430;
+  padding-bottom: 26px;
+}
+.verifier-kicker,
+.verifier-label,
+.verifier-footer {
+  color: #74b7a7;
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: 1.5px;
+}
+.verifier-header h1 {
+  margin: 10px 0 8px;
+  font-size: clamp(30px, 5vw, 58px);
+  letter-spacing: -2px;
+  font-weight: 600;
+}
+.verifier-header p {
+  max-width: 620px;
+  color: #9abbb4;
+  line-height: 1.6;
+}
+.verifier-back,
+.verifier-action {
+  border: 1px solid #2a6658;
+  border-radius: 5px;
+  background: #0d2924;
+  color: #a7f3d0;
+  padding: 11px 15px;
+  font: 11px 'DM Mono', monospace;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.verifier-back:hover,
+.verifier-action:hover:not(:disabled) { background: #143d35; }
+.verifier-grid {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+  gap: 18px;
+}
+.verifier-card {
+  border: 1px solid #1b3b35;
+  border-radius: 7px;
+  background: rgba(10, 29, 26, .8);
+  padding: 22px;
+}
+.verifier-key-label { margin-top: 20px; }
+.verifier-action { margin-top: 18px; width: 100%; }
+.verifier-action:disabled { cursor: not-allowed; opacity: .45; }
+.verifier-explanation h2 { margin: 12px 0 8px; font-size: 22px; font-weight: 500; }
+.verifier-explanation p { color: #9abbb4; line-height: 1.65; }
+.verifier-boundary {
+  margin: 28px 0;
+  border-left: 2px solid #62d9b1;
+  padding: 10px 14px;
+  color: #a7f3d0;
+  font: 11px/1.8 'DM Mono', monospace;
+}
+.verifier-result { display: grid; gap: 8px; border-radius: 5px; padding: 14px; font: 12px/1.5 'DM Mono', monospace; }
+.verifier-result.is-valid { border: 1px solid #2f9e75; background: #0c3027; color: #b8f7dc; }
+.verifier-result.is-invalid { border: 1px solid #92544b; background: #321c1a; color: #f3b3a5; }
+.verifier-result span { overflow-wrap: anywhere; }
+.verifier-result small { opacity: .7; }
+.verifier-footer { max-width: 1180px; margin: 24px auto 0; padding-top: 18px; border-top: 1px solid #1b3430; }
+@media (max-width: 760px) {
+  .verifier-header { flex-direction: column; }
+  .verifier-grid { grid-template-columns: 1fr; }
+  .verifier-back { align-self: flex-start; }
+}

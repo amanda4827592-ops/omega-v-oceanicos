@@ -136,7 +136,16 @@ export function createApp(
   logger: boolean = true,
   options: CreateAppOptions = {}
 ): FastifyInstance {
-  const fastify = Fastify({ logger });
+  const fastify = Fastify({
+    logger,
+    // The Vite development proxy and the production single-origin container
+    // both expose the API under /api. Strip that browser-only prefix before
+    // Fastify matches the route, while leaving direct API paths untouched.
+    rewriteUrl: (req: { url?: string }) => {
+      const url = req.url ?? '/';
+      return url.startsWith('/api/') ? url.slice(4) : url;
+    },
+  } as any) as unknown as FastifyInstance;
   const ledgerMemory = new RememberEngine(dbPath);
   const kernel = new MiniKernel(ledgerMemory);
   const moodEvaluator = new MoodEvaluator();
@@ -1069,10 +1078,24 @@ export function createApp(
     const target = resolve(join(webDist, relativePath));
     if (!target.startsWith(webDist)) return false;
     if (!existsSync(target)) return false;
-    reply.type(target.endsWith('.html') ? 'text/html; charset=utf-8' : undefined).send(readFileSync(target));
+    const contentType = target.endsWith('.html')
+      ? 'text/html; charset=utf-8'
+      : target.endsWith('.json')
+        ? 'application/json; charset=utf-8'
+        : target.endsWith('.svg')
+          ? 'image/svg+xml'
+          : target.endsWith('.js') || target.endsWith('.mjs')
+            ? 'text/javascript; charset=utf-8'
+            : target.endsWith('.css')
+              ? 'text/css; charset=utf-8'
+              : undefined;
+    reply.type(contentType).send(readFileSync(target));
     return true;
   };
   fastify.get('/', async (_request, reply) => { if (sendStatic('index.html', reply)) return; return jsonError(reply, 404, 'STATIC_CLIENT_UNAVAILABLE'); });
+  fastify.get('/manus-routes.json', async (_request, reply) => { if (sendStatic('manus-routes.json', reply)) return; return jsonError(reply, 404, 'STATIC_ROUTE_MANIFEST_UNAVAILABLE'); });
+  fastify.get('/favicon.svg', async (_request, reply) => { if (sendStatic('favicon.svg', reply)) return; return jsonError(reply, 404, 'STATIC_ASSET_NOT_FOUND'); });
+  fastify.get('/omega-mark.svg', async (_request, reply) => { if (sendStatic('omega-mark.svg', reply)) return; return jsonError(reply, 404, 'STATIC_ASSET_NOT_FOUND'); });
   fastify.get('/assets/*', async (request: any, reply) => { const asset = String(request.params['*'] ?? ''); if (sendStatic(join('assets', asset), reply)) return; return jsonError(reply, 404, 'STATIC_ASSET_NOT_FOUND'); });
   fastify.setNotFoundHandler(async (request, reply) => {
     if (webDist && request.method === 'GET' && !request.url.startsWith('/v1/') && !request.url.startsWith('/jobs') && !request.url.startsWith('/persistence') && !request.url.startsWith('/attest')) {

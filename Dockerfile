@@ -26,7 +26,7 @@ COPY apps/ apps/
 COPY tsconfig.json ./
 COPY bin/ bin/
 
-ARG VITE_API_URL=http://localhost:5000
+ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
 
 RUN pnpm run build
@@ -57,3 +57,13 @@ COPY --from=builder /app/apps/web/dist ./dist
 
 EXPOSE 3000
 CMD ["serve", "-s", "dist", "-l", "3000"]
+
+# ── Stage 4: Permanent single-origin website + API runtime ───────────────────
+# The managed publisher uses the final image. Keeping the API as the process
+# means /health and /api/* remain available beside the SPA routes.
+FROM api AS runtime
+COPY --from=builder /app/apps/web/dist ./apps/web/dist
+ENV OMEGA_WEB_DIST=/app/apps/web/dist
+ENV PORT=3000
+EXPOSE 3000
+CMD ["node", "apps/api/dist/index.js"]
