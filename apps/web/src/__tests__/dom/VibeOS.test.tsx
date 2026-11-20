@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import { readFileSync } from 'node:fs';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../App';
@@ -9,6 +10,17 @@ const VERIFIED_RESPONSE = 'Observed: the ledger is intact.';
 const VERIFIED_RESPONSE_SHA256 = '7e1fb64de987a8e0f7d01b596fdfe68802338fddc3c33b4fc9c4ef72b2a1124d';
 
 describe('Vibe OS surface', () => {
+  it('keeps the AVRØ HOUSE master poster linked in canonical docs and byte-identical in public assets', () => {
+    const brandDocument = readFileSync(new URL('../../../../../docs/BRAND.md', import.meta.url), 'utf8');
+    const docsPoster = readFileSync(new URL('../../../../../docs/assets/avro-house-master-poster.jpg', import.meta.url));
+    const publicPoster = readFileSync(
+      new URL('../../../../../apps/web/public/avro-house-master-poster.jpg', import.meta.url)
+    );
+
+    expect(brandDocument).toContain('./assets/avro-house-master-poster.jpg');
+    expect(publicPoster.equals(docsPoster)).toBe(true);
+  });
+
   it('opens on one calm conversation instead of the instrument panel', async () => {
     installFetch();
     render(<App />);
