@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { submitIntent, type IntentReceipt, type Verdict } from './vibe-os-api';
 import { TensorDavVisualizer } from './components/TensorDavVisualizer';
+import { ExperienceSwitcher } from './ExperienceSwitcher';
 import { MoodCodexPanel } from './MoodCodexPanel';
 import { EntityCodexModal } from './components/EntityCodexModal';
 import { WaterFlowPanel } from './WaterFlowPanel';
@@ -140,8 +141,7 @@ function generateWaterFlowFrames(state: string, intent: string): readonly WaterF
   }));
 }
 
-export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: () => void; active?: boolean }) {  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [spine, setSpine] = useState<HealthObservation>({
@@ -171,14 +171,16 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
   const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    let active = true;
+    if (!active) return;
+
+    let mounted = true;
     let controller: AbortController | null = null;
     const probe = async () => {
       controller?.abort();
       const current = new AbortController();
       controller = current;
       const observation = await observeSpineHealth(current.signal);
-      if (active && !current.signal.aborted) {
+      if (mounted && !current.signal.aborted) {
         setSpine(observation);
         setSpineCheckedAt(new Date().toLocaleTimeString());
       }
@@ -232,11 +234,11 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
     void probe();
     const interval = window.setInterval(() => void probe(), 15_000);
     return () => {
-      active = false;
+      mounted = false;
       controller?.abort();
       window.clearInterval(interval);
     };
-  }, []);
+  }, [active]);
 
   useEffect(() => {
     const log = logRef.current;
@@ -1084,9 +1086,12 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
               New chat
             </button>
             {onOpenDashboard && (
-              <button type="button" className="vibe-header-button vibe-header-button--primary" onClick={onOpenDashboard}>
-                Full system dashboard
-              </button>
+              <ExperienceSwitcher
+                active="vibe"
+                onChange={(view) => {
+                  if (view === 'dashboard') onOpenDashboard();
+                }}
+              />
             )}
           </div>
         </header>
@@ -1121,6 +1126,12 @@ export function VibeOS({ onOpenDashboard }: { onOpenDashboard?: () => void }) {
               detail={kaiStatus === 'UNKNOWN' ? 'No current chat receipt observed.' : `Latest execute receipt: ${kaiStatus}.`}
             />
           </div>
+          <p className="vibe-model-disclosure" role="note" aria-label="AI model and provider boundary">
+            <strong>What powers this?</strong> OCEANICOS is a chat-enabled application and verification workflow—not the
+            ChatGPT or Manus assistant service, and not itself a foundation model. Vibe OS sends only your intent and
+            uses the local deterministic composer by default. The separate Invisible Computer offers an explicit
+            opt-in for a server-configured OpenAI-compatible model; provider availability is not live-verified here.
+          </p>
           <p className="vibe-current-disclaimer">HTTP reachability and API receipts are scoped observations, not production-health claims.</p>
         </section>
 

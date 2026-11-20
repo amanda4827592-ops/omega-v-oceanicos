@@ -21,6 +21,7 @@ import { projectCommandWaterFlow } from './water-flow-panel-model';
 import { LifecycleFlow, deriveStageStates, type LifecycleStage } from './LifecycleFlow';
 import { GlobeViewport } from './GlobeViewport';
 import { bindGlobeEvidence } from './globe-shell';
+import { ExperienceSwitcher } from './ExperienceSwitcher';
 import { omegaApprovalRequest } from './omega-approval-request';
 import {
   theme,
@@ -678,24 +679,12 @@ export function LegacyDashboard({ onClose }: { onClose: () => void }) {
       {/* Progressive disclosure: this whole instrument panel is one level
           deeper than the Vibe OS chat and is only mounted when opened. */}
       <div style={{ position: 'relative', zIndex: 2, padding: '10px 24px 0' }}>
-        <button
-          type="button"
-          onClick={onClose}
-          style={{
-            background: 'transparent',
-            border: `1px solid ${theme.border}`,
-            color: theme.textMuted,
-            borderRadius: theme.radiusPill,
-            padding: '6px 14px',
-            fontFamily: theme.fontSans,
-            fontSize: '11px',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            cursor: 'pointer',
+        <ExperienceSwitcher
+          active="dashboard"
+          onChange={(view) => {
+            if (view === 'vibe') onClose();
           }}
-        >
-          ← Vibe OS
-        </button>
+        />
       </div>
 
       {/* Ambient status bar */}

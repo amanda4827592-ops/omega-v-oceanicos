@@ -65,6 +65,38 @@ test('swarm ledger validation rejects uncommitted removal of historical receipts
   }
 });
 
+test('swarm ledger validation accepts timestamp-interleaved receipts while preserving baseline order', () => {
+  const root = createGitFixture();
+  try {
+    const ledgerPath = path.join(root, 'kai_ledger.json');
+    const ledger = JSON.parse(readFileSync(ledgerPath, 'utf8'));
+    const insertionIndex = ledger.entries.findIndex((entry, index) => {
+      if (index === 0) return false;
+      return Date.parse(entry.timestamp) - Date.parse(ledger.entries[index - 1].timestamp) > 1;
+    });
+    assert.ok(insertionIndex > 0, 'fixture must contain a timestamp gap for an interleaved receipt');
+    const previousTime = Date.parse(ledger.entries[insertionIndex - 1].timestamp);
+    const nextTime = Date.parse(ledger.entries[insertionIndex].timestamp);
+    ledger.entries.splice(insertionIndex, 0, {
+      agent_id: 'copilot-test',
+      branch: 'agent/copilot-test/ledger-interleave',
+      status: 'UNKNOWN',
+      files_touched: ['scripts/validate-swarm-ledger.test.mjs'],
+      tests_passed: null,
+      evidence_hash: null,
+      next_delta: 'No follow-up; this receipt is an isolated merge-order test fixture.',
+      timestamp: new Date(previousTime + Math.floor((nextTime - previousTime) / 2)).toISOString(),
+    });
+    writeFileSync(ledgerPath, `${JSON.stringify(ledger, null, 2)}\n`);
+
+    const result = runValidator(root, 'origin/main');
+    assert.equal(result.status, 0, result.stderr);
+    assert.ok(result.stdout.includes(`validated ${ledger.entries.length} swarm ledger receipt`));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test('swarm ledger validation accepts new receipts appended to the baseline', () => {
   const root = createGitFixture();
   try {

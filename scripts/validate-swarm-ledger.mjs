@@ -53,12 +53,21 @@ const baseline = JSON.parse(baselineSource);
 if (!Array.isArray(baseline.entries)) {
   throw new Error(`kai_ledger.json: append-only baseline ${baselineRef} has no entries array`);
 }
-for (let index = 0; index < baseline.entries.length; index += 1) {
-  if (!isDeepStrictEqual(ledger.entries?.[index], baseline.entries[index])) {
-    throw new Error(
-      `kai_ledger.json: append-only baseline ${baselineRef} entry ${index} was removed or modified`
-    );
+// Concurrent append-only histories may be interleaved by timestamp during a
+// merge. Preserve every baseline receipt unchanged and in its original order.
+let baselineIndex = 0;
+for (const entry of ledger.entries ?? []) {
+  if (
+    baselineIndex < baseline.entries.length &&
+    isDeepStrictEqual(entry, baseline.entries[baselineIndex])
+  ) {
+    baselineIndex += 1;
   }
+}
+if (baselineIndex !== baseline.entries.length) {
+  throw new Error(
+    `kai_ledger.json: append-only baseline ${baselineRef} entry ${baselineIndex} was removed or modified`
+  );
 }
 
 if (ledger.protocol !== 'ΩVØØS-SWARM/1') {

@@ -231,6 +231,21 @@
   font-size: 9px;
 }
 
+.vibe-model-disclosure {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-left: 2px solid var(--vibe-current);
+  border-radius: 0 8px 8px 0;
+  background: rgba(140, 232, 200, 0.035);
+  color: var(--vibe-ink-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.vibe-model-disclosure strong {
+  color: var(--vibe-current);
+}
+
 .vibe-main {
   width: min(100%, 900px);
   flex: 1;

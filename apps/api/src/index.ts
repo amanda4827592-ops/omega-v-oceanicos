@@ -1084,7 +1084,11 @@ export function createApp(
         ? 'application/json; charset=utf-8'
         : target.endsWith('.svg')
           ? 'image/svg+xml'
-          : undefined;
+          : target.endsWith('.js') || target.endsWith('.mjs')
+            ? 'text/javascript; charset=utf-8'
+            : target.endsWith('.css')
+              ? 'text/css; charset=utf-8'
+              : undefined;
     reply.type(contentType).send(readFileSync(target));
     return true;
   };

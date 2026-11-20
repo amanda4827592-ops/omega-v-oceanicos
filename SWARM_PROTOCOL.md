@@ -115,7 +115,7 @@ No conversational filler. When you finish, put exactly this receipt in the PR de
   `null` when nothing was hashed.
 - `next_delta` — one bounded action, not a plan.
 
-Ledger rules: append only. Never rewrite or delete an existing entry. On a merge conflict, keep both receipts and order them by `timestamp`.
+Ledger rules: receipt objects and timestamps are immutable; never rewrite or delete an existing entry. Each worker history is append-only. When reconciling concurrent histories, preserve every baseline entry exactly and in its original relative order, retain both receipt sets, and stably merge by `timestamp`. The validator treats the baseline as an exact order-preserving subsequence, not a positional prefix, and still requires the resulting ledger to be timestamp-ordered.
 
 ## VII. ACTIVATION
 

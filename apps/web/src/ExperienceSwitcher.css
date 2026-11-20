@@ -1,0 +1,57 @@
+.experience-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--omega-abyss-edge, rgba(155, 197, 183, 0.2));
+  border-radius: 999px;
+  background: rgba(4, 15, 13, 0.58);
+}
+
+.experience-switcher button {
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--omega-foam-muted, #9db5aa);
+  padding: 7px 12px;
+  font: 600 11px/1.2 'Manrope', system-ui, sans-serif;
+  cursor: pointer;
+  transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.experience-switcher button[data-active='true'] {
+  border-color: rgba(140, 232, 200, 0.24);
+  background: rgba(140, 232, 200, 0.09);
+  color: var(--omega-current, #8ce8c8);
+}
+
+.experience-switcher button:not([data-active='true']):hover {
+  border-color: rgba(155, 197, 183, 0.28);
+  color: var(--omega-foam, #e8f1ec);
+}
+
+.experience-switcher button:focus-visible {
+  outline: 2px solid var(--omega-current, #8ce8c8);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+@media (max-width: 420px) {
+  .experience-switcher {
+    width: 100%;
+  }
+
+  .experience-switcher button {
+    flex: 1;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-switcher button {
+    transition: none;
+  }
+}

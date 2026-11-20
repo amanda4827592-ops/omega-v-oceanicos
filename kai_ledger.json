@@ -446,6 +446,24 @@
       "next_delta": "Human-review the worker branch before any pull request merge; keep local action execution disabled."
     },
     {
+      "agent_id": "manus",
+      "branch": "agent/manus/oceanicos-front-flow",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/web/src/App.tsx",
+        "apps/web/src/ExperienceSwitcher.css",
+        "apps/web/src/ExperienceSwitcher.tsx",
+        "apps/web/src/LegacyDashboard.tsx",
+        "apps/web/src/VibeOS.tsx",
+        "apps/web/src/__tests__/dom/VibeOS.test.tsx",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "1190e83ef8ee8412f050e9a6aaac56726d74b7190ace6893b9f830491f5d7c78",
+      "next_delta": "Human-review the shared experience switch at narrow/mobile widths before any external publication.",
+      "timestamp": "2026-11-17T12:01:50Z"
+    },
+    {
       "timestamp": "2026-11-17T18:37:52Z",
       "agent_id": "manus",
       "branch": "agent/manus/avro-house-brand",
@@ -499,6 +517,21 @@
       "tests_passed": true,
       "evidence_hash": "f91da5c87f69812989e6d7f9975745bfaf566a10adfea46b2d7100e919e8dfc4",
       "next_delta": "Human-review the installed continuum skills. The bounded-transition audit script was not run against the repository. Full pnpm test, deployment, and merge were not run. upgrade.execution stays NOT_EXECUTED."
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/dvro-ai-identity-clarity",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/web/src/VibeOS.tsx",
+        "apps/web/src/VibeOS.css",
+        "apps/web/src/__tests__/dom/VibeOS.test.tsx",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "010135c7e10d71566b09d63c367a45c978b91542fab065beba87849e18a0e92b",
+      "next_delta": "Human-review this pull request before merge; keep provider health and deployment as separate verified states.",
+      "timestamp": "2026-11-18T02:21:03Z"
     },
     {
       "timestamp": "2026-11-18T09:42:00Z",
@@ -1040,6 +1073,36 @@
       "tests_passed": true,
       "evidence_hash": "b707dc89992bd843c9f614e00b616b16aaf2d4737398f171e34101b347f9fb00",
       "next_delta": "Prepare a review PR for the AVRØ HOUSE poster parity guard without merging or deploying."
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/dvro-ai-identity-clarity",
+      "status": "VERIFIED",
+      "files_touched": [
+        "SWARM_PROTOCOL.md",
+        "apps/web/src/VibeOS.tsx",
+        "kai_ledger.json",
+        "scripts/validate-swarm-ledger.mjs",
+        "scripts/validate-swarm-ledger.test.mjs"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "a02df4be0be23f06402ef00ce30dbcabf776256fa75d6af7e756e8ae749ddee3",
+      "next_delta": "Human-review PR #634 and its refreshed hosted checks before any merge.",
+      "timestamp": "2026-11-19T16:11:04.959Z"
+    },
+    {
+      "agent_id": "manus",
+      "branch": "agent/manus/dvro-ai-identity-clarity",
+      "status": "VERIFIED",
+      "files_touched": [
+        "apps/api/src/index.ts",
+        "kai_ledger.json",
+        "tests/integration/api-route-contract.integration.test.ts"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "7035904509b7e3e7507b0db48dcfc4d449922297358006cd68c21e094ee28c80",
+      "next_delta": "Restore the API Jest suite as a supported Node 22 gate without disabling diagnostics, addressing its ESM loading and validateSceneInput failures.",
+      "timestamp": "2026-11-20T05:55:37.174Z"
     }
   ]
 }
