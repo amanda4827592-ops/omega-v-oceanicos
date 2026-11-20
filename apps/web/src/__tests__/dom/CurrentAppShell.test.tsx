@@ -94,7 +94,7 @@ describe('legacy OceanicOS dashboard', () => {
         headers: { get: () => 'application/json' },
       }),
     });
-    render(<App />);
+    render(<LegacyDashboard onClose={() => {}} />);
 
     await user.click(await screen.findByRole('button', { name: /open background full-stack/i }));
     await user.click(await screen.findByRole('button', { name: /run bounded scene/i }));
