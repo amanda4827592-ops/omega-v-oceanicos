@@ -902,4 +902,30 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/MEMORY != PROOF/i)).toBeInTheDocument();
     expect(screen.getByText(/Latest intent: "Explore the current state of"/i)).toBeInTheDocument();
   });
+
+  it('observes Omega Events and displays sovereign lifecycle transitions', async () => {
+    installFetch({
+      '/api/v1/omega/events': () =>
+        json({
+          success: true,
+          events: [
+            { type: 'command.proposed', commandId: 'cmd-001', status: 'REVIEW', at: '2026-10-10T14:17:06.924Z' },
+            { type: 'command.approved', commandId: 'cmd-001', status: 'AUTHORIZED', at: '2026-10-10T15:11:21.141Z', operator: 'operator-1' },
+            { type: 'command.executed', commandId: 'cmd-001', status: 'EXECUTED', at: '2026-10-10T15:11:21.183Z' },
+          ],
+          redacted: true,
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const evtBtn = screen.getByRole('button', { name: /📡 Omega Events/i });
+    expect(evtBtn).toBeInTheDocument();
+
+    await user.click(evtBtn);
+    expect(await screen.findByText(/Omega Events: 3 lifecycle event\(s\) recorded/i)).toBeInTheDocument();
+    expect(screen.getByText(/Latest event: "command\.executed" \(cmd-001\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Redacted: YES/i)).toBeInTheDocument();
+    expect(screen.getByText(/event history records transitions, not authorization/i)).toBeInTheDocument();
+  });
 });

@@ -1201,6 +1201,54 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runOmegaEventsCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Omega Events');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/omega/events'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || !Array.isArray(payload?.events)) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/omega/events · HTTP ${response.status}`,
+        };
+      } else {
+        const events: any[] = payload.events;
+        const total = events.length;
+        const latest = events[events.length - 1];
+        const latestType = latest?.type ? `"${latest.type}"` : 'none';
+        const latestCommand = latest?.commandId ? ` (${latest.commandId})` : '';
+        const redacted = payload.redacted === true;
+        result = {
+          role: 'ai',
+          content: `Omega Events: ${total} lifecycle event(s) recorded · Latest event: ${latestType}${latestCommand} · Redacted: ${redacted ? 'YES' : 'NO'} · Principle: "event history records transitions, not authorization".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/omega/events · sovereign lifecycle event log; not execution authority.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/omega/events unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1547,6 +1595,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runKaiMemoryCheck()} disabled={verifying}>
                 🧠 KAI Memory
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runOmegaEventsCheck()} disabled={verifying}>
+                📡 Omega Events
               </button>
             </div>
             <label className="vibe-model-toggle">
