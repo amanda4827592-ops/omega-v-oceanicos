@@ -1297,6 +1297,53 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runMinerStatusCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Miner Status');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/miner/status'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.miner !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/miner/status · HTTP ${response.status}`,
+        };
+      } else {
+        const m = payload.miner;
+        const active = m.active === true ? 'ACTIVE' : 'IDLE';
+        const intervalMs = typeof m.intervalMs === 'number' ? m.intervalMs : 5000;
+        const totalMined = typeof m.totalMined === 'number' ? m.totalMined : 0;
+        const powAttempts = typeof payload.bounds?.proofOfWorkAttempts === 'number' ? payload.bounds.proofOfWorkAttempts : 1000000;
+        result = {
+          role: 'ai',
+          content: `Miner Status: ${active} · Interval: ${intervalMs}ms · Total Mined: ${totalMined} · PoW Attempts Bound: ${powAttempts} · Principle: "local mining simulation is bounded trial, not external work claim".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/miner/status · sovereign local block miner status; not external network consensus.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/miner/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1649,6 +1696,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runPersistenceStatusCheck()} disabled={verifying}>
                 💾 Persistence Status
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runMinerStatusCheck()} disabled={verifying}>
+                ⛏️ Miner Status
               </button>
             </div>
             <label className="vibe-model-toggle">
