@@ -1722,6 +1722,56 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runRealityVectorCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Reality Vector');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/reality/status'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || !Array.isArray(payload?.statusVector)) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/reality/status · HTTP ${response.status}`,
+        };
+      } else {
+        const stage = payload.contract?.currentStage ?? 'UNKNOWN';
+        const invariant = payload.contract?.invariant ?? 'VERIFY(ΔREALITY)';
+        const yesCount = payload.statusVector.filter((f: any) => f.value === 'YES').length;
+        const unknownCount = payload.statusVector.filter((f: any) => f.value === 'UNKNOWN').length;
+        const total = payload.statusVector.length;
+        const principle = payload.realityAuthority?.principle ?? 'Reality is final authority. Attest, do not assert.';
+        result = {
+          role: 'ai',
+          content: `Reality Vector: Stage ${stage} (${invariant}) · Vector: ${yesCount}/${total} YES, ${unknownCount}/${total} UNKNOWN · Principle: "${principle}".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/reality/status · read-only reality status vector observation.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/reality/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2098,6 +2148,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runComposioGatewayCheck()} disabled={verifying}>
                 🔌 Composio Gateway
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runRealityVectorCheck()} disabled={verifying}>
+                📡 Reality Vector
               </button>
             </div>
             <label className="vibe-model-toggle">

@@ -1260,4 +1260,52 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Journal #1/i)).toBeInTheDocument();
     expect(screen.getByText(/A Composio response is an observation only; this route does not independently verify provider data or authorize write actions/i)).toBeInTheDocument();
   });
+
+  it('observes Reality Vector status vector without claiming deployment or health', async () => {
+    installFetch({
+      '/api/v1/reality/status': () =>
+        json({
+          success: true,
+          contract: {
+            name: 'omega-v-oceanicos',
+            version: '1.0.0',
+            schemaVersion: '1',
+            growthLaw: '0 → MINI → + → + → FULL STACK → ECOSYSTEM → REALITY ↺ ∞',
+            currentStage: 'REALITY',
+            invariant: 'VERIFY(ΔREALITY)',
+            governingEquation: 'Ω∞v := VERIFY(ΔREALITY)',
+            evaluatedAt: '2026-11-21T23:01:58.301Z',
+          },
+          statusVector: [
+            { field: 'declared', value: 'YES', evidence: 'contracts exist', provenance: 'CHARTER.md', scope: 'design-contract' },
+            { field: 'represented', value: 'YES', evidence: 'compiled', provenance: 'packages/types', scope: 'local-codebase' },
+            { field: 'implemented', value: 'YES', evidence: 'running', provenance: 'apps/api', scope: 'local-runtime' },
+            { field: 'tested', value: 'YES', evidence: 'tests exist', provenance: 'tests/integration', scope: 'local-contract' },
+            { field: 'admitted', value: 'UNKNOWN', evidence: 'no command in gate', provenance: 'command store', scope: 'runtime-state' },
+            { field: 'executed', value: 'UNKNOWN', evidence: 'no transition running', provenance: 'executor', scope: 'runtime-state' },
+            { field: 'observed', value: 'UNKNOWN', evidence: 'no observation running', provenance: 'observer', scope: 'runtime-state' },
+            { field: 'verified', value: 'YES', evidence: 'ledger tip verified', provenance: 'ledger', scope: 'local-runtime' },
+            { field: 'attested', value: 'UNKNOWN', evidence: 'key not set', provenance: 'OMEGA_SIGNING_KEY', scope: 'local-runtime' },
+            { field: 'deployed', value: 'UNKNOWN', evidence: 'no deployment target', provenance: 'not established', scope: 'not-executed' },
+            { field: 'healthy', value: 'UNKNOWN', evidence: 'no deployed target', provenance: 'not established', scope: 'not-executed' },
+          ],
+          realityAuthority: {
+            principle: 'Reality is final authority. Attest, do not assert.',
+            humanAgency: 'Human beings remain the source of consequential intent.',
+            aiBound: 'AI agents are bounded capabilities only.',
+            failClosed: true,
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const realityBtn = screen.getByRole('button', { name: /📡 Reality Vector/i });
+    expect(realityBtn).toBeInTheDocument();
+
+    await user.click(realityBtn);
+    expect(await screen.findByText(/Reality Vector: Stage REALITY \(VERIFY\(ΔREALITY\)\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Vector: 5\/11 YES, 6\/11 UNKNOWN/i)).toBeInTheDocument();
+    expect(screen.getByText(/Principle: "Reality is final authority\. Attest, do not assert\."/i)).toBeInTheDocument();
+  });
 });
