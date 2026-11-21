@@ -1249,6 +1249,54 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runPersistenceStatusCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Persistence Status');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/persistence/status'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.persistence !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /persistence/status · HTTP ${response.status}`,
+        };
+      } else {
+        const p = payload.persistence;
+        const enabled = p.enabled === true;
+        const coordinationMode = p.coordination?.mode ?? 'unknown';
+        const custodyMode = p.custody?.mode ?? 'unknown';
+        const scope = p.coordination?.scope ?? 'single-process';
+        const limitations = p.coordination?.limitations ?? 'local single-process only; does not prove distributed consensus';
+        result = {
+          role: 'ai',
+          content: `Persistence Status: ${enabled ? 'ENABLED' : 'DISABLED'} · Coordination: ${coordinationMode} (${scope}) · Custody: ${custodyMode} · Limitation: "${limitations}".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /persistence/status · local persistence & coordination scope; not distributed consensus.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /persistence/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1598,6 +1646,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runOmegaEventsCheck()} disabled={verifying}>
                 📡 Omega Events
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runPersistenceStatusCheck()} disabled={verifying}>
+                💾 Persistence Status
               </button>
             </div>
             <label className="vibe-model-toggle">

@@ -1,0 +1,30 @@
+## Order 025 — 💾 Persistence Status Probe
+
+Adds a dedicated **Persistence Status** quick-action probe to the ΔVRØ HOUSE VibeOS surface.
+
+### Endpoint
+`GET /persistence/status` — returns local storage, custody, and coordination limitations.
+
+### Epistemic Contract
+- Status: `OBSERVED` (not `VERIFIED`)
+- Fail-closed: errors collapse to `UNKNOWN`
+- Surfaces: enabled state · coordination mode · custody mode · scope · coordination limitations
+- Limitation: "local persistence & coordination scope; not distributed consensus"
+
+### Changes
+- `apps/web/src/VibeOS.tsx` — `runPersistenceStatusCheck` handler + `💾 Persistence Status` button
+- `apps/web/src/__tests__/dom/VibeOS.test.tsx` — DOM test #55
+- `ΩVØØS/ASSIGNMENTS/025-beta-persistence-status-probe.md` — assignment doc
+- `kai_ledger.json` — Receipt #75 appended
+
+### Gates
+- ✅ `pnpm validate:swarm` — 75 receipts
+- ✅ `pnpm validate:ci` — 6 workflow files
+- ✅ `pnpm validate:skills` — 20 skill contracts
+- ✅ `pnpm validate:docs` — 80 README contracts
+- ✅ `pnpm test:elion-veral` — 6/6 pass
+- ✅ `pnpm test:swarm-ledger` — 4/4 pass
+- ✅ `pnpm --filter web test:current-dom` — 55/55 pass
+- ✅ `pnpm --filter web build` — 409ms
+
+ATTEST, DON'T ASSERT · UNKNOWN IS PRESERVED
