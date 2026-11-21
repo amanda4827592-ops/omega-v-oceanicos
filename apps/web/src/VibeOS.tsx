@@ -1107,6 +1107,54 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runCommandPipelineCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Command Pipeline');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/omega/commands'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.count !== 'number') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/omega/commands · HTTP ${response.status}`,
+        };
+      } else {
+        const count = payload.count;
+        const commands: any[] = Array.isArray(payload.commands) ? payload.commands : [];
+        const verifiedCount = commands.filter((c: any) => c.status === 'VERIFIED').length;
+        const reviewCount = commands.filter((c: any) => c.status === 'REVIEW').length;
+        const executedCount = commands.filter((c: any) => c.status === 'EXECUTED').length;
+        const redacted = payload.redacted === true;
+        result = {
+          role: 'ai',
+          content: `Command Pipeline: ${count} command(s) · VERIFIED: ${verifiedCount} · Under Review: ${reviewCount} · Executed: ${executedCount} · Redacted: ${redacted ? 'YES' : 'NO'} · Principle: "command output is evidence, not authority".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/omega/commands · sovereign command ledger; not execution authority.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/omega/commands unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1447,6 +1495,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runConnectorJournalCheck()} disabled={verifying}>
                 🔗 Connector Journal
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runCommandPipelineCheck()} disabled={verifying}>
+                📋 Command Pipeline
               </button>
             </div>
             <label className="vibe-model-toggle">
