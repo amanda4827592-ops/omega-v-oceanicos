@@ -265,7 +265,16 @@ export function reconcileEvidence(input: {
  */
 export function composeLocalElionResponse(intent: string, authorityLevel: AuthorityLevel): string {
   const boundedIntent = intent.trim();
+  const lower = boundedIntent.toLowerCase();
+  const isGreeting = /^(hello|hi|hey|greetings|good\s*(morning|afternoon|evening)|wetin\s*dey)\b/i.test(lower);
+
+  const conversationalOpening = isGreeting
+    ? "Hello! I am the Ω∞v OCEANICOS intelligence entity, active and awake inside the full-stack house. I hear you clearly, and I am here to explore, converse, and build with you with full verification integrity."
+    : `Hello! I hear you clearly on "${boundedIntent}". The Ω∞v OCEANICOS intelligence entity is active and flowing inside the full-stack house.`;
+
   return [
+    conversationalOpening,
+    '',
     `Intent received: ${boundedIntent}`,
     '',
     'What is observed: KAI Shield scanned this intent, no fraud pattern matched, and no external system was contacted.',

@@ -168,7 +168,27 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     status: 'UNKNOWN',
     detail: 'No LLM observation yet.',
   });
-  const [useExternalModel, setUseExternalModel] = useState(false);
+  const [useExternalModel, setUseExternalModel] = useState<boolean>(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem('vibe_use_external_model') === 'true';
+      }
+    } catch {
+      // fallback
+    }
+    return false;
+  });
+
+  const handleModelToggle = (enabled: boolean) => {
+    setUseExternalModel(enabled);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem('vibe_use_external_model', String(enabled));
+      }
+    } catch {
+      // ignore
+    }
+  };
   const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -2157,7 +2177,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               <input
                 type="checkbox"
                 checked={useExternalModel}
-                onChange={(e) => setUseExternalModel(e.target.checked)}
+                onChange={(e) => handleModelToggle(e.target.checked)}
                 disabled={verifying}
               />
               <span>🌊 Ocean Intelligence (Ollama qwen2.5:0.5b · Port 11434)</span>
