@@ -928,4 +928,36 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Redacted: YES/i)).toBeInTheDocument();
     expect(screen.getByText(/event history records transitions, not authorization/i)).toBeInTheDocument();
   });
+
+  it('observes Persistence Status and displays local custody and coordination limitations', async () => {
+    installFetch({
+      '/api/persistence/status': () =>
+        json({
+          success: true,
+          persistence: {
+            enabled: true,
+            coordination: {
+              mode: 'local-single-process',
+              scope: 'single-process',
+              limitations: 'does not prove distributed consistency does not prove leader election or replica agreement',
+            },
+            custody: {
+              mode: 'unverified-local',
+              verified: false,
+            },
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const persistBtn = screen.getByRole('button', { name: /💾 Persistence Status/i });
+    expect(persistBtn).toBeInTheDocument();
+
+    await user.click(persistBtn);
+    expect(await screen.findByText(/Persistence Status: ENABLED/i)).toBeInTheDocument();
+    expect(screen.getByText(/Coordination: local-single-process \(single-process\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Custody: unverified-local/i)).toBeInTheDocument();
+    expect(screen.getByText(/does not prove distributed consistency/i)).toBeInTheDocument();
+  });
 });
