@@ -877,4 +877,29 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Redacted: YES/i)).toBeInTheDocument();
     expect(screen.getByText(/command output is evidence, not authority/i)).toBeInTheDocument();
   });
+
+  it('observes KAI Memory and displays digest-only ledger with MEMORY != PROOF principle', async () => {
+    installFetch({
+      '/api/kai/memory?limit=5': () =>
+        json({
+          success: true,
+          total: 29,
+          records: [
+            { id: 'rec-001', timestamp: '2026-11-21T00:41:35.812Z', intent: 'Explore the current state of', evidence_hash: 'a6997d4d668b24bb87c7d0de72d6cb6bec7586015f32a9ac42486733fd682416', status: 'VERIFIED', contract_id: '86e7f278-7cea-48e6-a913-82e5d44ba417' },
+            { id: 'rec-002', timestamp: '2026-11-21T00:41:09.865Z', intent: 'hello', evidence_hash: 'c8894ceba04beaeb31ac95c63c8e4b9ffbf18a02368f0f8870dc24a9dd6991b0', status: 'VERIFIED', contract_id: 'f7a9f840-a82a-4165-9401-3b3a49505a63' },
+          ],
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const kaiBtn = screen.getByRole('button', { name: /🧠 KAI Memory/i });
+    expect(kaiBtn).toBeInTheDocument();
+
+    await user.click(kaiBtn);
+    expect(await screen.findByText(/KAI Memory: 29 record\(s\) total/i)).toBeInTheDocument();
+    expect(screen.getByText(/VERIFIED in sample: 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/MEMORY != PROOF/i)).toBeInTheDocument();
+    expect(screen.getByText(/Latest intent: "Explore the current state of"/i)).toBeInTheDocument();
+  });
 });
