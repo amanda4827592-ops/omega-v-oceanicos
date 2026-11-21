@@ -960,4 +960,35 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Custody: unverified-local/i)).toBeInTheDocument();
     expect(screen.getByText(/does not prove distributed consistency/i)).toBeInTheDocument();
   });
+
+  it('observes Miner Status and displays local trial bounds without external work claim', async () => {
+    installFetch({
+      '/api/v1/miner/status': () =>
+        json({
+          success: true,
+          miner: {
+            active: false,
+            intervalMs: 5000,
+            totalMined: 0,
+            lastBlockTime: '',
+          },
+          bounds: {
+            intervalMs: { min: 1000, max: 60000 },
+            proofOfWorkAttempts: 1000000,
+          },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const minerBtn = screen.getByRole('button', { name: /⛏️ Miner Status/i });
+    expect(minerBtn).toBeInTheDocument();
+
+    await user.click(minerBtn);
+    expect(await screen.findByText(/Miner Status: IDLE/i)).toBeInTheDocument();
+    expect(screen.getByText(/Interval: 5000ms/i)).toBeInTheDocument();
+    expect(screen.getByText(/Total Mined: 0/i)).toBeInTheDocument();
+    expect(screen.getByText(/PoW Attempts Bound: 1000000/i)).toBeInTheDocument();
+    expect(screen.getByText(/local mining simulation is bounded trial/i)).toBeInTheDocument();
+  });
 });

@@ -1,0 +1,30 @@
+## Order 026 — ⛏️ Miner Status Probe
+
+Adds a dedicated **Miner Status** quick-action probe to the ΔVRØ HOUSE VibeOS surface.
+
+### Endpoint
+`GET /v1/miner/status` — returns sovereign local block mining simulation status and trial bounds.
+
+### Epistemic Contract
+- Status: `OBSERVED` (not `VERIFIED`)
+- Fail-closed: errors collapse to `UNKNOWN`
+- Surfaces: active state · intervalMs · totalMined · proofOfWorkAttempts bound · Principle: "local mining simulation is bounded trial, not external work claim"
+- Limitation: "sovereign local block miner status; not external network consensus"
+
+### Changes
+- `apps/web/src/VibeOS.tsx` — `runMinerStatusCheck` handler + `⛏️ Miner Status` button
+- `apps/web/src/__tests__/dom/VibeOS.test.tsx` — DOM test #56
+- `ΩVØØS/ASSIGNMENTS/026-beta-miner-status-probe.md` — assignment doc
+- `kai_ledger.json` — Receipt #76 appended
+
+### Gates
+- ✅ `pnpm validate:swarm` — 76 receipts
+- ✅ `pnpm validate:ci` — 6 workflow files
+- ✅ `pnpm validate:skills` — 20 skill contracts
+- ✅ `pnpm validate:docs` — 80 README contracts
+- ✅ `pnpm test:elion-veral` — 6/6 pass
+- ✅ `pnpm test:swarm-ledger` — 4/4 pass
+- ✅ `pnpm --filter web test:current-dom` — 56/56 pass
+- ✅ `pnpm --filter web build` — 296ms
+
+ATTEST, DON'T ASSERT · UNKNOWN IS PRESERVED
