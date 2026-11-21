@@ -112,7 +112,7 @@ function playHarmonicTone(frequencyHz = 432, durationSeconds = 1.2) {
     osc.stop(ctx.currentTime + durationSeconds + 0.05);
 
     setTimeout(() => {
-      void ctx.close().catch(() => {});
+      void ctx.close().catch(() => { });
     }, (durationSeconds + 0.2) * 1000);
   } catch {
     // Non-blocking fail-closed audio synthesis
@@ -1010,6 +1010,51 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runConnectorJournalCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Connector Journal');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/omega/connectors/observations'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.total !== 'number') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/omega/connectors/observations · HTTP ${response.status}`,
+        };
+      } else {
+        const total = payload.total;
+        const truncated = payload.truncated ? ' (truncated)' : '';
+        const integrity = payload.integrity ?? 'verified-local-hash-chain';
+        result = {
+          role: 'ai',
+          content: `Connector Journal: ${total} observation(s) recorded${truncated} · Integrity: ${integrity} · Limitation: "local connector journal is not deployment health, not live GitHub execution, not revenue".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/omega/connectors/observations · local hash-chained journal; not execution evidence.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/omega/connectors/observations unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSingleBodyCompressionCheck = async () => {
     if (verifying) return;
     beginQuickAction('Inspect Single Body (4×4×4×4)');
@@ -1399,6 +1444,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runSingleBodyCompressionCheck()} disabled={verifying}>
                 🧊 Single Body (4×4×4×4)
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runConnectorJournalCheck()} disabled={verifying}>
+                🔗 Connector Journal
               </button>
             </div>
             <label className="vibe-model-toggle">

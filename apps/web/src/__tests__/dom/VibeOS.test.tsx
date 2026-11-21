@@ -825,4 +825,28 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Expansion: VERIFIED \(lossless: YES\)/i)).toBeInTheDocument();
     expect(screen.getByText(/Fixpoint: omega\.ecosystem-body\.fixpoint\.v1 \(VERIFIED\)/i)).toBeInTheDocument();
   });
+
+  it('observes Connector Journal and displays hash-chained admission entries', async () => {
+    installFetch({
+      '/api/v1/omega/connectors/observations': () =>
+        json({
+          success: true,
+          entries: [],
+          total: 0,
+          truncated: false,
+          integrity: 'verified-local-hash-chain',
+          limitation: 'local connector journal is not deployment health, not live GitHub execution, not revenue, and not durable across a destroyed volume',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const connBtn = screen.getByRole('button', { name: /🔗 Connector Journal/i });
+    expect(connBtn).toBeInTheDocument();
+
+    await user.click(connBtn);
+    expect(await screen.findByText(/Connector Journal: 0 observation\(s\) recorded/i)).toBeInTheDocument();
+    expect(screen.getByText(/Integrity: verified-local-hash-chain/i)).toBeInTheDocument();
+    expect(screen.getByText(/Limitation: "local connector journal is not deployment health, not live GitHub execution, not revenue"/i)).toBeInTheDocument();
+  });
 });
