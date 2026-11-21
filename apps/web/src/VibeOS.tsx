@@ -1155,6 +1155,52 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runKaiMemoryCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect KAI Memory');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/kai/memory?limit=5'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.total !== 'number') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /kai/memory · HTTP ${response.status}`,
+        };
+      } else {
+        const total = payload.total;
+        const records: any[] = Array.isArray(payload.records) ? payload.records : [];
+        const verifiedCount = records.filter((r: any) => r.status === 'VERIFIED').length;
+        const latestIntent = records[0]?.intent ? `"${String(records[0].intent).slice(0, 40)}"` : 'none';
+        result = {
+          role: 'ai',
+          content: `KAI Memory: ${total} record(s) total · Last 5 shown · VERIFIED in sample: ${verifiedCount} · Latest intent: ${latestIntent} · Principle: "MEMORY != PROOF; digest stored, not text".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /kai/memory · local KAI memory ledger; digest only, not proof of execution.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /kai/memory unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -1498,6 +1544,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runCommandPipelineCheck()} disabled={verifying}>
                 📋 Command Pipeline
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runKaiMemoryCheck()} disabled={verifying}>
+                🧠 KAI Memory
               </button>
             </div>
             <label className="vibe-model-toggle">

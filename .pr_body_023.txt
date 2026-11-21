@@ -1,0 +1,30 @@
+## Order 023 — 🧠 KAI Memory Probe
+
+Adds a dedicated **KAI Memory** quick-action probe to the ΔVRØ HOUSE VibeOS surface.
+
+### Endpoint
+`GET /api/kai/memory?limit=5` (Fastify alias `GET /kai/memory`) — returns local KAI memory ledger records with cryptographic evidence hash digests.
+
+### Epistemic Contract
+- Status: `OBSERVED` (not `VERIFIED`)
+- Fail-closed: errors collapse to `UNKNOWN`
+- Surfaces: total count · VERIFIED in sample · latest intent · Principle: "MEMORY != PROOF; digest stored, not text"
+- Limitation: "local KAI memory ledger; digest only, not proof of execution"
+
+### Changes
+- `apps/web/src/VibeOS.tsx` — `runKaiMemoryCheck` handler + `🧠 KAI Memory` button
+- `apps/web/src/__tests__/dom/VibeOS.test.tsx` — DOM test #53
+- `ΩVØØS/ASSIGNMENTS/023-beta-kai-memory-probe.md` — assignment doc
+- `kai_ledger.json` — Receipt #73 appended
+
+### Gates
+- ✅ `pnpm validate:swarm` — 73 receipts
+- ✅ `pnpm validate:ci` — 6 workflow files
+- ✅ `pnpm validate:skills` — 20 skill contracts
+- ✅ `pnpm validate:docs` — 80 README contracts
+- ✅ `pnpm test:elion-veral` — 6/6 pass
+- ✅ `pnpm test:swarm-ledger` — 4/4 pass
+- ✅ `pnpm --filter web test:current-dom` — 53/53 pass
+- ✅ `pnpm --filter web build` — 501ms
+
+ATTEST, DON'T ASSERT · UNKNOWN IS PRESERVED
