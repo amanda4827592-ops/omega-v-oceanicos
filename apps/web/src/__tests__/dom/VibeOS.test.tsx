@@ -849,4 +849,32 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Integrity: verified-local-hash-chain/i)).toBeInTheDocument();
     expect(screen.getByText(/Limitation: "local connector journal is not deployment health, not live GitHub execution, not revenue"/i)).toBeInTheDocument();
   });
+
+  it('observes Command Pipeline and displays sovereign command ledger with status breakdown', async () => {
+    installFetch({
+      '/api/v1/omega/commands': () =>
+        json({
+          success: true,
+          count: 3,
+          commands: [
+            { commandId: 'cmd-001', intent: 'verify ecosystem', requestedBy: 'operator', status: 'VERIFIED', decision: 'ALLOW', execution: { stateAfter: 'bounded-local-action-complete' } },
+            { commandId: 'cmd-002', intent: 'check health', requestedBy: 'dashboard-user', status: 'REVIEW', decision: 'REVIEW', execution: null },
+            { commandId: 'cmd-003', intent: 'observe water flow', requestedBy: 'operator', status: 'EXECUTED', decision: 'ALLOW', execution: { stateAfter: 'bounded-local-action-complete' } },
+          ],
+          redacted: true,
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const cmdBtn = screen.getByRole('button', { name: /📋 Command Pipeline/i });
+    expect(cmdBtn).toBeInTheDocument();
+
+    await user.click(cmdBtn);
+    expect(await screen.findByText(/Command Pipeline: 3 command\(s\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/VERIFIED: 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Under Review: 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Redacted: YES/i)).toBeInTheDocument();
+    expect(screen.getByText(/command output is evidence, not authority/i)).toBeInTheDocument();
+  });
 });
