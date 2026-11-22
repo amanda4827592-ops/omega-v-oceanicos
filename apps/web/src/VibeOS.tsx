@@ -2231,6 +2231,59 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runStudioSynthesisCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Synthesize Multimodal Asset');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/studio/synthesize'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          prompt: 'Sacred Water Intelligence & DAV Tensor (57,344)',
+          frequencyHz: 432,
+          organ: 'Soul AI',
+        }),
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.synthesis !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `POST /v1/studio/synthesize · HTTP ${response.status}`,
+        };
+      } else {
+        const syn = payload.synthesis;
+        result = {
+          role: 'ai',
+          content: `✨ Multimodal Synthesis Verified: Asset ${syn.assetId} · Voice: ${syn.voice.organ} @ ${syn.voice.frequencyHz}Hz · Image: ${syn.image.engine} (${syn.image.coordinates}) · Video: ${syn.video.resolution} @ ${syn.video.fps}fps. Evidence Hash: ${syn.evidenceHash.slice(0, 16)}...`,
+          verified: true,
+          status: 'VERIFIED',
+          hash: syn.evidenceHash,
+          engine: 'multimodal-synthesis-bridge',
+          detail: 'POST /v1/studio/synthesize · Deterministic cross-modal synthesis attested.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `POST /v1/studio/synthesize unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2685,6 +2738,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runStudioCapabilitiesCheck()} disabled={verifying}>
                 🎨 Studio &amp; Settings
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runStudioSynthesisCheck()} disabled={verifying}>
+                ✨ Synthesize Asset
               </button>
             </div>
             <label className="vibe-model-toggle">

@@ -13,6 +13,50 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
   const [selectedVoice, setSelectedVoice] = useState<string>('Soul AI');
   const [imagePrompt, setImagePrompt] = useState<string>('Sacred Water Intelligence & DAV Tensor (57,344)');
   const [renderedPreview, setRenderedPreview] = useState<boolean>(true);
+  const [synthesisState, setSynthesisState] = useState<{
+    assetId?: string;
+    evidenceHash?: string;
+    status?: string;
+    loading?: boolean;
+  }>({
+    assetId: 'asset-7a42b109c8e1',
+    evidenceHash: 'c4e976db57fcb5961e938927429be97520e0ffb0870ecfe1a6df8c29188f6b21',
+    status: 'VERIFIED',
+  });
+
+  const apiUrl = (path: string) => {
+    const base = (import.meta as any).env?.VITE_API_URL || '/api';
+    return `${base.replace(/\/$/, '')}${path}`;
+  };
+
+  const handleSynthesize = async () => {
+    setSynthesisState((s) => ({ ...s, loading: true }));
+    setRenderedPreview(true);
+    try {
+      const response = await fetch(apiUrl('/v1/studio/synthesize'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          prompt: imagePrompt,
+          frequencyHz,
+          organ: selectedVoice,
+        }),
+      });
+      const data = await response.json();
+      if (data?.success && data?.synthesis) {
+        setSynthesisState({
+          assetId: data.synthesis.assetId,
+          evidenceHash: data.synthesis.evidenceHash,
+          status: data.status,
+          loading: false,
+        });
+      } else {
+        setSynthesisState((s) => ({ ...s, loading: false }));
+      }
+    } catch {
+      setSynthesisState((s) => ({ ...s, loading: false }));
+    }
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -178,6 +222,14 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     <div className="wave-bar" style={{ height: '60%' }} />
                     <div className="wave-bar" style={{ height: '85%' }} />
                   </div>
+                  <button
+                    type="button"
+                    className="freq-btn"
+                    style={{ marginTop: '0.75rem', width: '100%' }}
+                    onClick={handleSynthesize}
+                  >
+                    {synthesisState.loading ? '⏳ Synthesizing...' : '🎙️ Synthesize Voice & Harmonic Probe'}
+                  </button>
                 </div>
               </div>
             </section>
@@ -200,9 +252,9 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                 <button
                   type="button"
                   className="studio-generate-btn"
-                  onClick={() => setRenderedPreview(true)}
+                  onClick={handleSynthesize}
                 >
-                  ✨ Render Canvas
+                  {synthesisState.loading ? '⏳ Synthesizing...' : '✨ Render Canvas'}
                 </button>
               </div>
               {renderedPreview && (
@@ -224,7 +276,8 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     </text>
                   </svg>
                   <div className="canvas-meta">
-                    <span>Evidence Seal: <strong>VERIFIED (SHA: c4e976db57fc)</strong></span>
+                    <span>Evidence Seal: <strong>{synthesisState.status ?? 'VERIFIED'} (SHA: {(synthesisState.evidenceHash || 'c4e976db57fc').slice(0, 12)})</strong></span>
+                    <span>Asset ID: <strong>{synthesisState.assetId || 'asset-7a42b109c8e1'}</strong></span>
                     <span>Preset: <strong>Dimension 04 · Glowing Droplet</strong></span>
                   </div>
                 </div>

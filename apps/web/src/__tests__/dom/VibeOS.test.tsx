@@ -901,6 +901,22 @@ describe('Vibe OS surface', () => {
     });
   });
 
+  it('probes Multimodal Synthesis Bridge and verifies cross-modal attested asset', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const synBtn = screen.getByRole('button', { name: /✨ Synthesize Asset/i });
+    expect(synBtn).toBeInTheDocument();
+
+    await user.click(synBtn);
+    expect(
+      await screen.findByText(/✨ Multimodal Synthesis Verified: Asset asset-7a42b109c8e1/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Voice: Soul AI @ 432Hz · Image: svg_tensor_canvas/i)).toBeInTheDocument();
+    expect(screen.getByText(/Video: 1920x1080 @ 30fps/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
