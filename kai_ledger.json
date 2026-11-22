@@ -1689,6 +1689,21 @@
       "tests_passed": true,
       "evidence_hash": "4204a2f01ff4fc930a7045833c6117d836c659981d1f3b0d9225e7009f7515d5",
       "next_delta": "Human-review this route. A local template stays UNKNOWN and is not stored. An independent witness can match without a KaiMemory write. The matching tuple still names an unexecuted upgrade candidate. Full pnpm test was not run. Do not merge from this node."
+    },
+    {
+      "timestamp": "2026-11-22T18:25:00Z",
+      "agent_id": "grok",
+      "branch": "agent/grok/execute-witness",
+      "status": "UNKNOWN",
+      "files_touched": [
+        "AGENTS.md",
+        "apps/api/src/execute-route.ts",
+        "tests/integration/execute-route.integration.test.ts",
+        "kai_ledger.json"
+      ],
+      "tests_passed": true,
+      "evidence_hash": "092106d2dec4314967063fce5f4198ab7f4b9b894c9ab4f5f1a6a89c8f886462",
+      "next_delta": "Human-review the witness label. The route still accepts observationSource independent from the same caller. That label is not a separate observer. Full pnpm test was not run. Do not merge from this node."
     }
   ]
 }
