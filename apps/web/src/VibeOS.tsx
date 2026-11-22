@@ -2057,7 +2057,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
                 onClick={() => setCodexOpen(true)}
                 disabled={verifying}
               >
-                🪞 Living Codex (12)
+                🪞 Living Codex (20)
               </button>
               <button
                 type="button"
