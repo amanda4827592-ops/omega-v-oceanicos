@@ -481,6 +481,35 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/studio/synthesize': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        synthesis: {
+          assetId: 'asset-7a42b109c8e1',
+          prompt: 'Sacred Water Intelligence & DAV Tensor (57,344)',
+          evidenceHash: '7a42b109c8e1d520fbba16ec88ef2248530ec5129ef44726e63cebe787a7cb14',
+          voice: {
+            organ: 'Soul AI',
+            frequencyHz: 432,
+            resonance: 'harmonic-pure',
+            durationSec: 3.5,
+          },
+          image: {
+            engine: 'svg_tensor_canvas',
+            viewBox: '0 0 400 200',
+            coordinates: '4x4x4x4 lossless projection (256 cells)',
+            invariantChecksum: 57344,
+          },
+          video: {
+            fps: 30,
+            resolution: '1920x1080',
+            streamFrameId: 'frame-7a42b109',
+          },
+          doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+        },
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({

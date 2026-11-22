@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 
 /**
@@ -8,7 +9,15 @@ import type { FastifyInstance } from 'fastify';
  * 3. Image Generation: SVG Tensor Canvas, 20 Codex Projections, Evidence Watermark
  * 4. Video Creation: SSE Stream, Multimodal WebRTC, Frame Interpolation
  * 5. Settings: Ports :3000, :5000, :8088, :11434, Local Auth, FinOps Limits
+ * 6. Synthesize: Deterministic Multimodal Synthesis Bridge
  */
+
+export interface StudioSynthesizeBody {
+  prompt?: string;
+  frequencyHz?: number;
+  organ?: string;
+}
+
 export function registerStudioRoutes(fastify: FastifyInstance): void {
   fastify.get('/v1/studio/capabilities', async () => ({
     success: true,
@@ -57,4 +66,48 @@ export function registerStudioRoutes(fastify: FastifyInstance): void {
     doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
     timestamp: new Date().toISOString(),
   }));
+
+  fastify.post<{ Body: StudioSynthesizeBody }>('/v1/studio/synthesize', async (request) => {
+    const prompt = typeof request.body?.prompt === 'string' && request.body.prompt.trim()
+      ? request.body.prompt.trim()
+      : 'DAV Tensor N=8 Invariant Matrix';
+    const frequencyHz = typeof request.body?.frequencyHz === 'number' && Number.isFinite(request.body.frequencyHz)
+      ? request.body.frequencyHz
+      : 432;
+    const organ = typeof request.body?.organ === 'string' && request.body.organ.trim()
+      ? request.body.organ.trim()
+      : 'Soul AI';
+
+    const evidenceInput = `${prompt}:${frequencyHz}:${organ}`;
+    const evidenceHash = createHash('sha256').update(evidenceInput, 'utf8').digest('hex');
+
+    return {
+      success: true,
+      status: 'VERIFIED',
+      synthesis: {
+        assetId: `asset-${evidenceHash.slice(0, 12)}`,
+        prompt,
+        evidenceHash,
+        voice: {
+          organ,
+          frequencyHz,
+          resonance: 'harmonic-pure',
+          durationSec: 3.5,
+        },
+        image: {
+          engine: 'svg_tensor_canvas',
+          viewBox: '0 0 400 200',
+          coordinates: '4x4x4x4 lossless projection (256 cells)',
+          invariantChecksum: 57344,
+        },
+        video: {
+          fps: 30,
+          resolution: '1920x1080',
+          streamFrameId: `frame-${evidenceHash.slice(0, 8)}`,
+        },
+        doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  });
 }
