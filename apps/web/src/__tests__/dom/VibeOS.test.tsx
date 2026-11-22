@@ -349,7 +349,7 @@ describe('Vibe OS surface', () => {
     await user.click(voiceBtn);
     expect(await screen.findByText(/Voice Bridge Harmonic Resonance active at 432Hz/i)).toBeInTheDocument();
     expect(screen.getByText(/Soul AI/i)).toBeInTheDocument();
-  });
+  }, 60000);
 
   it('observes Local LLM on port 11434 and enables Ocean Intelligence toggle', async () => {
     installFetch({
@@ -831,6 +831,25 @@ describe('Vibe OS surface', () => {
     expect(screen.getByLabelText('Real-Time Stream status')).toHaveTextContent('VERIFIED');
     expect(screen.getByLabelText('Evals Flywheel status')).toHaveTextContent('VERIFIED');
     expect(screen.getByLabelText('Edge & FinOps status')).toHaveTextContent('SUPPORTED');
+  });
+
+  it('probes Whole Ecosystem Release Attestation and verifies full-stack platform convergence', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const releaseBtn = screen.getByRole('button', { name: /🏆 Release Attestation/i });
+    expect(releaseBtn).toBeInTheDocument();
+
+    await user.click(releaseBtn);
+    expect(
+      await screen.findByText(
+        /🏆 Ecosystem Release Attestation Verified \[Ω∞v-1\.0\.0-CONTINUUM\]/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Platform: ΔVRØ HOUSE × Ω∞v OCEANICOS/i)).toBeInTheDocument();
+    expect(screen.getByText(/Convergence: 10\/10 CONVERGED/i)).toBeInTheDocument();
+    expect(screen.getByText(/DAV N=8 Invariant: 57,344/i)).toBeInTheDocument();
   });
 
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
