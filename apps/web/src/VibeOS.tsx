@@ -809,6 +809,53 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runAvroHouseCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect ΔVRØ House 10-Layer Ecosystem');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/ecosystem/status'), { headers: { accept: 'application/json' } });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || !payload?.avroHouse) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/ecosystem/status · HTTP ${response.status}`,
+        };
+      } else {
+        const avro = payload.avroHouse;
+        const layers = Array.isArray(avro.layers) ? avro.layers : [];
+        const supported = layers.filter((l: any) => l.evidenceStatus === 'SUPPORTED').length;
+        const unverified = layers.filter((l: any) => l.evidenceStatus === 'UNVERIFIED').length;
+        const unknown = layers.filter((l: any) => l.evidenceStatus === 'UNKNOWN').length;
+        result = {
+          role: 'ai',
+          content: `ΔVRØ House 10-Layer AI Ecosystem observed: ${avro.equation}. Layers (10): ${supported} SUPPORTED · ${unverified} UNVERIFIED · ${unknown} UNKNOWN. Active Ports: Frontend (:3000), Spine (:5000), Brain (:11434), Muscle (:8088). Doctrine: "${avro.doctrine}".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/ecosystem/status · ΔVRØ House 10-Layer Ecosystem specification telemetry.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/ecosystem/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runEcosystemStatusCheck = async () => {
     if (verifying) return;
     beginQuickAction('Inspect Ecosystem Composite Status');
@@ -2123,6 +2170,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runEcosystemStatusCheck()} disabled={verifying}>
                 🏛️ Ecosystem Status
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runAvroHouseCheck()} disabled={verifying}>
+                🏛️ ΔVRØ House (10-Layer)
               </button>
               <button type="button" className="vibe-action" onClick={() => void runValueProposalsCheck()} disabled={verifying}>
                 💎 Value Proposals

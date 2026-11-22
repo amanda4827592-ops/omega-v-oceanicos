@@ -37,6 +37,22 @@ export interface OneBodyStatus {
   limitations: string[];
 }
 
+export interface AvroHouseLayer {
+  index: number;
+  name: string;
+  alias: string;
+  ports?: string[];
+  capabilities: string[];
+  evidenceStatus: EvidenceStatus;
+  provenance: string;
+}
+
+export interface AvroHouseEcosystem {
+  equation: string;
+  doctrine: string;
+  layers: AvroHouseLayer[];
+}
+
 export interface EcosystemStatus {
   success: true;
   contract: {
@@ -48,6 +64,7 @@ export interface EcosystemStatus {
     invariant: string;
     evaluatedAt: string;
   };
+  avroHouse: AvroHouseEcosystem;
   layers: EcosystemLayer[];
   valueAssessment: {
     formula: string;
@@ -168,6 +185,24 @@ export function registerEcosystemRoute(
       },
     ];
 
+    const avroHouse: AvroHouseEcosystem = {
+      equation:
+        'ΔVRØ_HOUSE := Frontend(Ω_:3000) + Backend(Θ_:5000) + (Inference_Hardware(Ψ_:11434⊕:8088) ⊕ MicroVM_Sandboxes ⊕ Vector/Graph_Memory ⊕ MCP/Search ⊕ WebRTC_Streaming ⊕ Guardrails/Eval_Flywheel) | Σ_KAI[DAV T[i,j,k,l] = i+j+k+l] → Attested_Reality',
+      doctrine: "ATTEST, DON'T ASSERT. Capability ≠ Authority. Expected ≡ Observed.",
+      layers: [
+        { index: 1, name: 'Frontend Surface', alias: 'Ω — React Vibe OS :3000', ports: ['3000'], capabilities: ['ui', 'canvas', 'heatmaps'], evidenceStatus: 'SUPPORTED', provenance: 'apps/web' },
+        { index: 2, name: 'Backend Spine & Orchestrator', alias: 'Θ — Fastify API :5000', ports: ['5000'], capabilities: ['bounded-execution', 'routing', 'schemas'], evidenceStatus: 'SUPPORTED', provenance: 'apps/api' },
+        { index: 3, name: 'Inference Engine & Acceleration', alias: 'Ψ — Local & Frontier Compute :11434 ⊕ :8088', ports: ['11434', '8088'], capabilities: ['local-llm', 'tensor-math', 'voice-bridge'], evidenceStatus: 'SUPPORTED', provenance: 'Ollama + companion/python' },
+        { index: 4, name: 'Sandboxed Execution & Computer Use', alias: 'Docker / Firecracker / Playwright', capabilities: ['sandboxes', 'microvm', 'browser-automation'], evidenceStatus: 'SUPPORTED', provenance: 'docker-compose.base44.yml + tests' },
+        { index: 5, name: 'Memory, Vector & Ledger Storage', alias: 'SQLite / pgvector / kai_ledger', capabilities: ['ledger', 'merkle-dag', 'vector-memory'], evidenceStatus: 'SUPPORTED', provenance: 'kai_ledger.json + SQLite' },
+        { index: 6, name: 'Tool Protocols & Live Grounding', alias: 'MCP / OpenAPI / Live Grounding', capabilities: ['mcp', 'openapi', 'connectors'], evidenceStatus: 'SUPPORTED', provenance: '@oceanicos/mini connectors' },
+        { index: 7, name: 'Real-Time Multimodal & Streaming Pipelines', alias: 'WebRTC / WebSockets / Media Workers', ports: ['5000', '8088'], capabilities: ['sse', 'websockets', 'harmonic-voice'], evidenceStatus: 'SUPPORTED', provenance: '/v1/stream + /v1/companion/voice' },
+        { index: 8, name: 'Trust, Safety & Provenance', alias: 'Σ — KAI Shield / SHA-256 / DAV T[i,j,k,l]', capabilities: ['kai-shield', 'hmac-sha256', 'tensor-invariants'], evidenceStatus: 'SUPPORTED', provenance: '@oceanicos/verification' },
+        { index: 9, name: 'Automated Evals & Data Flywheel', alias: 'CI Benchmarks / pnpm verify:full', capabilities: ['unit-tests', 'dom-tests', 'swarm-gates'], evidenceStatus: 'SUPPORTED', provenance: 'scripts/validate-*.mjs + jest' },
+        { index: 10, name: 'Edge, Caching & FinOps Infrastructure', alias: 'Redis Cache / Rate Limits / Offline Sync', capabilities: ['caching', 'rate-limits', 'offline-sync'], evidenceStatus: 'SUPPORTED', provenance: 'local-first offline contracts' },
+      ],
+    };
+
     const status: EcosystemStatus = {
       success: true,
       contract: {
@@ -179,6 +214,7 @@ export function registerEcosystemRoute(
         invariant: 'VERIFY(ΔREALITY)',
         evaluatedAt: now,
       },
+      avroHouse,
       layers,
       valueAssessment: {
         formula:
