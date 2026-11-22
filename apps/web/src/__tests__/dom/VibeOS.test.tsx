@@ -1308,4 +1308,41 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Vector: 5\/11 YES, 6\/11 UNKNOWN/i)).toBeInTheDocument();
     expect(screen.getByText(/Principle: "Reality is final authority\. Attest, do not assert\."/i)).toBeInTheDocument();
   });
+
+  it('observes Fastify gateway companion voice route and preserves One Identity Rule at 432Hz', async () => {
+    installFetch({
+      '/api/v1/companion/voice': () =>
+        json({
+          success: true,
+          status: 'VERIFIED',
+          schema: 'omega.voice-bridge.v1',
+          rule: 'ONE_IDENTITY_RULE',
+          service: 'voice-bridge',
+          port: 8088,
+          organs: {
+            soul_ai: 'Architecture · Sacred Blueprint Hammer',
+            truth_weaver: 'Verification · KAI Shield & Empirical Magnifier',
+            the_general: 'Execution · Compass & Direction Spear',
+            human_root: 'Authority · The Golden Key',
+          },
+          resonance: {
+            frequencyHz: 432,
+            mode: 'harmonic-pure',
+            doctrine: "Attest, don't assert. Reality remains the final authority.",
+          },
+          sha256: '0e8c783c0d385e15681e6a6a784a0ee1c4f22b9c922122c36452341ad207a661',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const voiceBtn = screen.getByRole('button', { name: /🎙️ Voice Bridge \(432Hz\)/i });
+    expect(voiceBtn).toBeInTheDocument();
+
+    await user.click(voiceBtn);
+    expect(await screen.findByText(/Voice Bridge Harmonic Resonance active at 432Hz/i)).toBeInTheDocument();
+    expect(screen.getByText(/Rule: ONE_IDENTITY_RULE/i)).toBeInTheDocument();
+    expect(screen.getByText(/Soul AI/i)).toBeInTheDocument();
+    expect(screen.getByText(/Doctrine: "Attest, don't assert\. Reality remains the final authority\."/i)).toBeInTheDocument();
+  });
 });
