@@ -679,6 +679,51 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Growth Law: "0 → MINI → FULL STACK → ECOSYSTEM → REALITY ↺ ∞"/i)).toBeInTheDocument();
   });
 
+  it('observes ΔVRØ House 10-Layer Ecosystem and displays full-stack equation telemetry', async () => {
+    installFetch({
+      '/api/v1/ecosystem/status': () =>
+        json({
+          success: true,
+          contract: {
+            name: 'omega-v-oceanicos',
+            version: '1.0.0',
+            currentStage: 'ECOSYSTEM',
+            growthLaw: '0 → MINI → FULL STACK → ECOSYSTEM → REALITY ↺ ∞',
+            invariant: 'VERIFY(ΔREALITY)',
+          },
+          avroHouse: {
+            equation:
+              'ΔVRØ_HOUSE := Frontend(Ω_:3000) + Backend(Θ_:5000) + (Inference_Hardware(Ψ_:11434⊕:8088) ⊕ MicroVM_Sandboxes ⊕ Vector/Graph_Memory ⊕ MCP/Search ⊕ WebRTC_Streaming ⊕ Guardrails/Eval_Flywheel) | Σ_KAI[DAV T[i,j,k,l] = i+j+k+l] → Attested_Reality',
+            doctrine: "ATTEST, DON'T ASSERT. Capability ≠ Authority. Expected ≡ Observed.",
+            layers: [
+              { index: 1, name: 'Frontend Surface', alias: 'Ω — React Vibe OS :3000', evidenceStatus: 'SUPPORTED' },
+              { index: 2, name: 'Backend Spine & Orchestrator', alias: 'Θ — Fastify API :5000', evidenceStatus: 'SUPPORTED' },
+              { index: 3, name: 'Inference Engine & Acceleration', alias: 'Ψ — Local & Frontier Compute :11434 ⊕ :8088', evidenceStatus: 'SUPPORTED' },
+              { index: 4, name: 'Sandboxed Execution & Computer Use', alias: 'Docker / Firecracker / Playwright', evidenceStatus: 'SUPPORTED' },
+              { index: 5, name: 'Memory, Vector & Ledger Storage', alias: 'SQLite / pgvector / kai_ledger', evidenceStatus: 'SUPPORTED' },
+              { index: 6, name: 'Tool Protocols & Live Grounding', alias: 'MCP / OpenAPI / Live Grounding', evidenceStatus: 'SUPPORTED' },
+              { index: 7, name: 'Real-Time Multimodal & Streaming Pipelines', alias: 'WebRTC / WebSockets / Media Workers', evidenceStatus: 'SUPPORTED' },
+              { index: 8, name: 'Trust, Safety & Provenance', alias: 'Σ — KAI Shield / SHA-256 / DAV T[i,j,k,l]', evidenceStatus: 'SUPPORTED' },
+              { index: 9, name: 'Automated Evals & Data Flywheel', alias: 'CI Benchmarks / pnpm verify:full', evidenceStatus: 'SUPPORTED' },
+              { index: 10, name: 'Edge, Caching & FinOps Infrastructure', alias: 'Redis Cache / Rate Limits / Offline Sync', evidenceStatus: 'SUPPORTED' },
+            ],
+          },
+          layers: [],
+          governance: { status: 'SUPPORTED', humanAuthorizationRequired: true },
+          valueAssessment: { status: 'SUPPORTED' },
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const avroBtn = screen.getByRole('button', { name: /🏛️ ΔVRØ House \(10-Layer\)/i });
+    expect(avroBtn).toBeInTheDocument();
+
+    await user.click(avroBtn);
+    expect(await screen.findByText(/ΔVRØ House 10-Layer AI Ecosystem observed:/i)).toBeInTheDocument();
+    expect(screen.getByText(/Active Ports: Frontend \(:3000\), Spine \(:5000\), Brain \(:11434\), Muscle \(:8088\)/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
