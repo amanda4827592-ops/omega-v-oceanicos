@@ -745,6 +745,23 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Sandboxed executions remain fail-closed until granted explicit local execution authority/i)).toBeInTheDocument();
   });
 
+  it('probes Real-Time Streaming Pipeline and verifies Layer 7 multimodal stream', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const streamBtn = screen.getByRole('button', { name: /🌊 Real-Time Stream/i });
+    expect(streamBtn).toBeInTheDocument();
+
+    await user.click(streamBtn);
+    expect(
+      await screen.findByText(
+        /Real-Time Multimodal Stream active: SSE connection verified \(\/v1\/stream\) with harmonic voice continuum gateway/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Streaming tokens and block events flowing across Layer 7 pipeline/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
