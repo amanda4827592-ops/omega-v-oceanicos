@@ -152,9 +152,22 @@
   font: 9px 'DM Mono', ui-monospace, monospace;
 }
 
+.vibe-continuum-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border: 1px solid rgba(140, 232, 200, 0.35);
+  border-radius: 999px;
+  background: rgba(140, 232, 200, 0.08);
+  color: var(--vibe-current);
+  font: 10px 'DM Mono', ui-monospace, monospace;
+  letter-spacing: 0.08em;
+}
+
 .vibe-status-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -179,7 +192,8 @@
 }
 
 .vibe-status-dot--observed,
-.vibe-status-dot--verified {
+.vibe-status-dot--verified,
+.vibe-status-dot--supported {
   background: var(--vibe-observed);
   box-shadow: 0 0 10px rgba(140, 232, 200, 0.55);
 }

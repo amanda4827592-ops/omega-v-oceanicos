@@ -818,6 +818,21 @@ describe('Vibe OS surface', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders the complete 10-layer living telemetry continuum status badge and grid', async () => {
+    installFetch();
+    render(<VibeOS />);
+
+    expect(screen.getByLabelText('10-Layer Continuum Status')).toBeInTheDocument();
+    expect(screen.getByText(/🏛️ 10\/10 Layers Converged · VERIFY\(ΔREALITY\)/i)).toBeInTheDocument();
+    expect(screen.getByLabelText('Frontend Surface · 3000 status')).toHaveTextContent('SUPPORTED');
+    expect(screen.getByLabelText('Sandbox Runner status')).toHaveTextContent('SUPPORTED');
+    expect(screen.getByLabelText('Ledger Receipts status')).toHaveTextContent('VERIFIED');
+    expect(screen.getByLabelText('MCP Connectors status')).toHaveTextContent('SUPPORTED');
+    expect(screen.getByLabelText('Real-Time Stream status')).toHaveTextContent('VERIFIED');
+    expect(screen.getByLabelText('Evals Flywheel status')).toHaveTextContent('VERIFIED');
+    expect(screen.getByLabelText('Edge & FinOps status')).toHaveTextContent('SUPPORTED');
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
