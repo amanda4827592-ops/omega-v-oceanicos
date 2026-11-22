@@ -31,6 +31,14 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
     executionStatus?: string;
     loading?: boolean;
   }>({});
+  const [orchestrationState, setOrchestrationState] = useState<{
+    orchestrationId?: string;
+    chainSeal?: string;
+    totalStages?: number;
+    completedStages?: number;
+    status?: string;
+    loading?: boolean;
+  }>({});
 
   const apiUrl = (path: string) => {
     const base = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -120,6 +128,39 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
       }
     } catch {
       setDispatchState({ loading: false });
+    }
+  };
+
+  const handleOrchestratePipeline = async () => {
+    setOrchestrationState({ loading: true });
+    try {
+      const response = await fetch(apiUrl('/v1/reality/orchestrate'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          pipelineName: 'Sovereign Reality Continuum Pipeline',
+          stages: [
+            { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432 } },
+            { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20 } },
+            { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
+          ],
+        }),
+      });
+      const data = await response.json();
+      if (data?.success && data?.orchestration) {
+        setOrchestrationState({
+          orchestrationId: data.orchestration.orchestrationId,
+          chainSeal: data.orchestration.chainSeal,
+          totalStages: data.orchestration.totalStages,
+          completedStages: data.orchestration.completedStages,
+          status: data.status,
+          loading: false,
+        });
+      } else {
+        setOrchestrationState({ loading: false });
+      }
+    } catch {
+      setOrchestrationState({ loading: false });
     }
   };
 
@@ -437,6 +478,30 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     </button>
                   </div>
                 ))}
+              </div>
+              <div className="studio-card" style={{ marginTop: '1.25rem', width: '100%' }}>
+                <h4>🧬 Multi-Tool Sovereign Workflow Pipeline</h4>
+                <p style={{ margin: '0.25rem 0 0.75rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+                  Chain multiple reality tools into a cryptographically sealed end-to-end execution pipeline.
+                </p>
+                <button
+                  type="button"
+                  className="freq-btn"
+                  style={{ width: '100%', borderColor: '#3b82f6', color: '#60a5fa' }}
+                  onClick={handleOrchestratePipeline}
+                  disabled={orchestrationState.loading}
+                >
+                  {orchestrationState.loading
+                    ? '⏳ Orchestrating Multi-Tool Pipeline...'
+                    : '🧬 Run Multi-Tool Continuum Pipeline (Acoustic ⊕ SVG ⊕ DAV)'}
+                </button>
+                {orchestrationState.chainSeal && (
+                  <div className="canvas-meta" style={{ marginTop: '0.75rem' }}>
+                    <span>Pipeline ID: <strong>{orchestrationState.orchestrationId}</strong></span>
+                    <span>Stages: <strong>{orchestrationState.completedStages}/{orchestrationState.totalStages} VERIFIED</strong></span>
+                    <span>Chain Seal: <strong>{(orchestrationState.chainSeal || '').slice(0, 16)}…</strong></span>
+                  </div>
+                )}
               </div>
               {dispatchState.executionStatus && (
                 <div className="canvas-meta" style={{ marginTop: '1rem' }}>

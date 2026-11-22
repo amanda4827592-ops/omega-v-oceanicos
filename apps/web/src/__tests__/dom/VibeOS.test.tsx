@@ -1656,5 +1656,41 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/SOVEREIGN_DISPATCH/i)).toBeInTheDocument();
     expect(screen.getByText(/e48f72a101d29c38/i)).toBeInTheDocument();
   });
+
+  it('orchestrates a multi-tool continuum pipeline and shows the chained cryptographic receipt', async () => {
+    installFetch({
+      '/api/v1/reality/orchestrate': () =>
+        json({
+          success: true,
+          status: 'VERIFIED',
+          orchestration: {
+            orchestrationId: 'orch-f49c01de2b',
+            pipelineName: 'Sovereign Reality Continuum Pipeline',
+            totalStages: 3,
+            completedStages: 3,
+            chainSeal: 'f49c01de2bc14a589e18b4501a2cf901768412e098dfc381a941b27e8a914c62',
+            stages: [
+              { stageIndex: 0, toolId: 'tool-voice-acoustic', stageEvidenceHash: 'a1b2c3d4...', status: 'VERIFIED' },
+              { stageIndex: 1, toolId: 'tool-svg-tensor-canvas', stageEvidenceHash: 'b2c3d4e5...', status: 'VERIFIED' },
+              { stageIndex: 2, toolId: 'tool-dav-tensor-validator', stageEvidenceHash: 'c3d4e5f6...', status: 'VERIFIED' },
+            ],
+            authority: 'SOVEREIGN_ORCHESTRATION',
+            doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+          },
+          timestamp: '2026-11-22T00:00:00.000Z',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const orchBtn = screen.getByRole('button', { name: /🧬 Orchestrate Reality/i });
+    expect(orchBtn).toBeInTheDocument();
+
+    await user.click(orchBtn);
+    expect(await screen.findByText(/Reality Continuum Orchestrated: Sovereign Reality Continuum Pipeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/3\/3 stages VERIFIED/i)).toBeInTheDocument();
+    expect(screen.getByText(/SOVEREIGN_ORCHESTRATION/i)).toBeInTheDocument();
+    expect(screen.getByText(/f49c01de2bc14a58/i)).toBeInTheDocument();
+  });
 });
 

@@ -580,6 +580,26 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/reality/orchestrate': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        orchestration: {
+          orchestrationId: 'orch-f49c01de2b',
+          pipelineName: 'Sovereign Reality Continuum Pipeline',
+          totalStages: 3,
+          completedStages: 3,
+          chainSeal: 'f49c01de2bc14a589e18b4501a2cf901768412e098dfc381a941b27e8a914c62',
+          stages: [
+            { stageIndex: 0, toolId: 'tool-voice-acoustic', stageEvidenceHash: 'a1b2c3d4...', status: 'VERIFIED' },
+            { stageIndex: 1, toolId: 'tool-svg-tensor-canvas', stageEvidenceHash: 'b2c3d4e5...', status: 'VERIFIED' },
+            { stageIndex: 2, toolId: 'tool-dav-tensor-validator', stageEvidenceHash: 'c3d4e5f6...', status: 'VERIFIED' },
+          ],
+          authority: 'SOVEREIGN_ORCHESTRATION',
+          doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+        },
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/v1/companion/synthesize': () =>
       json({
         success: true,
