@@ -13,6 +13,7 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
   const [selectedVoice, setSelectedVoice] = useState<string>('Soul AI');
   const [imagePrompt, setImagePrompt] = useState<string>('Sacred Water Intelligence & DAV Tensor (57,344)');
   const [renderedPreview, setRenderedPreview] = useState<boolean>(true);
+  const [playingTone, setPlayingTone] = useState<boolean>(false);
   const [synthesisState, setSynthesisState] = useState<{
     assetId?: string;
     evidenceHash?: string;
@@ -55,6 +56,27 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
       }
     } catch {
       setSynthesisState((s) => ({ ...s, loading: false }));
+    }
+  };
+
+  const handlePlayAcousticTone = async () => {
+    setPlayingTone(true);
+    try {
+      const response = await fetch(apiUrl('/v1/companion/synthesize'), {
+        method: 'POST',
+        headers: { accept: 'application/json' },
+      });
+      const data = await response.json();
+      if (data?.success && data?.synthesis?.audioDataUri) {
+        if (typeof Audio !== 'undefined') {
+          const audio = new Audio(data.synthesis.audioDataUri);
+          audio.play().catch(() => {});
+        }
+      }
+    } catch {
+      // safe fallback
+    } finally {
+      setTimeout(() => setPlayingTone(false), 600);
     }
   };
 
@@ -229,6 +251,14 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     onClick={handleSynthesize}
                   >
                     {synthesisState.loading ? '⏳ Synthesizing...' : '🎙️ Synthesize Voice & Harmonic Probe'}
+                  </button>
+                  <button
+                    type="button"
+                    className="freq-btn"
+                    style={{ marginTop: '0.5rem', width: '100%', borderColor: '#00e5ff', color: '#00e5ff' }}
+                    onClick={handlePlayAcousticTone}
+                  >
+                    {playingTone ? '🔊 Generating & Playing Tone...' : `▶️ Play Harmonic Tone (${frequencyHz}Hz ${selectedVoice})`}
                   </button>
                 </div>
               </div>

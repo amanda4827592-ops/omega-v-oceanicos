@@ -933,6 +933,21 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Seal: ΔVRØ-CENTURY-COUNCIL \(VERIFIED\)/i)).toBeInTheDocument();
   });
 
+  it('probes Sovereign Reality Tools Gateway and verifies 8 attested reality tools', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const toolsBtn = screen.getByRole('button', { name: /🛠️ Reality Tools/i });
+    expect(toolsBtn).toBeInTheDocument();
+
+    await user.click(toolsBtn);
+    expect(
+      await screen.findByText(/🛠️ Sovereign Reality Tools Gateway Active: 8 tools verified/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/execution, grounding, neural inference, voice synthesis, image canvas, video streaming/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>

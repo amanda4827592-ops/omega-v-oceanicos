@@ -112,6 +112,53 @@ def compute_voice_bridge() -> Dict[str, Any]:
     return payload
 
 
+def generate_harmonic_wav(frequency_hz: int = 432, duration_sec: float = 0.5, sample_rate: int = 44100) -> str:
+    """Generate a pure sinusoidal PCM WAV byte stream encoded as base64 data URI."""
+    import base64
+    import io
+    import math
+    import struct
+    import wave
+
+    buf = io.BytesIO()
+    with wave.open(buf, "wb") as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(sample_rate)
+        num_samples = int(sample_rate * duration_sec)
+        frames = bytearray()
+        for i in range(num_samples):
+            t = i / sample_rate
+            sample = int(16000.0 * math.sin(2.0 * math.pi * frequency_hz * t))
+            frames.extend(struct.pack("<h", sample))
+        wav.writeframesraw(frames)
+
+    encoded = base64.b64encode(buf.getvalue()).decode("ascii")
+    return f"data:audio/wav;base64,{encoded}"
+
+
+def compute_voice_synthesis(frequency_hz: int = 432, organ: str = "Soul AI") -> Dict[str, Any]:
+    """Compute harmonic acoustic synthesis for the selected One Identity organ."""
+    wav_uri = generate_harmonic_wav(frequency_hz=frequency_hz, duration_sec=0.5)
+    evidence_input = f"{organ}:{frequency_hz}:{len(wav_uri)}"
+    evidence_hash = hashlib.sha256(evidence_input.encode("utf-8")).hexdigest()
+
+    payload = {
+        "success": True,
+        "status": "VERIFIED",
+        "schema": "omega.voice-synthesis.v1",
+        "organ": organ,
+        "frequencyHz": frequency_hz,
+        "mode": "harmonic-pure-sine",
+        "durationSec": 0.5,
+        "sampleRate": 44100,
+        "audioDataUri": wav_uri,
+        "sha256": evidence_hash,
+        "doctrine": "Attest, don't assert. Reality remains the final authority.",
+    }
+    return payload
+
+
 # --- ASGI Interface (for uvicorn main:app) ---
 
 async def app(scope: Dict[str, Any], receive: Any, send: Any) -> None:
@@ -146,6 +193,13 @@ async def app(scope: Dict[str, Any], receive: Any, send: Any) -> None:
 
     if path in ("/voice", "/api/voice", "/voice/status", "/api/voice/status"):
         data = compute_voice_bridge()
+        body = json.dumps(data).encode("utf-8")
+        await send({"type": "http.response.start", "status": 200, "headers": headers})
+        await send({"type": "http.response.body", "body": body})
+        return
+
+    if path in ("/voice/synthesize", "/api/voice/synthesize"):
+        data = compute_voice_synthesis(432, "Soul AI")
         body = json.dumps(data).encode("utf-8")
         await send({"type": "http.response.start", "status": 200, "headers": headers})
         await send({"type": "http.response.body", "body": body})
@@ -203,6 +257,15 @@ class CompanionHTTPHandler(BaseHTTPRequestHandler):
 
         if path in ("/voice", "/api/voice", "/voice/status", "/api/voice/status"):
             data = compute_voice_bridge()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
+
+        if path in ("/voice/synthesize", "/api/voice/synthesize"):
+            data = compute_voice_synthesis(432, "Soul AI")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Access-Control-Allow-Origin", "*")

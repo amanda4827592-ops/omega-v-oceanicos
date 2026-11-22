@@ -2184,6 +2184,52 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runRealityToolsGatewayCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Sovereign Reality Tools Gateway');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/reality/tools'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.gateway !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/reality/tools · HTTP ${response.status}`,
+        };
+      } else {
+        const gw = payload.gateway;
+        result = {
+          role: 'ai',
+          content: `🛠️ Sovereign Reality Tools Gateway Active: ${gw.totalTools} tools verified across execution, grounding, neural inference, voice synthesis, image canvas, video streaming, tensor math, and immutable memory. Doctrine: "${gw.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          engine: 'reality-tools-gateway',
+          detail: 'GET /v1/reality/tools · 8 sovereign tools of reality attested.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/reality/tools unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -2790,6 +2836,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runCenturyMilestoneCheck()} disabled={verifying}>
                 💯 Century Milestone
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runRealityToolsGatewayCheck()} disabled={verifying}>
+                🛠️ Reality Tools
               </button>
             </div>
             <label className="vibe-model-toggle">

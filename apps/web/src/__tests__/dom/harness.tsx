@@ -538,6 +538,43 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/reality/tools': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        gateway: {
+          platform: 'ΔVRØ HOUSE OMNI-MODAL REALITY TOOL GATEWAY',
+          doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+          totalTools: 8,
+          tools: [
+            { id: 'tool-microvm-sandbox', name: 'MicroVM Sandbox Runner', category: 'execution', status: 'VERIFIED' },
+            { id: 'tool-mcp-connectors', name: 'MCP Sovereign Connectors', category: 'grounding', status: 'VERIFIED' },
+            { id: 'tool-ollama-neural', name: 'Local Ollama Neural Engine', category: 'inference', status: 'VERIFIED' },
+            { id: 'tool-voice-acoustic', name: 'Acoustic Waveform Synthesizer', category: 'multimodal_voice', status: 'VERIFIED' },
+            { id: 'tool-svg-tensor-canvas', name: 'Deterministic SVG Tensor Canvas', category: 'multimodal_image', status: 'VERIFIED' },
+            { id: 'tool-sse-video-stream', name: 'Real-Time SSE Video Pipeline', category: 'multimodal_video', status: 'VERIFIED' },
+            { id: 'tool-dav-tensor-validator', name: 'DAV Tensor Invariant Validator', category: 'mathematical_law', status: 'VERIFIED' },
+            { id: 'tool-kai-immutable-ledger', name: 'KAI Immutable Ledger', category: 'memory_governance', status: 'VERIFIED' },
+          ],
+          evidenceBoundary: 'All tools operate under local-first sovereign custody. Unobserved tools remain UNKNOWN.',
+        },
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
+    '/api/v1/companion/synthesize': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        synthesis: {
+          organ: 'Soul AI',
+          frequencyHz: 432,
+          mode: 'harmonic-pure-sine',
+          durationSec: 0.5,
+          sampleRate: 44100,
+          audioDataUri: 'data:audio/wav;base64,UklGRmisAABXQVZFZm10IBAAAAABAAEA...',
+          sha256: '9f83a216c87d461a8f895c102a0a5ec2213e4b7cb6270bf93c9d7d24269d033a',
+        },
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({
