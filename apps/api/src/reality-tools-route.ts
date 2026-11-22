@@ -331,6 +331,14 @@ export function registerRealityToolsRoutes(fastify: FastifyInstance): void {
       } else if (toolId === 'tool-dav-tensor-validator') {
         const size = typeof stage.params?.size === 'number' ? stage.params.size : 8;
         const checksum = 2 * Math.pow(size, 4) * (size - 1);
+        if (checksum !== 57344) {
+          return {
+            success: false,
+            status: 'UNKNOWN',
+            error: `Live execution halted at stage ${i}: DAV invariant diverged for N=${size} (observed checksum ${checksum}, expected 57344).`,
+            completedStages: i,
+          };
+        }
         artifactSummary = `DAV Hypercube invariant verified: N=${size} Checksum ≡ ${checksum}`;
         artifacts.tensor = {
           size,

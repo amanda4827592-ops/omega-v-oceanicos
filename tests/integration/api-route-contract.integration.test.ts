@@ -39,6 +39,33 @@ test('route inventory rejects malformed and duplicate method/path contracts', ()
   );
 });
 
+test('live reality pipeline fails closed when the DAV invariant diverges', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'omega-api-reality-pipeline-'));
+  const app = createApp(join(directory, 'ledger.db'), false, { allowUnsignedCycle: true });
+
+  try {
+    await app.ready();
+    const response = await app.inject({
+      method: 'POST',
+      url: '/v1/reality/pipeline/execute',
+      payload: {
+        stages: [{ toolId: 'tool-dav-tensor-validator', params: { size: 4 } }],
+      },
+    });
+
+    assert.equal(response.statusCode, 200);
+    const body = response.json();
+    assert.equal(body.success, false);
+    assert.equal(body.status, 'UNKNOWN');
+    assert.equal(body.completedStages, 0);
+    assert.match(body.error, /DAV invariant diverged.*observed checksum 1536.*expected 57344/);
+    assert.equal('execution' in body, false);
+  } finally {
+    await app.close();
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('compiled API serves JavaScript and CSS assets with browser-compatible MIME types', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'omega-api-static-mime-'));
   const distDir = join(directory, 'dist');
