@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './StudioSettingsModal.css';
 
-export type StudioTab = 'settings' | 'voice' | 'image' | 'video';
+export type StudioTab = 'settings' | 'voice' | 'image' | 'video' | 'tools';
 
 export interface StudioSettingsModalProps {
   onClose: () => void;
@@ -24,6 +24,13 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
     evidenceHash: 'c4e976db57fcb5961e938927429be97520e0ffb0870ecfe1a6df8c29188f6b21',
     status: 'VERIFIED',
   });
+  const [dispatchState, setDispatchState] = useState<{
+    toolId?: string;
+    dispatchId?: string;
+    evidenceHash?: string;
+    executionStatus?: string;
+    loading?: boolean;
+  }>({});
 
   const apiUrl = (path: string) => {
     const base = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -77,6 +84,42 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
       // safe fallback
     } finally {
       setTimeout(() => setPlayingTone(false), 600);
+    }
+  };
+
+  const REALITY_TOOLS = [
+    { id: 'tool-microvm-sandbox', name: 'MicroVM Sandbox Runner', icon: '🔒', category: 'execution' },
+    { id: 'tool-mcp-connectors', name: 'MCP Sovereign Connectors', icon: '🔌', category: 'grounding' },
+    { id: 'tool-ollama-neural', name: 'Local Ollama Neural Engine', icon: '🧠', category: 'inference' },
+    { id: 'tool-voice-acoustic', name: 'Acoustic Waveform Synthesizer', icon: '🎙️', category: 'multimodal_voice' },
+    { id: 'tool-svg-tensor-canvas', name: 'Deterministic SVG Tensor Canvas', icon: '🎨', category: 'multimodal_image' },
+    { id: 'tool-sse-video-stream', name: 'Real-Time SSE Video Pipeline', icon: '🎬', category: 'multimodal_video' },
+    { id: 'tool-dav-tensor-validator', name: 'DAV Tensor Invariant Validator', icon: '📐', category: 'mathematical_law' },
+    { id: 'tool-kai-immutable-ledger', name: 'KAI Immutable Ledger', icon: '📒', category: 'memory_governance' },
+  ];
+
+  const handleDispatchTool = async (toolId: string) => {
+    setDispatchState({ loading: true });
+    try {
+      const response = await fetch(apiUrl('/v1/reality/dispatch'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ toolId, params: { target: 'bounded-execution-check' } }),
+      });
+      const data = await response.json();
+      if (data?.success && data?.dispatch) {
+        setDispatchState({
+          toolId: data.dispatch.toolId,
+          dispatchId: data.dispatch.dispatchId,
+          evidenceHash: data.dispatch.evidenceHash,
+          executionStatus: data.dispatch.executionStatus,
+          loading: false,
+        });
+      } else {
+        setDispatchState({ loading: false });
+      }
+    } catch {
+      setDispatchState({ loading: false });
     }
   };
 
@@ -148,6 +191,15 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
             onClick={() => setTab('video')}
           >
             🎬 Video Studio
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'tools'}
+            className={`studio-tab-btn${tab === 'tools' ? ' studio-tab-btn--active' : ''}`}
+            onClick={() => setTab('tools')}
+          >
+            ⚡ Reality Tools
           </button>
         </nav>
 
@@ -355,6 +407,45 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                   </div>
                 </div>
               </div>
+            </section>
+          )}
+
+          {tab === 'tools' && (
+            <section className="studio-panel" aria-label="Reality tools dispatcher">
+              <h3 className="studio-panel-title">Sovereign Reality Tools Dispatcher</h3>
+              <p className="studio-panel-desc">
+                One-click dispatch of the 8 sovereign reality tools. Each dispatch is sealed with a SHA-256 evidence hash.
+              </p>
+              <div className="studio-grid">
+                {REALITY_TOOLS.map((tool) => (
+                  <div className="studio-card" key={tool.id}>
+                    <h4>{tool.icon} {tool.name}</h4>
+                    <div className="studio-setting-row">
+                      <span>Category:</span>
+                      <span className="setting-val">{tool.category}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="freq-btn"
+                      style={{ marginTop: '0.5rem', width: '100%' }}
+                      onClick={() => void handleDispatchTool(tool.id)}
+                      disabled={dispatchState.loading}
+                    >
+                      {dispatchState.loading && dispatchState.toolId === tool.id
+                        ? '⏳ Dispatching...'
+                        : `⚡ Dispatch ${tool.name.split(' ')[0]}`}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              {dispatchState.executionStatus && (
+                <div className="canvas-meta" style={{ marginTop: '1rem' }}>
+                  <span>Dispatch ID: <strong>{dispatchState.dispatchId}</strong></span>
+                  <span>Tool: <strong>{dispatchState.toolId}</strong></span>
+                  <span>Status: <strong>{dispatchState.executionStatus}</strong></span>
+                  <span>Evidence: <strong>{(dispatchState.evidenceHash || '').slice(0, 16)}…</strong></span>
+                </div>
+              )}
             </section>
           )}
         </main>

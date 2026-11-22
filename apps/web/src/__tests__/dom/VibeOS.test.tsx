@@ -1620,4 +1620,41 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Soul AI/i)).toBeInTheDocument();
     expect(screen.getByText(/Doctrine: "Attest, don't assert\. Reality remains the final authority\."/i)).toBeInTheDocument();
   });
+
+  it('dispatches a reality tool and shows the verified execution receipt with evidence seal', async () => {
+    installFetch({
+      '/api/v1/reality/dispatch': () =>
+        json({
+          success: true,
+          status: 'VERIFIED',
+          dispatch: {
+            toolId: 'tool-microvm-sandbox',
+            dispatchId: 'disp-e48f72a101',
+            evidenceHash: 'e48f72a101d29c384a75e219fb09c8e1471029c914bf681920ac3415ef8214bb',
+            executionStatus: 'COMPLETED_VERIFIED',
+            authority: 'SOVEREIGN_DISPATCH',
+            doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+            outcome: {
+              invoked: 'tool-microvm-sandbox',
+              params: { target: 'bounded-execution-check' },
+              verifiedAt: '2026-11-22T00:00:00.000Z',
+              details: 'Autonomous execution verified under local custody with evidence seal e48f72a101...',
+            },
+          },
+          timestamp: '2026-11-22T00:00:00.000Z',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const dispatchBtn = screen.getByRole('button', { name: /⚡ Dispatch Tool/i });
+    expect(dispatchBtn).toBeInTheDocument();
+
+    await user.click(dispatchBtn);
+    expect(await screen.findByText(/Reality Tool Dispatched: tool-microvm-sandbox/i)).toBeInTheDocument();
+    expect(screen.getByText(/COMPLETED_VERIFIED/i)).toBeInTheDocument();
+    expect(screen.getByText(/SOVEREIGN_DISPATCH/i)).toBeInTheDocument();
+    expect(screen.getByText(/e48f72a101d29c38/i)).toBeInTheDocument();
+  });
 });
+

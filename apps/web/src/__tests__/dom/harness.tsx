@@ -560,6 +560,26 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/reality/dispatch': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        dispatch: {
+          toolId: 'tool-microvm-sandbox',
+          dispatchId: 'disp-e48f72a101',
+          evidenceHash: 'e48f72a101d29c384a75e219fb09c8e1471029c914bf681920ac3415ef8214bb',
+          executionStatus: 'COMPLETED_VERIFIED',
+          authority: 'SOVEREIGN_DISPATCH',
+          doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+          outcome: {
+            invoked: 'tool-microvm-sandbox',
+            params: { target: 'bounded-execution-check' },
+            verifiedAt: '2026-11-22T00:00:00.000Z',
+            details: 'Autonomous execution verified under local custody with evidence seal e48f72a101...',
+          },
+        },
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/v1/companion/synthesize': () =>
       json({
         success: true,

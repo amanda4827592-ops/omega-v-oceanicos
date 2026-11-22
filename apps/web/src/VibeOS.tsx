@@ -2230,6 +2230,54 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runRealityToolDispatchCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Dispatch Reality Tool');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/reality/dispatch'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({ toolId: 'tool-microvm-sandbox', params: { target: 'bounded-execution-check' } }),
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.dispatch !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `POST /v1/reality/dispatch · HTTP ${response.status}`,
+        };
+      } else {
+        const d = payload.dispatch;
+        result = {
+          role: 'ai',
+          content: `⚡ Reality Tool Dispatched: ${d.toolId} → ${d.executionStatus}. Dispatch ID: ${d.dispatchId}. Evidence Seal: ${(d.evidenceHash || '').slice(0, 16)}… Authority: ${d.authority}. Doctrine: "${d.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          engine: 'reality-tool-dispatcher',
+          detail: `POST /v1/reality/dispatch · Tool ${d.toolId} dispatched with sovereign evidence seal.`,
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `POST /v1/reality/dispatch unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -2839,6 +2887,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealityToolsGatewayCheck()} disabled={verifying}>
                 🛠️ Reality Tools
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runRealityToolDispatchCheck()} disabled={verifying}>
+                ⚡ Dispatch Tool
               </button>
             </div>
             <label className="vibe-model-toggle">
