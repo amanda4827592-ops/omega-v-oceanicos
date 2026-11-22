@@ -258,6 +258,15 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         sha256: '0e8c783c0d385e15681e6a6a784a0ee1c4f22b9c922122c36452341ad207a661',
       }),
+    '/api/v1/stream': () => ({
+      ok: true,
+      status: 200,
+      headers: {
+        get: (h: string) => (h.toLowerCase() === 'content-type' ? 'text/event-stream' : null),
+      },
+      text: async () => 'data: {"event":"TIP","block":{"index":0}}\n\n',
+      json: async () => ({ event: 'TIP' }),
+    }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({
