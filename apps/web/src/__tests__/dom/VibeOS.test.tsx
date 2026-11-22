@@ -917,6 +917,22 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Video: 1920x1080 @ 30fps/i)).toBeInTheDocument();
   });
 
+  it('probes Century Milestone and verifies Receipt #100 attestation', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const centuryBtn = screen.getByRole('button', { name: /💯 Century Milestone/i });
+    expect(centuryBtn).toBeInTheDocument();
+
+    await user.click(centuryBtn);
+    expect(
+      await screen.findByText(/💯 Century Milestone Attested \[Receipt #100\]/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/10\/10 Layers Converged · 256\/256 Tensor Coordinates/i)).toBeInTheDocument();
+    expect(screen.getByText(/Seal: ΔVRØ-CENTURY-COUNCIL \(VERIFIED\)/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
