@@ -36,6 +36,7 @@ import { registerExecuteRoute } from './execute-route.js';
 import { registerTensorDavRoutes } from './tensor-dav-route.js';
 import { registerLocalActionsStatusRoutes } from './local-actions-status-route.js';
 import { registerEvalsStatusRoutes } from './evals-status-route.js';
+import { registerEdgeFinopsRoutes } from './edge-finops-route.js';
 import { scanIntent } from './invisible-computer.js';
 import {
   ENCRYPTION_ALGORITHM,
@@ -288,7 +289,7 @@ export function createApp(
   });
   registerLocalActionsStatusRoutes(fastify);
   registerEvalsStatusRoutes(fastify);
-
+  registerEdgeFinopsRoutes(fastify);
   fastify.register(async (scope) => {
     await scope.register(rateLimit, { global: false });
     registerPipelineRoute(scope, jsonError, options.pipelineAdmissionEvidence);

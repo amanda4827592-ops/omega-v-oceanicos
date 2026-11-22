@@ -285,6 +285,39 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         doctrine: "ATTEST, DON'T ASSERT. Zero regression tolerance.",
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/edge/status': () =>
+      json({
+        success: true,
+        status: 'OBSERVED',
+        layer: 'Layer 10: Edge, Caching & FinOps Infrastructure',
+        edge: {
+          semanticCache: {
+            provider: 'local-memory-fallback',
+            status: 'ACTIVE',
+            policy: 'LRU eviction; Redis wired when OMEGA_REDIS_URL is set',
+            evidence: 'SUPPORTED',
+          },
+          rateLimit: {
+            status: 'ACTIVE',
+            policy: '@fastify/rate-limit global; per-route overrides for sensitive endpoints',
+            evidence: 'SUPPORTED',
+          },
+          offlineSync: {
+            status: 'ACTIVE',
+            policy: 'local-first SQLite append-only ledger; disconnected operation sovereign',
+            evidence: 'SUPPORTED',
+          },
+          finOps: {
+            formula: 'V = (Outcome × Evidence) − (Cost + Risk)',
+            costScoringEnabled: true,
+            tokenBudgetEnforced: false,
+            evidence: 'SUPPORTED',
+          },
+        },
+        provenance: '@fastify/rate-limit + local SQLite + cost/risk formula in CHARTER.md',
+        doctrine: 'CAPABILITY ≠ AUTHORITY. Edge infra is a gate, not a guarantee.',
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({

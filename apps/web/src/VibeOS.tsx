@@ -1988,6 +1988,56 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runEdgeFinopsCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Edge & FinOps Infrastructure');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/edge/status'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.edge !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/edge/status · HTTP ${response.status}`,
+        };
+      } else {
+        const edge = payload.edge;
+        const cache = edge.semanticCache?.status ?? 'UNKNOWN';
+        const cacheProvider = edge.semanticCache?.provider ?? 'unknown';
+        const rateLimit = edge.rateLimit?.status ?? 'UNKNOWN';
+        const offlineSync = edge.offlineSync?.status ?? 'UNKNOWN';
+        const formula = edge.finOps?.formula ?? 'V = (Outcome × Evidence) − (Cost + Risk)';
+        result = {
+          role: 'ai',
+          content: `Layer 10 Edge & FinOps observed: Semantic Cache ${cache} (${cacheProvider}) · Rate Limiting ${rateLimit} · Offline Sync ${offlineSync} · FinOps Formula: "${formula}".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/edge/status · Layer 10 Edge, Caching & FinOps Infrastructure telemetry.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/edge/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2379,6 +2429,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runEvalsFlywheelCheck()} disabled={verifying}>
                 📊 Evals Flywheel
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runEdgeFinopsCheck()} disabled={verifying}>
+                ⚙️ Edge & FinOps
               </button>
             </div>
             <label className="vibe-model-toggle">
