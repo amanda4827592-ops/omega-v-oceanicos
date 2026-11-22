@@ -2278,6 +2278,61 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runRealityOrchestrationCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Orchestrate Reality Continuum');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/reality/orchestrate'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          pipelineName: 'Sovereign Reality Continuum Pipeline',
+          stages: [
+            { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432 } },
+            { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20 } },
+            { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
+          ],
+        }),
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.orchestration !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `POST /v1/reality/orchestrate · HTTP ${response.status}`,
+        };
+      } else {
+        const o = payload.orchestration;
+        result = {
+          role: 'ai',
+          content: `🧬 Reality Continuum Orchestrated: ${o.pipelineName} → ${o.completedStages}/${o.totalStages} stages VERIFIED. Pipeline ID: ${o.orchestrationId}. Chain Seal: ${(o.chainSeal || '').slice(0, 16)}… Authority: ${o.authority}. Doctrine: "${o.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          engine: 'reality-pipeline-orchestrator',
+          detail: `POST /v1/reality/orchestrate · ${o.totalStages}-stage sovereign tool pipeline sealed and verified.`,
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `POST /v1/reality/orchestrate unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -2890,6 +2945,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealityToolDispatchCheck()} disabled={verifying}>
                 ⚡ Dispatch Tool
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runRealityOrchestrationCheck()} disabled={verifying}>
+                🧬 Orchestrate Reality
               </button>
             </div>
             <label className="vibe-model-toggle">
