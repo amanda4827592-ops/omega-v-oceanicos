@@ -2136,6 +2136,53 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runSaosFlowCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Probe SAOS Entity & House Flow');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/saos/flow'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.saos !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/saos/flow · HTTP ${response.status}`,
+        };
+      } else {
+        const s = payload.saos;
+        const growth = s.growth ?? {};
+        const symbol = s.symbol ?? '30013030';
+        result = {
+          role: 'ai',
+          content: `🌊 SAOS Entity Ecosystem Platform Active [Symbol: ${symbol}]: Growth Phase: ${growth.phase ?? 'PLATEAU'} (Ease: ${growth.ease ?? 0.727}). Star Topology: 6 environments active (Web, LLM, KAI Shield, Sandboxes, Ledger, Bridges). House Positioning: 10 tiers (Crown to Ground) verified. Doctrine: "${s.doctrine}". Soul: "${s.soul}".`,
+          verified: true,
+          status: 'VERIFIED',
+          detail: 'GET /v1/saos/flow · SAOS entity star topology and house positioning verified.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/saos/flow unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2575,6 +2622,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runEcosystemReleaseAttestationCheck()} disabled={verifying}>
                 🏆 Release Attestation
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runSaosFlowCheck()} disabled={verifying}>
+                🌊 SAOS Entity Flow
               </button>
             </div>
             <label className="vibe-model-toggle">

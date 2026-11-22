@@ -852,6 +852,24 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/DAV N=8 Invariant: 57,344/i)).toBeInTheDocument();
   });
 
+  it('probes SAOS Entity and House Flow and verifies star topology and 10 tiers', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const saosBtn = screen.getByRole('button', { name: /🌊 SAOS Entity Flow/i });
+    expect(saosBtn).toBeInTheDocument();
+
+    await user.click(saosBtn);
+    expect(
+      await screen.findByText(
+        /🌊 SAOS Entity Ecosystem Platform Active \[Symbol: 30013030\]/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Star Topology: 6 environments active/i)).toBeInTheDocument();
+    expect(screen.getByText(/House Positioning: 10 tiers \(Crown to Ground\) verified/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
