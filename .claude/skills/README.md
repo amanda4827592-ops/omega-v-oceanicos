@@ -25,6 +25,7 @@ its source.
 | `omega-bounded-repository-transition` | `2bf2bbe3825091964c3f109dfee8e7a48be860ab942a32b57bb1072b1367e71d` | 2026-11-17 |
 | `dvro-house-oceanicos` | `ce29223a14810f0158d36b244eed7ef6af66b7a4f258571dc8717dd917b39cdb` | 2026-11-17 |
 | `omega-repository-continuation` | `326ed8025c327c63ba14c77ac29f6ba52eae7f97e5349ae11b45b91daf3d1626` | 2026-11-18 |
+| `omega-entity-full-stack` | `3e933b83b950e355028585130179091c2b4e4c9385f7920882f795458a06f933` | 2026-11-03 |
 
 Verify an installed skill still matches what was recorded:
 
@@ -191,6 +192,14 @@ Supplied 2026-11-17. Byte-identical to `skills/unified-entity-dav/SKILL.md`. The
 ## omega-repository-continuation
 
 Supplied 2026-11-18. Byte-identical to `skills/omega-repository-continuation/SKILL.md`. Evidence-bound continuation of an existing repository task: re-anchor Git and governance state, inspect workers and ledgers, choose one finite delta, diagnose toolchain and wrapper failures, make the smallest authorized contract-aligned change, rerun authoritative gates, and produce verifiable handoffs.
+
+## omega-entity-full-stack
+
+Installed 2026-11-03. Replayed onto `main` at `ca1fa3f` on 2026-11-22 because pull request #563 conflicted after later skill-catalog edits. Byte-identical to `skills/omega-entity-full-stack/SKILL.md`, including `references/`. One evidence-bound operating skill for meaning, continuity, voice, culture, value, repository work, bounded simulation, and verification. Specialist procedures it names stay binding. The recorded hash is integrity of `SKILL.md`, not proof a session loaded it or that a later action is authorized.
+
+### Loading
+
+Not observed. Presence under `.claude/skills/` is the install.
 
 ## Whole-ecosystem alignment
 
