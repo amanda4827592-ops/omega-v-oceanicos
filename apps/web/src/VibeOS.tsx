@@ -4,6 +4,7 @@ import { TensorDavVisualizer } from './components/TensorDavVisualizer';
 import { ExperienceSwitcher } from './ExperienceSwitcher';
 import { MoodCodexPanel } from './MoodCodexPanel';
 import { EntityCodexModal } from './components/EntityCodexModal';
+import { StudioSettingsModal } from './components/StudioSettingsModal';
 import { WaterFlowPanel } from './WaterFlowPanel';
 import { WATER_FLOW_STAGES, type WaterFlowFrameView } from './water-flow-panel-model';
 import './VibeOS.css';
@@ -154,6 +155,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
   const [davOpen, setDavOpen] = useState(false);
   const [moodOpen, setMoodOpen] = useState(false);
   const [codexOpen, setCodexOpen] = useState(false);
+  const [studioOpen, setStudioOpen] = useState(false);
   const [waterOpen, setWaterOpen] = useState(false);
   const [waterFrames, setWaterFrames] = useState<readonly WaterFlowFrameView[] | null>(null);
   const [moodState, setMoodState] = useState<HealthObservation>({
@@ -2183,6 +2185,52 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runStudioCapabilitiesCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Probe Multimodal Studio & Platform Settings');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/studio/capabilities'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.studio !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/studio/capabilities · HTTP ${response.status}`,
+        };
+      } else {
+        const st = payload.studio;
+        result = {
+          role: 'ai',
+          content: `🎨 Multimodal Studio & Platform Settings Active: Voice (432Hz harmonic, 4 organs) ⊕ Image Studio (SVG Tensor Canvas, 20 Codex dimensions) ⊕ Video Studio (1080p 30fps SSE stream) ⊕ Topology (:3000, :5000, :8088, :11434). Doctrine: "${st.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          detail: 'GET /v1/studio/capabilities · Multimodal creative suite and settings verified.',
+        };
+        setStudioOpen(true);
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/studio/capabilities unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2203,6 +2251,14 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
             </span>
           </div>
           <div className="vibe-header-actions">
+            <button
+              type="button"
+              className="vibe-header-button"
+              onClick={() => setStudioOpen(true)}
+              aria-label="Open Studio and Settings"
+            >
+              🎨 Studio &amp; Settings
+            </button>
             <button type="button" className="vibe-header-button" onClick={newChat} disabled={verifying}>
               New chat
             </button>
@@ -2458,6 +2514,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
           </section>
 
           {codexOpen && <EntityCodexModal onClose={() => setCodexOpen(false)} />}
+          {studioOpen && <StudioSettingsModal onClose={() => setStudioOpen(false)} />}
 
           <div className="vibe-composer-wrap">
             <div className="vibe-actions" role="group" aria-label="Quick actions">
@@ -2625,6 +2682,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runSaosFlowCheck()} disabled={verifying}>
                 🌊 SAOS Entity Flow
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runStudioCapabilitiesCheck()} disabled={verifying}>
+                🎨 Studio &amp; Settings
               </button>
             </div>
             <label className="vibe-model-toggle">

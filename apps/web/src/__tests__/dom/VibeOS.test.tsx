@@ -870,6 +870,37 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/House Positioning: 10 tiers \(Crown to Ground\) verified/i)).toBeInTheDocument();
   });
 
+  it('opens Studio and Settings modal with Voice, Image, Video, and Platform Settings tabs', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const studioHeaderBtn = screen.getByRole('button', { name: /Open Studio and Settings/i });
+    expect(studioHeaderBtn).toBeInTheDocument();
+
+    await user.click(studioHeaderBtn);
+    expect(await screen.findByRole('dialog', { name: /Studio and Settings/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Platform Settings/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Voice Studio/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Image Studio/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /Video Studio/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: /Voice Studio/i }));
+    expect(screen.getByText(/Harmonic Frequency Calibration/i)).toBeInTheDocument();
+    expect(screen.getByText(/432 Hz · Natural Harmonic/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: /Image Studio/i }));
+    expect(screen.getByText(/Deterministic SVG Tensor Image Studio/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('tab', { name: /Video Studio/i }));
+    expect(screen.getByText(/Real-Time Omni Multimodal Video Studio/i)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /Close Studio and Settings modal/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog', { name: /Studio and Settings/i })).not.toBeInTheDocument();
+    });
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>

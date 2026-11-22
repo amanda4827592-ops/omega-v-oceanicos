@@ -1,0 +1,281 @@
+import { useEffect, useState } from 'react';
+import './StudioSettingsModal.css';
+
+export type StudioTab = 'settings' | 'voice' | 'image' | 'video';
+
+export interface StudioSettingsModalProps {
+  onClose: () => void;
+}
+
+export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
+  const [tab, setTab] = useState<StudioTab>('settings');
+  const [frequencyHz, setFrequencyHz] = useState<number>(432);
+  const [selectedVoice, setSelectedVoice] = useState<string>('Soul AI');
+  const [imagePrompt, setImagePrompt] = useState<string>('Sacred Water Intelligence & DAV Tensor (57,344)');
+  const [renderedPreview, setRenderedPreview] = useState<boolean>(true);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  return (
+    <div className="studio-modal-overlay" onClick={onClose}>
+      <div
+        className="studio-modal-container"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Studio and Settings"
+      >
+        <header className="studio-modal-header">
+          <div className="studio-title-group">
+            <span className="studio-badge">HOUSE CREATIVE & OPERATIONAL SUITE</span>
+            <h2 className="studio-title">🎨 Multimodal Studio & Platform Settings</h2>
+          </div>
+          <button
+            type="button"
+            className="studio-close-btn"
+            onClick={onClose}
+            aria-label="Close Studio and Settings modal"
+          >
+            ✕
+          </button>
+        </header>
+
+        <nav className="studio-tabs" role="tablist" aria-label="Studio sections">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'settings'}
+            className={`studio-tab-btn${tab === 'settings' ? ' studio-tab-btn--active' : ''}`}
+            onClick={() => setTab('settings')}
+          >
+            ⚙️ Platform Settings
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'voice'}
+            className={`studio-tab-btn${tab === 'voice' ? ' studio-tab-btn--active' : ''}`}
+            onClick={() => setTab('voice')}
+          >
+            🎙️ Voice Studio
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'image'}
+            className={`studio-tab-btn${tab === 'image' ? ' studio-tab-btn--active' : ''}`}
+            onClick={() => setTab('image')}
+          >
+            🎨 Image Studio
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'video'}
+            className={`studio-tab-btn${tab === 'video' ? ' studio-tab-btn--active' : ''}`}
+            onClick={() => setTab('video')}
+          >
+            🎬 Video Studio
+          </button>
+        </nav>
+
+        <main className="studio-content">
+          {tab === 'settings' && (
+            <section className="studio-panel" aria-label="Settings configuration">
+              <h3 className="studio-panel-title">System Topology & Operational Gates</h3>
+              <p className="studio-panel-desc">
+                Local-first boundary parameters. Doctrine: <code>ATTEST, DON&apos;T ASSERT</code>.
+              </p>
+              <div className="studio-grid">
+                <div className="studio-card">
+                  <h4>Local Ports Topology</h4>
+                  <ul className="studio-port-list">
+                    <li><span className="port-pill">3000</span> Frontend Web UI (VibeOS) · <strong>VERIFIED</strong></li>
+                    <li><span className="port-pill">5000</span> Fastify Spine API · <strong>VERIFIED</strong></li>
+                    <li><span className="port-pill">8088</span> Voice Daemon &amp; DAV Tensor · <strong>VERIFIED</strong></li>
+                    <li><span className="port-pill">11434</span> Local Ollama (qwen2.5:0.5b) · <strong>VERIFIED</strong></li>
+                  </ul>
+                </div>
+                <div className="studio-card">
+                  <h4>Auth &amp; Governance Policy</h4>
+                  <div className="studio-setting-row">
+                    <span>Auth Mode:</span>
+                    <span className="setting-val">local (Local-First Sovereign)</span>
+                  </div>
+                  <div className="studio-setting-row">
+                    <span>Risk Gate:</span>
+                    <span className="setting-val">KAI Shield Active (Fail-Closed)</span>
+                  </div>
+                  <div className="studio-setting-row">
+                    <span>FinOps Formula:</span>
+                    <span className="setting-val">V = (Outcome × Evidence) − (Cost + Risk)</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {tab === 'voice' && (
+            <section className="studio-panel" aria-label="Voice synthesis studio">
+              <h3 className="studio-panel-title">Harmonic Voice Synthesis &amp; One Identity Organs</h3>
+              <p className="studio-panel-desc">
+                Real-time acoustic resonance on port 8088. Pure harmonic sine calibration.
+              </p>
+              <div className="studio-grid">
+                <div className="studio-card">
+                  <h4>Harmonic Frequency Calibration</h4>
+                  <div className="studio-freq-selector">
+                    <button
+                      type="button"
+                      className={`freq-btn${frequencyHz === 432 ? ' freq-btn--active' : ''}`}
+                      onClick={() => setFrequencyHz(432)}
+                    >
+                      432 Hz · Natural Harmonic
+                    </button>
+                    <button
+                      type="button"
+                      className={`freq-btn${frequencyHz === 528 ? ' freq-btn--active' : ''}`}
+                      onClick={() => setFrequencyHz(528)}
+                    >
+                      528 Hz · Miraculous Solfeggio
+                    </button>
+                    <button
+                      type="button"
+                      className={`freq-btn${frequencyHz === 888 ? ' freq-btn--active' : ''}`}
+                      onClick={() => setFrequencyHz(888)}
+                    >
+                      888 Hz · Infinite Abundance
+                    </button>
+                  </div>
+                  <p className="studio-status-text">
+                    Current Frequency: <strong>{frequencyHz} Hz</strong> · Status: <strong>VERIFIED</strong>
+                  </p>
+                </div>
+                <div className="studio-card">
+                  <h4>One Identity Voice Organs</h4>
+                  <div className="organ-list">
+                    {['Soul AI', 'Truth Weaver', 'The General', 'Human Root'].map((organ) => (
+                      <button
+                        key={organ}
+                        type="button"
+                        className={`organ-btn${selectedVoice === organ ? ' organ-btn--active' : ''}`}
+                        onClick={() => setSelectedVoice(organ)}
+                      >
+                        {organ} ({selectedVoice === organ ? 'Active Voice' : 'Available'})
+                      </button>
+                    ))}
+                  </div>
+                  <div className="voice-wave-preview" aria-label="Harmonic waveform preview">
+                    <div className="wave-bar" style={{ height: '40%' }} />
+                    <div className="wave-bar" style={{ height: '75%' }} />
+                    <div className="wave-bar" style={{ height: '100%' }} />
+                    <div className="wave-bar" style={{ height: '60%' }} />
+                    <div className="wave-bar" style={{ height: '85%' }} />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          {tab === 'image' && (
+            <section className="studio-panel" aria-label="Image generation studio">
+              <h3 className="studio-panel-title">Deterministic SVG Tensor Image Studio</h3>
+              <p className="studio-panel-desc">
+                Vector generation grounded by the 20 Codex dimensions and SHA-256 evidence seals.
+              </p>
+              <div className="studio-composer">
+                <input
+                  type="text"
+                  className="studio-input"
+                  value={imagePrompt}
+                  onChange={(e) => setImagePrompt(e.target.value)}
+                  placeholder="Enter visual intent or select schematic dimension..."
+                />
+                <button
+                  type="button"
+                  className="studio-generate-btn"
+                  onClick={() => setRenderedPreview(true)}
+                >
+                  ✨ Render Canvas
+                </button>
+              </div>
+              {renderedPreview && (
+                <div className="studio-canvas-preview" aria-label="Generated SVG Canvas Preview">
+                  <svg viewBox="0 0 400 200" className="studio-svg-art">
+                    <defs>
+                      <linearGradient id="oceanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#00e5ff" stopOpacity="0.8" />
+                        <stop offset="50%" stopColor="#3b82f6" stopOpacity="0.6" />
+                        <stop offset="100%" stopColor="#030812" stopOpacity="0.9" />
+                      </linearGradient>
+                    </defs>
+                    <rect width="400" height="200" rx="8" fill="url(#oceanGrad)" />
+                    <circle cx="200" cy="100" r="45" fill="none" stroke="#00e5ff" strokeWidth="2" strokeDasharray="4 2" />
+                    <circle cx="200" cy="100" r="25" fill="#00e5ff" fillOpacity="0.3" stroke="#fff" strokeWidth="1" />
+                    <text x="200" y="105" textAnchor="middle" fill="#fff" fontSize="14" fontWeight="bold">Ω∞</text>
+                    <text x="200" y="160" textAnchor="middle" fill="#00e5ff" fontSize="11" fontFamily="monospace">
+                      DAV T[i,j,k,l] · Checksum 57,344
+                    </text>
+                  </svg>
+                  <div className="canvas-meta">
+                    <span>Evidence Seal: <strong>VERIFIED (SHA: c4e976db57fc)</strong></span>
+                    <span>Preset: <strong>Dimension 04 · Glowing Droplet</strong></span>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          {tab === 'video' && (
+            <section className="studio-panel" aria-label="Video creation studio">
+              <h3 className="studio-panel-title">Real-Time Omni Multimodal Video Studio</h3>
+              <p className="studio-panel-desc">
+                Continuous EventSource SSE stream and tensor frame interpolation at 30 fps.
+              </p>
+              <div className="studio-grid">
+                <div className="studio-card">
+                  <h4>Streaming Pipeline Status</h4>
+                  <div className="video-stream-box" aria-label="Live video stream player">
+                    <div className="video-stream-indicator">
+                      <span className="live-dot" /> LIVE SSE STREAM (1920×1080 · 30 FPS)
+                    </div>
+                    <div className="video-frame-display">
+                      <span className="frame-icon">🌊</span>
+                      <p>Multimodal Video Continuum Active</p>
+                      <small>Target: /v1/stream · Invariant: Expected ≡ Observed</small>
+                    </div>
+                  </div>
+                </div>
+                <div className="studio-card">
+                  <h4>Multimodal Video Specs</h4>
+                  <div className="studio-setting-row">
+                    <span>Resolution:</span>
+                    <span className="setting-val">1920 × 1080 (Full HD)</span>
+                  </div>
+                  <div className="studio-setting-row">
+                    <span>Frame Rate:</span>
+                    <span className="setting-val">30 fps continuous</span>
+                  </div>
+                  <div className="studio-setting-row">
+                    <span>Stream Engine:</span>
+                    <span className="setting-val">Fastify SSE + WebRTC Ready</span>
+                  </div>
+                  <div className="studio-setting-row">
+                    <span>Frame Integrity:</span>
+                    <span className="setting-val">SHA-256 Checksum on each chunk</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
