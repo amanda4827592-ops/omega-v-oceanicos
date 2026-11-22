@@ -26,6 +26,8 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/saos/flow',
   'GET /v1/studio/capabilities',
   'POST /v1/studio/synthesize',
+  'GET /v1/reality/tools',
+  'POST /v1/companion/synthesize',
   'GET /v1/kernel/capabilities',
   'GET /v1/kernel/stats',
   'GET /v1/ecosystem/body',
