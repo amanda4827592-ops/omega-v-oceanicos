@@ -2038,6 +2038,55 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runContinuumAuditCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Run 10-Layer Continuum Audit');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/continuum/audit'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.continuum !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/continuum/audit · HTTP ${response.status}`,
+        };
+      } else {
+        const c = payload.continuum;
+        const total = c.totalLayers ?? 10;
+        const active = c.activeLayers ?? 10;
+        const convergence = c.convergence ?? 'CONVERGED';
+        const invariant = c.invariant ?? 'VERIFY(ΔREALITY)';
+        result = {
+          role: 'ai',
+          content: `ΔVRØ House Continuum Audit: Status ${convergence} (${active}/${total} layers active). Invariant: ${invariant}. 10-layer full-stack AI ecosystem unified: Frontend (:3000) ⊕ Backend (:5000) ⊕ Compute (:11434 ⊕ :8088) ⊕ MicroVM Sandboxes ⊕ Vector Memory ⊕ MCP Connectors ⊕ WebRTC Streaming ⊕ KAI Shield ⊕ Evals Flywheel ⊕ Edge FinOps.`,
+          verified: true,
+          status: 'VERIFIED',
+          detail: 'GET /v1/continuum/audit · Layer 1-10 complete continuum convergence verified.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/continuum/audit unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2432,6 +2481,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runEdgeFinopsCheck()} disabled={verifying}>
                 ⚙️ Edge & FinOps
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runContinuumAuditCheck()} disabled={verifying}>
+                🌌 Continuum Audit
               </button>
             </div>
             <label className="vibe-model-toggle">

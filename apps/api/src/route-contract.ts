@@ -20,6 +20,7 @@ export const API_ROUTE_INVENTORY = [
   'GET /v1/local-actions/runs',
   'GET /v1/evals/status',
   'GET /v1/edge/status',
+  'GET /v1/continuum/audit',
   'GET /v1/kernel/capabilities',
   'GET /v1/kernel/stats',
   'GET /v1/ecosystem/body',

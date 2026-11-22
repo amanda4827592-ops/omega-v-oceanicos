@@ -797,6 +797,27 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/FinOps Formula: "V = \(Outcome × Evidence\) − \(Cost \+ Risk\)"/i)).toBeInTheDocument();
   });
 
+  it('probes Layer 1-10 Continuum Audit and verifies unified ecosystem convergence', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const auditBtn = screen.getByRole('button', { name: /🌌 Continuum Audit/i });
+    expect(auditBtn).toBeInTheDocument();
+
+    await user.click(auditBtn);
+    expect(
+      await screen.findByText(
+        /ΔVRØ House Continuum Audit: Status CONVERGED \(10\/10 layers active\)\. Invariant: VERIFY\(ΔREALITY\)\./i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /10-layer full-stack AI ecosystem unified: Frontend \(:3000\) ⊕ Backend \(:5000\) ⊕ Compute \(:11434 ⊕ :8088\) ⊕ MicroVM Sandboxes ⊕ Vector Memory ⊕ MCP Connectors ⊕ WebRTC Streaming ⊕ KAI Shield ⊕ Evals Flywheel ⊕ Edge FinOps\./i
+      )
+    ).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
