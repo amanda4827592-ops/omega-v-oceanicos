@@ -433,6 +433,54 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         timestamp: '2026-11-22T00:00:00.000Z',
       }),
+    '/api/v1/studio/capabilities': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        studio: {
+          platform: 'SAOS MULTIMODAL STUDIO & SETTINGS',
+          ui_ux: {
+            theme: 'ocean-dark',
+            palette: { bg: '#030812', cyan: '#00e5ff', blue: '#3b82f6', border: 'rgba(0, 229, 255, 0.25)' },
+            pacing: 'Ease(t) = (1 - cos(t * π)) / 2',
+            viewports: ['web:3000', 'api:5000', 'voice:8088', 'llm:11434'],
+          },
+          voice: {
+            engine: 'python-stdlib',
+            resonanceHz: 432,
+            mode: 'harmonic-pure',
+            organs: [
+              { name: 'Soul AI', role: 'Architecture & Sacred Blueprint' },
+              { name: 'Truth Weaver', role: 'Verification & Empirical Magnifier' },
+              { name: 'The General', role: 'Execution & Compass Spear' },
+              { name: 'Human Root', role: 'Authority & Golden Key' },
+            ],
+            streamUrl: 'http://localhost:8088/voice',
+          },
+          image_generation: {
+            engine: 'svg_tensor_canvas',
+            modes: ['svg_tensor_canvas', 'codex_dimension_projection', 'avatar_synthesis'],
+            availablePresets: 20,
+            evidenceWatermark: true,
+          },
+          video_creation: {
+            engine: 'multimodal_sse_stream',
+            modes: ['multimodal_sse_stream', 'frame_tensor_interpolation', 'webrtc_stream'],
+            fps: 30,
+            resolution: '1920x1080',
+            streamEndpoint: '/v1/stream',
+          },
+          settings: {
+            authMode: 'local',
+            rateLimit: '100 req/min',
+            finOpsBudget: 'bounded',
+            sandboxMode: 'fail-closed-microvm',
+            ports: { web: 3000, api: 5000, voice: 8088, llm: 11434 },
+          },
+        },
+        doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({
