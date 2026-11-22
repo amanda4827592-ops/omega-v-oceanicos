@@ -492,7 +492,8 @@ test('an independent witness can match without writing KaiMemory', async () => {
     assert.equal(body.cycle.independentObservation, true);
     assert.match(body.cycle.deltaHash, /^[a-f0-9]{64}$/);
     assert.equal(body.upgrade.execution, 'NOT_EXECUTED');
-    assert.equal(body.upgrade.selected.evidenceHash, body.cycle.deltaHash);
+    assert.equal(body.upgrade.selected, null);
+    assert.equal(body.upgrade.cycleStatus, 'VERIFIED');
 
     const mismatched = await app.inject({
       method: 'POST',

@@ -293,10 +293,7 @@ export function registerExecuteRoute(
           deltaHash: cycle.deltaHash,
           independentObservation: true,
         },
-        upgrade: compressTowardUpgrade({
-          cycleStatus: 'VERIFIED',
-          evidenceHash: cycle.deltaHash,
-        }),
+        upgrade: compressTowardUpgrade({ cycleStatus: 'VERIFIED', evidenceHash: null }),
       });
     }
 
