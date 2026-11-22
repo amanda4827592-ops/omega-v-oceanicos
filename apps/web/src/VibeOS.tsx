@@ -1848,6 +1848,55 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runLocalActionsSandboxCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Autonomous Sandbox & Local Actions');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/local-actions'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success) {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/local-actions · HTTP ${response.status}`,
+        };
+      } else {
+        const enabled = Boolean(payload.enabled);
+        const actions = Array.isArray(payload.actions) ? payload.actions : [];
+        const reason = payload.reason ?? 'UNKNOWN';
+        result = {
+          role: 'ai',
+          content: enabled
+            ? `Autonomous Sandbox & Local Actions active: ${actions.length} action(s) available. Sandboxed runner enabled.`
+            : `Autonomous Sandbox & Local Runner observed: Status DISABLED (${reason}). Actions (${actions.length}) available. Sandboxed executions remain fail-closed until granted explicit local execution authority.`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/local-actions · Layer 4 MicroVM Sandboxes & Bounded Execution boundary.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/local-actions unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const empty = messages.length === 0 && !verifying;
 
   return (
@@ -2230,6 +2279,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealityVectorCheck()} disabled={verifying}>
                 📡 Reality Vector
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runLocalActionsSandboxCheck()} disabled={verifying}>
+                🛠️ Sandbox Actions
               </button>
             </div>
             <label className="vibe-model-toggle">
