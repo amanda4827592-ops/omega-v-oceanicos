@@ -39,6 +39,15 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
     status?: string;
     loading?: boolean;
   }>({});
+  const [pipelineExecutionState, setPipelineExecutionState] = useState<{
+    executionId?: string;
+    bundleSeal?: string;
+    totalStages?: number;
+    completedStages?: number;
+    artifacts?: Record<string, any>;
+    status?: string;
+    loading?: boolean;
+  }>({});
 
   const apiUrl = (path: string) => {
     const base = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -161,6 +170,40 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
       }
     } catch {
       setOrchestrationState({ loading: false });
+    }
+  };
+
+  const handleExecuteLivePipeline = async () => {
+    setPipelineExecutionState({ loading: true });
+    try {
+      const response = await fetch(apiUrl('/v1/reality/pipeline/execute'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          pipelineId: 'live-continuum-runner',
+          stages: [
+            { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432 } },
+            { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20 } },
+            { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
+          ],
+        }),
+      });
+      const data = await response.json();
+      if (data?.success && data?.execution) {
+        setPipelineExecutionState({
+          executionId: data.execution.executionId,
+          bundleSeal: data.execution.bundleSeal,
+          totalStages: data.execution.totalStages,
+          completedStages: data.execution.completedStages,
+          artifacts: data.execution.artifacts,
+          status: data.status,
+          loading: false,
+        });
+      } else {
+        setPipelineExecutionState({ loading: false });
+      }
+    } catch {
+      setPipelineExecutionState({ loading: false });
     }
   };
 
@@ -500,6 +543,30 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     <span>Pipeline ID: <strong>{orchestrationState.orchestrationId}</strong></span>
                     <span>Stages: <strong>{orchestrationState.completedStages}/{orchestrationState.totalStages} VERIFIED</strong></span>
                     <span>Chain Seal: <strong>{(orchestrationState.chainSeal || '').slice(0, 16)}…</strong></span>
+                  </div>
+                )}
+              </div>
+              <div className="studio-card" style={{ marginTop: '1rem', width: '100%', borderColor: '#10b981' }}>
+                <h4>⚡ Autonomous Live Execution Engine</h4>
+                <p style={{ margin: '0.25rem 0 0.75rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+                  Execute the 3-stage continuum live across ports 8088, 5000, and tensor kernels with intermediate output bundles.
+                </p>
+                <button
+                  type="button"
+                  className="freq-btn"
+                  style={{ width: '100%', borderColor: '#10b981', color: '#34d399' }}
+                  onClick={handleExecuteLivePipeline}
+                  disabled={pipelineExecutionState.loading}
+                >
+                  {pipelineExecutionState.loading
+                    ? '⏳ Executing Live Continuum Across House...'
+                    : '⚡ Execute Real-Time Live Pipeline (Audio ⊕ SVG ⊕ DAV)'}
+                </button>
+                {pipelineExecutionState.bundleSeal && (
+                  <div className="canvas-meta" style={{ marginTop: '0.75rem' }}>
+                    <span>Execution ID: <strong>{pipelineExecutionState.executionId}</strong></span>
+                    <span>Progress: <strong>{pipelineExecutionState.completedStages}/{pipelineExecutionState.totalStages} STAGES COMPLETED</strong></span>
+                    <span>Bundle Seal: <strong>{(pipelineExecutionState.bundleSeal || '').slice(0, 16)}…</strong></span>
                   </div>
                 )}
               </div>

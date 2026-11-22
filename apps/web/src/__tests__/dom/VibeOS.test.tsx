@@ -1692,5 +1692,44 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/SOVEREIGN_ORCHESTRATION/i)).toBeInTheDocument();
     expect(screen.getByText(/f49c01de2bc14a58/i)).toBeInTheDocument();
   });
+
+  it('executes live continuum pipeline across house and verifies multi-artifact bundle seal', async () => {
+    installFetch({
+      '/api/v1/reality/pipeline/execute': () =>
+        json({
+          success: true,
+          status: 'VERIFIED',
+          execution: {
+            executionId: 'exec-8b29c1da40',
+            totalStages: 3,
+            completedStages: 3,
+            bundleSeal: '8b29c1da40f73b1a8d92ef0182c19a4e761042df98c1a2e389b41a7d6e5201c4',
+            stages: [
+              { stageIndex: 0, toolId: 'tool-voice-acoustic', executionStatus: 'VERIFIED', artifactSummary: 'Harmonic 432Hz sine PCM waveform synthesized' },
+              { stageIndex: 1, toolId: 'tool-svg-tensor-canvas', executionStatus: 'VERIFIED', artifactSummary: 'Deterministic SVG Canvas 4x4x4x4 projected' },
+              { stageIndex: 2, toolId: 'tool-dav-tensor-validator', executionStatus: 'VERIFIED', artifactSummary: 'DAV Hypercube Checksum 57,344 verified' },
+            ],
+            artifacts: {
+              voice: { frequencyHz: 432, status: 'VERIFIED' },
+              svg: { checksum: 57344, status: 'VERIFIED' },
+              tensor: { checksum: 57344, invariant: 'VERIFIED' },
+            },
+            authority: 'SOVEREIGN_LIVE_EXECUTION',
+            doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+          },
+          timestamp: '2026-11-22T00:00:00.000Z',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const execBtn = screen.getByRole('button', { name: /⚡ Execute Pipeline/i });
+    expect(execBtn).toBeInTheDocument();
+
+    await user.click(execBtn);
+    expect(await screen.findByText(/Reality Continuum Pipeline Executed: 3\/3 stages completed/i)).toBeInTheDocument();
+    expect(screen.getByText(/SOVEREIGN_LIVE_EXECUTION/i)).toBeInTheDocument();
+    expect(screen.getByText(/8b29c1da40f73b1a/i)).toBeInTheDocument();
+  });
 });
 

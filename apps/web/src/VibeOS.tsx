@@ -2333,6 +2333,61 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runRealityPipelineExecuteCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Execute Reality Continuum Pipeline');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/reality/pipeline/execute'), {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', accept: 'application/json' },
+        body: JSON.stringify({
+          pipelineId: 'live-continuum-runner',
+          stages: [
+            { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432 } },
+            { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20 } },
+            { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
+          ],
+        }),
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.execution !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `POST /v1/reality/pipeline/execute · HTTP ${response.status}`,
+        };
+      } else {
+        const e = payload.execution;
+        result = {
+          role: 'ai',
+          content: `⚡ Reality Continuum Pipeline Executed: ${e.completedStages}/${e.totalStages} stages completed. Execution ID: ${e.executionId}. Bundle Seal: ${(e.bundleSeal || '').slice(0, 16)}… Authority: ${e.authority}. Doctrine: "${e.doctrine}".`,
+          verified: true,
+          status: 'VERIFIED',
+          engine: 'reality-pipeline-executor',
+          detail: `POST /v1/reality/pipeline/execute · Live multi-tool execution verified across house.`,
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `POST /v1/reality/pipeline/execute unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -2948,6 +3003,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealityOrchestrationCheck()} disabled={verifying}>
                 🧬 Orchestrate Reality
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runRealityPipelineExecuteCheck()} disabled={verifying}>
+                ⚡ Execute Pipeline
               </button>
             </div>
             <label className="vibe-model-toggle">
