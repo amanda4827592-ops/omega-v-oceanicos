@@ -108,6 +108,9 @@ This documentation set is intentionally explicit about what is implemented, what
   — human authority stays with the person; the skill does not grant it.
 - **[Unified Entity DAV](../skills/unified-entity-dav/SKILL.md)**
   — the tensor method for the entity surface already in this repository.
+- **[Ω∞v entity full stack](../skills/omega-entity-full-stack/SKILL.md)**
+  — evidence-bound intent, continuity, repository work, and one finite next Δ.
+  The file is the contract. It is not evidence that a session loaded it.
 - **[Whole ecosystem reality compression](./upgrades/WHOLE_ECOSYSTEM_REALITY_COMPRESSION_2026-10-04.md)**
   — source-labeled translation of the supplied Ω∞v architecture into repository
   boundaries and explicit unknowns.
