@@ -724,6 +724,27 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Active Ports: Frontend \(:3000\), Spine \(:5000\), Brain \(:11434\), Muscle \(:8088\)/i)).toBeInTheDocument();
   });
 
+  it('observes Autonomous Sandbox & Local Actions and displays fail-closed execution boundary', async () => {
+    installFetch({
+      '/api/v1/local-actions': () =>
+        json({
+          success: true,
+          enabled: false,
+          actions: [],
+          reason: 'LOCAL_RUNNER_DISABLED',
+        }),
+    });
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const sandboxBtn = screen.getByRole('button', { name: /🛠️ Sandbox Actions/i });
+    expect(sandboxBtn).toBeInTheDocument();
+
+    await user.click(sandboxBtn);
+    expect(await screen.findByText(/Autonomous Sandbox & Local Runner observed: Status DISABLED \(LOCAL_RUNNER_DISABLED\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Sandboxed executions remain fail-closed until granted explicit local execution authority/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
