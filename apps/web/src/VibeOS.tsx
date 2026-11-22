@@ -1897,6 +1897,57 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runEvalsFlywheelCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Inspect Evals Flywheel & Benchmark Suite');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/evals/status'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.evals !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/evals/status · HTTP ${response.status}`,
+        };
+      } else {
+        const e = payload.evals;
+        const domTests = typeof e.domTests === 'number' ? e.domTests : 0;
+        const domSuites = typeof e.domSuites === 'number' ? e.domSuites : 0;
+        const integrationSuites = typeof e.integrationSuites === 'number' ? e.integrationSuites : 0;
+        const swarmReceipts = typeof e.swarmReceipts === 'number' ? e.swarmReceipts : 0;
+        const swarmProtocol = e.swarmProtocol ?? 'UNKNOWN';
+        const failClosed = e.failClosedGating ?? 'UNKNOWN';
+        result = {
+          role: 'ai',
+          content: `Layer 9 Evals Flywheel observed: ${domTests} DOM tests across ${domSuites} suites · ${integrationSuites} integration suites · ${swarmReceipts} swarm receipts (Protocol: ${swarmProtocol}) · Fail-Closed Gating: ${failClosed} · Doctrine: "${payload.doctrine}".`,
+          verified: false,
+          status: 'OBSERVED',
+          detail: 'GET /v1/evals/status · Layer 9 Automated Evals & Data Flywheel; test counts are runtime telemetry, not proof of passing.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/evals/status unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runRealtimeStreamTelemetryCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe Real-Time Streaming Pipeline');
@@ -2325,6 +2376,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealtimeStreamTelemetryCheck()} disabled={verifying}>
                 🌊 Real-Time Stream
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runEvalsFlywheelCheck()} disabled={verifying}>
+                📊 Evals Flywheel
               </button>
             </div>
             <label className="vibe-model-toggle">

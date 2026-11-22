@@ -267,6 +267,24 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
       text: async () => 'data: {"event":"TIP","block":{"index":0}}\n\n',
       json: async () => ({ event: 'TIP' }),
     }),
+    '/api/v1/evals/status': () =>
+      json({
+        success: true,
+        status: 'OBSERVED',
+        layer: 'Layer 9: Automated Evals & Data Flywheel',
+        evals: {
+          domSuites: 6,
+          domTests: 69,
+          integrationSuites: 49,
+          swarmReceipts: 92,
+          swarmProtocol: 'VERIFIED',
+          failClosedGating: 'ACTIVE',
+          evidenceBoundary: 'EVALS_ARE_GATES_NOT_GUARANTEES',
+        },
+        provenance: 'Vitest/Jest DOM test harness + Node test runner + scripts/validate-swarm-ledger.mjs',
+        doctrine: "ATTEST, DON'T ASSERT. Zero regression tolerance.",
+        timestamp: '2026-11-22T00:00:00.000Z',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({

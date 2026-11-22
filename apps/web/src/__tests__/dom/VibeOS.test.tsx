@@ -762,6 +762,24 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/Streaming tokens and block events flowing across Layer 7 pipeline/i)).toBeInTheDocument();
   });
 
+  it('observes Layer 9 Evals Flywheel and displays benchmark suite telemetry', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const evalsBtn = screen.getByRole('button', { name: /📊 Evals Flywheel/i });
+    expect(evalsBtn).toBeInTheDocument();
+
+    await user.click(evalsBtn);
+    expect(
+      await screen.findByText(
+        /Layer 9 Evals Flywheel observed: 69 DOM tests across 6 suites/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/49 integration suites/i)).toBeInTheDocument();
+    expect(screen.getByText(/92 swarm receipts/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>

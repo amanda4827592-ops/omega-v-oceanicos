@@ -35,6 +35,7 @@ import { KaiMemoryStore } from './kai-memory.js';
 import { registerExecuteRoute } from './execute-route.js';
 import { registerTensorDavRoutes } from './tensor-dav-route.js';
 import { registerLocalActionsStatusRoutes } from './local-actions-status-route.js';
+import { registerEvalsStatusRoutes } from './evals-status-route.js';
 import { scanIntent } from './invisible-computer.js';
 import {
   ENCRYPTION_ALGORITHM,
@@ -286,6 +287,7 @@ export function createApp(
     };
   });
   registerLocalActionsStatusRoutes(fastify);
+  registerEvalsStatusRoutes(fastify);
 
   fastify.register(async (scope) => {
     await scope.register(rateLimit, { global: false });
@@ -435,23 +437,23 @@ export function createApp(
       },
       compression: compression.status === 'COMPRESSED'
         ? {
-            space: compression.body.space,
-            projection: 'body.layers.v1',
-            projectionBoundary: 'coordinates are a declared projection of each runtime layer, not inferred truth',
-            count: compression.body.count,
-            filled: compression.body.filled,
-            empty: compression.body.empty,
-            digest: compression.body.digest,
-            cells: compression.body.cells.map((cell) => ({
-              address: cell.address,
-              key: cell.key,
-              digest: cell.digest,
-              entries: cell.entries,
-            })),
-            expansion: expansion && expansion.status === 'EXPANDED'
-              ? { status: 'VERIFIED', entries: expansion.entries.length, digestMatches: true, lossless: true, evidence: expansion.evidence }
-              : { status: 'INVALID', entries: 0, digestMatches: false, lossless: false, evidence: 'LOCAL_ROUND_TRIP_ONLY', issues: expansion?.issues ?? [] },
-          }
+          space: compression.body.space,
+          projection: 'body.layers.v1',
+          projectionBoundary: 'coordinates are a declared projection of each runtime layer, not inferred truth',
+          count: compression.body.count,
+          filled: compression.body.filled,
+          empty: compression.body.empty,
+          digest: compression.body.digest,
+          cells: compression.body.cells.map((cell) => ({
+            address: cell.address,
+            key: cell.key,
+            digest: cell.digest,
+            entries: cell.entries,
+          })),
+          expansion: expansion && expansion.status === 'EXPANDED'
+            ? { status: 'VERIFIED', entries: expansion.entries.length, digestMatches: true, lossless: true, evidence: expansion.evidence }
+            : { status: 'INVALID', entries: 0, digestMatches: false, lossless: false, evidence: 'LOCAL_ROUND_TRIP_ONLY', issues: expansion?.issues ?? [] },
+        }
         : { status: 'INVALID', issues: compression.issues },
     };
   });
@@ -746,9 +748,9 @@ export function createApp(
         : 'UNAVAILABLE' as const;
     const change = callerMatchedRecord
       ? {
-          ...verification.record,
-          consequence: `${verification.record.consequence ?? 'transition executed'}; caller-supplied state matched the executor record; not independently verified`,
-        }
+        ...verification.record,
+        consequence: `${verification.record.consequence ?? 'transition executed'}; caller-supplied state matched the executor record; not independently verified`,
+      }
       : verification.record;
     const nextAction = callerMatchedRecord
       ? 'caller-supplied state matched the executor record; this is a comparison, not independent verification'
