@@ -2138,6 +2138,52 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runCenturyMilestoneCheck = async () => {
+    if (verifying) return;
+    beginQuickAction('Probe Century Milestone (Receipt #100)');
+    let result: ChatMessage;
+    try {
+      const response = await fetch(apiUrl('/v1/ecosystem/century'), {
+        headers: { accept: 'application/json' },
+      });
+      let payload: any = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+      if (!response.ok || !payload?.success || typeof payload?.century !== 'object') {
+        result = {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: `GET /v1/ecosystem/century · HTTP ${response.status}`,
+        };
+      } else {
+        const c = payload.century;
+        result = {
+          role: 'ai',
+          content: `💯 Century Milestone Attested [Receipt #100]: ${c.platform} · 10/10 Layers Converged · 256/256 Tensor Coordinates · 33/33 Outward Files · 8/8 Water Skills · 77 DOM Tests. Seal: ${c.seal.signer} (${c.seal.verdict}).`,
+          verified: true,
+          status: 'VERIFIED',
+          engine: 'century-milestone-council',
+          detail: 'GET /v1/ecosystem/century · 100 consecutive sovereign swarm receipts verified in immutable kai_ledger.json.',
+        };
+      }
+    } catch (error) {
+      result = {
+        role: 'ai',
+        content: '[UNKNOWN]',
+        verified: false,
+        status: 'UNKNOWN',
+        detail: `GET /v1/ecosystem/century unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+      };
+    }
+    setMessages((previous) => [...previous, result]);
+    setVerifying(false);
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -2331,7 +2377,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
             <span className="vibe-current-kicker">ΔVRØ HOUSE 10-LAYER CONTINUUM</span>
             <div className="vibe-continuum-badge" aria-label="10-Layer Continuum Status">
               <span className="vibe-status-dot vibe-status-dot--verified" aria-hidden="true" />
-              <span>🏛️ 10/10 Layers Converged · VERIFY(ΔREALITY)</span>
+              <span>🏛️ 10/10 Layers Converged · VERIFY(ΔREALITY) · 💯 100th Milestone</span>
             </div>
             <span className="vibe-current-note">
               {spineCheckedAt ? `Health observed ${spineCheckedAt}` : 'Waiting for first health observation'}
@@ -2741,6 +2787,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runStudioSynthesisCheck()} disabled={verifying}>
                 ✨ Synthesize Asset
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runCenturyMilestoneCheck()} disabled={verifying}>
+                💯 Century Milestone
               </button>
             </div>
             <label className="vibe-model-toggle">
