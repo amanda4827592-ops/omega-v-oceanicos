@@ -780,6 +780,23 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/92 swarm receipts/i)).toBeInTheDocument();
   });
 
+  it('observes Layer 10 Edge & FinOps and displays infrastructure telemetry', async () => {
+    installFetch();
+    const user = userEvent.setup();
+    render(<VibeOS />);
+
+    const edgeBtn = screen.getByRole('button', { name: /⚙️ Edge & FinOps/i });
+    expect(edgeBtn).toBeInTheDocument();
+
+    await user.click(edgeBtn);
+    expect(
+      await screen.findByText(
+        /Layer 10 Edge & FinOps observed: Semantic Cache ACTIVE \(local-memory-fallback\) · Rate Limiting ACTIVE · Offline Sync ACTIVE/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/FinOps Formula: "V = \(Outcome × Evidence\) − \(Cost \+ Risk\)"/i)).toBeInTheDocument();
+  });
+
   it('observes Value Navigator Proposals and displays journal hash-chain integrity', async () => {
     installFetch({
       '/api/v1/value-navigator/proposals': () =>
