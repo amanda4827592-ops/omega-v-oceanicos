@@ -2388,6 +2388,67 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     setVerifying(false);
   };
 
+  const runPipelineCanvasStream = async () => {
+    if (verifying) return;
+    beginQuickAction('Subscribe pipeline canvas');
+    if (typeof EventSource === 'undefined') {
+      setMessages((previous) => [
+        ...previous,
+        {
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: 'EventSource is not available in this runtime',
+        },
+      ]);
+      setVerifying(false);
+      return;
+    }
+    await new Promise<void>((resolve) => {
+      const source = new EventSource(apiUrl('/v1/reality/pipeline/stream'));
+      let frames = 0;
+      let settled = false;
+      const finish = (message: ChatMessage) => {
+        if (settled) return;
+        settled = true;
+        source.close();
+        setMessages((previous) => [...previous, message]);
+        setVerifying(false);
+        resolve();
+      };
+      source.addEventListener('frame', () => {
+        frames += 1;
+      });
+      source.addEventListener('seal', (event) => {
+        let data: { frames?: number; nominalFps?: number; continuous?: boolean; bundleSeal?: string; status?: string } = {};
+        try {
+          data = JSON.parse((event as MessageEvent).data);
+        } catch {
+          data = {};
+        }
+        const bounded = data.continuous === false && data.status === 'VERIFIED' && frames === data.frames;
+        finish({
+          role: 'ai',
+          content: `Pipeline canvas subscribed: ${frames}/${data.frames ?? 0} frames at nominal ${data.nominalFps ?? 0}fps. Continuous: ${String(data.continuous)}. Not a continuous camera. Bundle ${(data.bundleSeal || '').slice(0, 16)}…`,
+          verified: bounded,
+          status: bounded ? 'VERIFIED' : 'UNKNOWN',
+          engine: 'reality-pipeline-stream',
+          detail: 'GET /v1/reality/pipeline/stream · bounded EventSource sample, not a continuous camera',
+        });
+      });
+      source.onerror = () => {
+        finish({
+          role: 'ai',
+          content: '[UNKNOWN]',
+          verified: false,
+          status: 'UNKNOWN',
+          detail: 'GET /v1/reality/pipeline/stream closed before a seal',
+        });
+      };
+    });
+  };
+
   const runSaosFlowCheck = async () => {
     if (verifying) return;
     beginQuickAction('Probe SAOS Entity & House Flow');
@@ -3006,6 +3067,9 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
               </button>
               <button type="button" className="vibe-action" onClick={() => void runRealityPipelineExecuteCheck()} disabled={verifying}>
                 ⚡ Execute Pipeline
+              </button>
+              <button type="button" className="vibe-action" onClick={() => void runPipelineCanvasStream()} disabled={verifying}>
+                Subscribe pipeline canvas
               </button>
             </div>
             <label className="vibe-model-toggle">

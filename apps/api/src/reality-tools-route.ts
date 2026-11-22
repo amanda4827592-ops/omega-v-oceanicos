@@ -22,6 +22,195 @@ export interface RealityPipelineExecuteBody {
   failFast?: boolean;
 }
 
+const DEFAULT_LIVE_STAGES: RealityOrchestrationStage[] = [
+  { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432, organ: 'Soul AI' } },
+  { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20, preset: 4 } },
+  { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
+];
+
+const REGISTERED_REALITY_TOOLS = [
+  'tool-microvm-sandbox',
+  'tool-mcp-connectors',
+  'tool-ollama-neural',
+  'tool-voice-acoustic',
+  'tool-svg-tensor-canvas',
+  'tool-sse-video-stream',
+  'tool-dav-tensor-validator',
+  'tool-kai-immutable-ledger',
+];
+
+export const PIPELINE_STREAM_FRAMES = 8;
+export const PIPELINE_STREAM_NOMINAL_FPS = 30;
+
+type PipelineStageReceipt = {
+  stageIndex: number;
+  toolId: string;
+  executionStatus: 'VERIFIED';
+  artifactSummary: string;
+  stageSeal: string;
+};
+
+export type PipelineRun =
+  | {
+      ok: true;
+      execution: {
+        executionId: string;
+        totalStages: number;
+        completedStages: number;
+        bundleSeal: string;
+        stages: PipelineStageReceipt[];
+        artifacts: Record<string, unknown>;
+        authority: 'SOVEREIGN_LIVE_EXECUTION';
+        doctrine: string;
+      };
+    }
+  | {
+      ok: false;
+      status: 'UNKNOWN';
+      error: string;
+      unregisteredTool?: string;
+      completedStages: number;
+    };
+
+export function runRealityPipeline(pipelineId: string, rawStages: RealityOrchestrationStage[]): PipelineRun {
+  const executedStages: PipelineStageReceipt[] = [];
+  const artifacts: Record<string, unknown> = {};
+  let bundleHash = createHash('sha256').update(pipelineId || 'live-continuum', 'utf8').digest('hex');
+
+  for (let i = 0; i < rawStages.length; i++) {
+    const stage = rawStages[i];
+    const toolId = typeof stage?.toolId === 'string' ? stage.toolId.trim() : '';
+
+    if (!REGISTERED_REALITY_TOOLS.includes(toolId)) {
+      return {
+        ok: false,
+        status: 'UNKNOWN',
+        error: `Live execution halted at stage ${i}: tool "${toolId}" is unobserved or unregistered.`,
+        unregisteredTool: toolId,
+        completedStages: i,
+      };
+    }
+
+    let artifactSummary = '';
+    if (toolId === 'tool-voice-acoustic') {
+      const freq = typeof stage.params?.frequencyHz === 'number' ? stage.params.frequencyHz : 432;
+      artifactSummary = `Harmonic sine waveform synthesized at ${freq}Hz with 44.1kHz PCM encoding`;
+      artifacts.voice = {
+        frequencyHz: freq,
+        resonance: 'harmonic-pure-sine',
+        sampleRate: 44100,
+        status: 'VERIFIED',
+      };
+    } else if (toolId === 'tool-svg-tensor-canvas') {
+      artifactSummary = 'Deterministic SVG Canvas rendered with 4x4x4x4 lossless 256-cell projection';
+      artifacts.svg = {
+        viewBox: '0 0 400 200',
+        checksum: 57344,
+        status: 'VERIFIED',
+      };
+    } else if (toolId === 'tool-dav-tensor-validator') {
+      const size = typeof stage.params?.size === 'number' ? stage.params.size : 8;
+      const checksum = 2 * Math.pow(size, 4) * (size - 1);
+      if (checksum !== 57344) {
+        return {
+          ok: false,
+          status: 'UNKNOWN',
+          error: `Live execution halted at stage ${i}: DAV invariant diverged for N=${size} (observed checksum ${checksum}, expected 57344).`,
+          completedStages: i,
+        };
+      }
+      artifactSummary = `DAV Hypercube invariant verified: N=${size} Checksum ≡ ${checksum}`;
+      artifacts.tensor = {
+        size,
+        checksum,
+        invariant: 'VERIFIED',
+      };
+    } else {
+      artifactSummary = `Deterministic sandbox execution completed for ${toolId}`;
+      artifacts[toolId] = { status: 'VERIFIED', executedAt: new Date().toISOString() };
+    }
+
+    const stageSeed = `${i}:${toolId}:${artifactSummary}:${bundleHash}`;
+    const stageSeal = createHash('sha256').update(stageSeed, 'utf8').digest('hex');
+    bundleHash = createHash('sha256').update(`${bundleHash}:${stageSeal}`, 'utf8').digest('hex');
+    executedStages.push({
+      stageIndex: i,
+      toolId,
+      executionStatus: 'VERIFIED',
+      artifactSummary,
+      stageSeal,
+    });
+  }
+
+  return {
+    ok: true,
+    execution: {
+      executionId: `exec-${bundleHash.slice(0, 10)}`,
+      totalStages: rawStages.length,
+      completedStages: executedStages.length,
+      bundleSeal: bundleHash,
+      stages: executedStages,
+      artifacts,
+      authority: 'SOVEREIGN_LIVE_EXECUTION',
+      doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
+    },
+  };
+}
+
+export function buildPipelineEventStream(): { status: number; contentType: string; body: string } {
+  const ran = runRealityPipeline('live-continuum-stream', DEFAULT_LIVE_STAGES);
+  if (!ran.ok) {
+    return {
+      status: 200,
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify({
+        success: false,
+        status: 'UNKNOWN',
+        error: ran.error,
+        completedStages: ran.completedStages,
+      }),
+    };
+  }
+
+  const frames = Array.from({ length: PIPELINE_STREAM_FRAMES }, (_, frameIndex) => {
+    const digest = createHash('sha256')
+      .update(`${ran.execution.bundleSeal}:frame:${frameIndex}`, 'utf8')
+      .digest('hex');
+    return {
+      frameIndex,
+      nominalFps: PIPELINE_STREAM_NOMINAL_FPS,
+      offsetMs: Math.round((frameIndex * 1000) / PIPELINE_STREAM_NOMINAL_FPS),
+      width: 64,
+      height: 36,
+      continuous: false,
+      digest,
+    };
+  });
+  const frameDigest = createHash('sha256')
+    .update(frames.map((frame) => frame.digest).join(':'), 'utf8')
+    .digest('hex');
+  const chunks = [
+    `event: open\ndata: ${JSON.stringify({
+      executionId: ran.execution.executionId,
+      bundleSeal: ran.execution.bundleSeal,
+      nominalFps: PIPELINE_STREAM_NOMINAL_FPS,
+      frames: PIPELINE_STREAM_FRAMES,
+      continuous: false,
+    })}\n\n`,
+    ...ran.execution.stages.map((stage) => `event: stage\ndata: ${JSON.stringify(stage)}\n\n`),
+    ...frames.map((frame) => `event: frame\ndata: ${JSON.stringify(frame)}\n\n`),
+    `event: seal\ndata: ${JSON.stringify({
+      bundleSeal: ran.execution.bundleSeal,
+      frameDigest,
+      frames: PIPELINE_STREAM_FRAMES,
+      nominalFps: PIPELINE_STREAM_NOMINAL_FPS,
+      continuous: false,
+      status: 'VERIFIED',
+    })}\n\n`,
+  ];
+  return { status: 200, contentType: 'text/event-stream', body: chunks.join('') };
+}
+
 /**
  * Sovereign Reality Tools Gateway Route.
  * Provides unified, attested registry and execution gateway for all tools of reality
@@ -273,112 +462,32 @@ export function registerRealityToolsRoutes(fastify: FastifyInstance): void {
     };
   });
 
-  fastify.post<{ Body: RealityPipelineExecuteBody }>('/v1/reality/pipeline/execute', async (request, reply) => {
+  fastify.post<{ Body: RealityPipelineExecuteBody }>('/v1/reality/pipeline/execute', async (request) => {
     const rawStages = Array.isArray(request.body?.stages) && request.body.stages.length > 0
       ? request.body.stages
-      : [
-          { toolId: 'tool-voice-acoustic', params: { frequencyHz: 432, organ: 'Soul AI' } },
-          { toolId: 'tool-svg-tensor-canvas', params: { dimensions: 20, preset: 4 } },
-          { toolId: 'tool-dav-tensor-validator', params: { size: 8 } },
-        ];
-
-    const registeredTools = [
-      'tool-microvm-sandbox',
-      'tool-mcp-connectors',
-      'tool-ollama-neural',
-      'tool-voice-acoustic',
-      'tool-svg-tensor-canvas',
-      'tool-sse-video-stream',
-      'tool-dav-tensor-validator',
-      'tool-kai-immutable-ledger',
-    ];
-
-    const executedStages = [];
-    const artifacts: Record<string, unknown> = {};
-    let bundleHash = createHash('sha256').update(request.body?.pipelineId || 'live-continuum', 'utf8').digest('hex');
-
-    for (let i = 0; i < rawStages.length; i++) {
-      const stage = rawStages[i];
-      const toolId = typeof stage?.toolId === 'string' ? stage.toolId.trim() : '';
-
-      if (!registeredTools.includes(toolId)) {
-        return {
-          success: false,
-          status: 'UNKNOWN',
-          error: `Live execution halted at stage ${i}: tool "${toolId}" is unobserved or unregistered.`,
-          unregisteredTool: toolId,
-          completedStages: i,
-        };
-      }
-
-      let artifactSummary = '';
-      if (toolId === 'tool-voice-acoustic') {
-        const freq = typeof stage.params?.frequencyHz === 'number' ? stage.params.frequencyHz : 432;
-        artifactSummary = `Harmonic sine waveform synthesized at ${freq}Hz with 44.1kHz PCM encoding`;
-        artifacts.voice = {
-          frequencyHz: freq,
-          resonance: 'harmonic-pure-sine',
-          sampleRate: 44100,
-          status: 'VERIFIED',
-        };
-      } else if (toolId === 'tool-svg-tensor-canvas') {
-        artifactSummary = 'Deterministic SVG Canvas rendered with 4x4x4x4 lossless 256-cell projection';
-        artifacts.svg = {
-          viewBox: '0 0 400 200',
-          checksum: 57344,
-          status: 'VERIFIED',
-        };
-      } else if (toolId === 'tool-dav-tensor-validator') {
-        const size = typeof stage.params?.size === 'number' ? stage.params.size : 8;
-        const checksum = 2 * Math.pow(size, 4) * (size - 1);
-        if (checksum !== 57344) {
-          return {
-            success: false,
-            status: 'UNKNOWN',
-            error: `Live execution halted at stage ${i}: DAV invariant diverged for N=${size} (observed checksum ${checksum}, expected 57344).`,
-            completedStages: i,
-          };
-        }
-        artifactSummary = `DAV Hypercube invariant verified: N=${size} Checksum ≡ ${checksum}`;
-        artifacts.tensor = {
-          size,
-          checksum,
-          invariant: checksum === 57344 ? 'VERIFIED' : 'UNKNOWN',
-        };
-      } else {
-        artifactSummary = `Deterministic sandbox execution completed for ${toolId}`;
-        artifacts[toolId] = { status: 'VERIFIED', executedAt: new Date().toISOString() };
-      }
-
-      const stageSeed = `${i}:${toolId}:${artifactSummary}:${bundleHash}`;
-      const stageSeal = createHash('sha256').update(stageSeed, 'utf8').digest('hex');
-      bundleHash = createHash('sha256').update(`${bundleHash}:${stageSeal}`, 'utf8').digest('hex');
-
-      executedStages.push({
-        stageIndex: i,
-        toolId,
-        executionStatus: 'VERIFIED',
-        artifactSummary,
-        stageSeal,
-      });
+      : DEFAULT_LIVE_STAGES;
+    const ran = runRealityPipeline(request.body?.pipelineId || 'live-continuum', rawStages);
+    if (!ran.ok) {
+      return {
+        success: false,
+        status: ran.status,
+        error: ran.error,
+        ...(ran.unregisteredTool ? { unregisteredTool: ran.unregisteredTool } : {}),
+        completedStages: ran.completedStages,
+      };
     }
-
-    const executionId = `exec-${bundleHash.slice(0, 10)}`;
-
     return {
       success: true,
       status: 'VERIFIED',
-      execution: {
-        executionId,
-        totalStages: rawStages.length,
-        completedStages: executedStages.length,
-        bundleSeal: bundleHash,
-        stages: executedStages,
-        artifacts,
-        authority: 'SOVEREIGN_LIVE_EXECUTION',
-        doctrine: "ATTEST, DON'T ASSERT. Expected ≡ Observed. Reality remains the final authority.",
-      },
+      execution: ran.execution,
       timestamp: new Date().toISOString(),
     };
+  });
+
+  fastify.get('/v1/reality/pipeline/stream', async (_request, reply) => {
+    const stream = buildPipelineEventStream();
+    reply.header('Cache-Control', 'no-cache');
+    reply.type(stream.contentType);
+    return stream.body;
   });
 }

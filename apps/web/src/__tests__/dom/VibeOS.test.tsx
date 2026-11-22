@@ -1731,5 +1731,48 @@ describe('Vibe OS surface', () => {
     expect(screen.getByText(/SOVEREIGN_LIVE_EXECUTION/i)).toBeInTheDocument();
     expect(screen.getByText(/8b29c1da40f73b1a/i)).toBeInTheDocument();
   });
+
+  it('subscribes the pipeline canvas to a bounded EventSource sample', async () => {
+    const listeners = new Map<string, Array<(event: MessageEvent) => void>>();
+    class FakeEventSource {
+      url: string;
+      onerror: (() => void) | null = null;
+      constructor(url: string) {
+        this.url = url;
+        queueMicrotask(() => {
+          const emit = (type: string, data: unknown) => {
+            const event = { data: JSON.stringify(data) } as MessageEvent;
+            for (const listener of listeners.get(type) ?? []) listener(event);
+          };
+          emit('frame', { frameIndex: 0, nominalFps: 30, continuous: false });
+          emit('seal', {
+            frames: 1,
+            nominalFps: 30,
+            continuous: false,
+            bundleSeal: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            status: 'VERIFIED',
+          });
+        });
+      }
+      addEventListener(type: string, listener: (event: MessageEvent) => void) {
+        const list = listeners.get(type) ?? [];
+        list.push(listener);
+        listeners.set(type, list);
+      }
+      close() {}
+    }
+    const previous = globalThis.EventSource;
+    globalThis.EventSource = FakeEventSource as unknown as typeof EventSource;
+    try {
+      const user = userEvent.setup();
+      render(<VibeOS />);
+      await user.click(screen.getByRole('button', { name: /Subscribe pipeline canvas/i }));
+      expect(await screen.findByText(/Pipeline canvas subscribed: 1\/1 frames at nominal 30fps/i)).toBeInTheDocument();
+      expect(screen.getByText(/not a continuous camera/i)).toBeInTheDocument();
+      expect(screen.getByText(/aaaaaaaaaaaaaaaa/i)).toBeInTheDocument();
+    } finally {
+      globalThis.EventSource = previous;
+    }
+  });
 });
 

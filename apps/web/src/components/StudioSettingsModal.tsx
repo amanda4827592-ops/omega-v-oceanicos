@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './StudioSettingsModal.css';
 
 export type StudioTab = 'settings' | 'voice' | 'image' | 'video' | 'tools';
@@ -48,6 +48,10 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
     status?: string;
     loading?: boolean;
   }>({});
+  const [canvasFrames, setCanvasFrames] = useState(0);
+  const [canvasSeal, setCanvasSeal] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<EventSource | null>(null);
 
   const apiUrl = (path: string) => {
     const base = (import.meta as any).env?.VITE_API_URL || '/api';
@@ -207,12 +211,42 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
     }
   };
 
+  const subscribePipelineCanvas = () => {
+    streamRef.current?.close();
+    setCanvasFrames(0);
+    setCanvasSeal(null);
+    const source = new EventSource(apiUrl('/v1/reality/pipeline/stream'));
+    streamRef.current = source;
+    const paint = (index: number) => {
+      const canvas = canvasRef.current;
+      const context = canvas?.getContext('2d');
+      if (!context) return;
+      context.fillStyle = index % 2 === 0 ? '#0f766e' : '#134e4a';
+      context.fillRect(index * 36, 8, 28, 48);
+    };
+    source.addEventListener('frame', (event) => {
+      const frame = JSON.parse((event as MessageEvent).data) as { frameIndex?: number };
+      const index = typeof frame.frameIndex === 'number' ? frame.frameIndex : 0;
+      setCanvasFrames((count) => Math.max(count, index + 1));
+      paint(index);
+    });
+    source.addEventListener('seal', (event) => {
+      const seal = JSON.parse((event as MessageEvent).data) as { bundleSeal?: string };
+      setCanvasSeal(typeof seal.bundleSeal === 'string' ? seal.bundleSeal : null);
+      source.close();
+    });
+    source.onerror = () => source.close();
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      streamRef.current?.close();
+    };
   }, [onClose]);
 
   return (
@@ -569,6 +603,19 @@ export function StudioSettingsModal({ onClose }: StudioSettingsModalProps) {
                     <span>Bundle Seal: <strong>{(pipelineExecutionState.bundleSeal || '').slice(0, 16)}…</strong></span>
                   </div>
                 )}
+                <button
+                  type="button"
+                  className="freq-btn"
+                  style={{ width: '100%', marginTop: '0.75rem' }}
+                  onClick={subscribePipelineCanvas}
+                >
+                  Subscribe pipeline canvas
+                </button>
+                <canvas ref={canvasRef} width={320} height={64} aria-label="pipeline frame canvas" />
+                <p>
+                  Bounded 30fps sample · {canvasFrames}/8 frames
+                  {canvasSeal ? ` · ${(canvasSeal).slice(0, 16)}…` : ''} · not a continuous camera
+                </p>
               </div>
               {dispatchState.executionStatus && (
                 <div className="canvas-meta" style={{ marginTop: '1rem' }}>
