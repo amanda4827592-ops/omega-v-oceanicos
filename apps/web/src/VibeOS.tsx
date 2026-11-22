@@ -440,8 +440,17 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
     beginQuickAction('Probe Voice Bridge (432Hz)');
     let result: ChatMessage;
     try {
-      const voiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
-      const response = await fetch(voiceUrl, { headers: { accept: 'application/json' } });
+      const companionApiUrl = apiUrl('/v1/companion/voice');
+      const directVoiceUrl = (import.meta as any).env?.VITE_VOICE_URL || 'http://localhost:8088/voice';
+      let response: Response;
+      try {
+        response = await fetch(companionApiUrl, { headers: { accept: 'application/json' } });
+        if (!response.ok) {
+          response = await fetch(directVoiceUrl, { headers: { accept: 'application/json' } });
+        }
+      } catch {
+        response = await fetch(directVoiceUrl, { headers: { accept: 'application/json' } });
+      }
       let payload: any = null;
       try {
         payload = await response.json();
@@ -465,7 +474,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
           verified: true,
           status: 'VERIFIED',
           hash: payload.sha256,
-          detail: `GET /voice · SHA-256: ${payload.sha256}`,
+          detail: `GET /v1/companion/voice · SHA-256: ${payload.sha256}`,
         };
       }
     } catch (error) {
@@ -474,7 +483,7 @@ export function VibeOS({ onOpenDashboard, active = true }: { onOpenDashboard?: (
         content: '[UNKNOWN]',
         verified: false,
         status: 'UNKNOWN',
-        detail: `GET http://localhost:8088/voice unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
+        detail: `Voice Bridge unavailable${error instanceof Error ? ` · ${error.message}` : ''}`,
       };
     }
     setMessages((previous) => [...previous, result]);

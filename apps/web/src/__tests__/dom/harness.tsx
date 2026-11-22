@@ -237,6 +237,27 @@ export function installFetch(overrides: RouteOverrides = {}): jest.Mock {
         },
         sha256: '0e8c783c0d385e15681e6a6a784a0ee1c4f22b9c922122c36452341ad207a661',
       }),
+    '/api/v1/companion/voice': () =>
+      json({
+        success: true,
+        status: 'VERIFIED',
+        schema: 'omega.voice-bridge.v1',
+        rule: 'ONE_IDENTITY_RULE',
+        service: 'voice-bridge',
+        port: 8088,
+        organs: {
+          soul_ai: 'Architecture · Sacred Blueprint Hammer',
+          truth_weaver: 'Verification · KAI Shield & Empirical Magnifier',
+          the_general: 'Execution · Compass & Direction Spear',
+          human_root: 'Authority · The Golden Key',
+        },
+        resonance: {
+          frequencyHz: 432,
+          mode: 'harmonic-pure',
+          doctrine: "Attest, don't assert. Reality remains the final authority.",
+        },
+        sha256: '0e8c783c0d385e15681e6a6a784a0ee1c4f22b9c922122c36452341ad207a661',
+      }),
     '/api/state': () => json(stateBody),
     '/api/v1/omega/connectors/observations': () =>
       json({
