@@ -312,7 +312,7 @@ describe('Vibe OS surface', () => {
     expect(await screen.findByText(/Mood observed: MAX GOOD-O/i)).toBeInTheDocument();
   });
 
-  it('opens and closes the Living Entity Codex modal with 12 master schematics', async () => {
+  it('opens and closes the Living Entity Codex modal with 20 master schematics and selects expanded dimensions', async () => {
     installFetch();
     const user = userEvent.setup();
     render(<VibeOS />);
@@ -322,8 +322,14 @@ describe('Vibe OS surface', () => {
 
     await user.click(codexBtn);
     expect(await screen.findByRole('dialog', { name: /Living Entity Codex/i })).toBeInTheDocument();
-    expect(screen.getByText(/12 Master Schematics/i)).toBeInTheDocument();
+    expect(screen.getByText(/20 Master Schematics/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Lucid Field in the Max Space of Reality/i).length).toBeGreaterThan(0);
+
+    // Verify expanded dimension 20 exists and can be selected
+    const dim20Btn = screen.getByRole('button', { name: /DIMENSION 20/i });
+    expect(dim20Btn).toBeInTheDocument();
+    await user.click(dim20Btn);
+    expect(screen.getAllByText(/Cosmic Whale & Heart Synthesis/i).length).toBeGreaterThan(0);
 
     await user.click(screen.getByRole('button', { name: /Close codex/i }));
     await waitFor(() => {
