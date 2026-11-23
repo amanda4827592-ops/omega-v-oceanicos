@@ -22,6 +22,8 @@ services:
   api:
     image: node:22
     working_dir: /app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - .:/app
     # Start node --watch only after tsc's initial pass finished: emitting ~9 files
@@ -36,6 +38,10 @@ services:
       - OMEGA_AUTH_MODE=local
       - OMEGA_DB_PATH=/app/data/oceanicos.db
       - OMEGA_ALLOW_UNSIGNED_CYCLE=true
+      - OMEGA_COMPANION_URL=http://host.docker.internal:8088
+      - OMEGA_LLM_BASE_URL=http://omega-ollama:11434/v1
+      - OMEGA_LLM_PROVIDER=ollama
+      - OMEGA_LLM_MODEL=qwen2.5:0.5b
     env_file:
       - ./.env.base44-defaults
       - /run/base44/app.env
