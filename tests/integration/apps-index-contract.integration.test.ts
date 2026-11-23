@@ -44,13 +44,15 @@ test('documented app URLs and API proxy match source configuration', () => {
   assert.match(devServer, /Web dev server on http:\/\/localhost:3000/);
 });
 
-test('Base44 API gateway routes local companion and Ollama services', () => {
+test('Base44 keeps companion private and routes the API through local services', () => {
   const compose = read('docker-compose.base44.yml');
-  assert.match(compose, /host\.docker\.internal:host-gateway/);
-  assert.match(compose, /OMEGA_COMPANION_URL=http:\/\/host\.docker\.internal:8088/);
-  assert.match(compose, /OMEGA_LLM_BASE_URL=http:\/\/omega-ollama:11434\/v1/);
+  assert.match(compose, /image: python:3\.14-slim/);
+  assert.match(compose, /OMEGA_COMPANION_URL=http:\/\/companion:8088/);
+  assert.match(compose, /OMEGA_LLM_BASE_URL=http:\/\/ollama:11434\/v1/);
   assert.match(compose, /OMEGA_LLM_PROVIDER=ollama/);
   assert.match(compose, /OMEGA_LLM_MODEL=qwen2\.5:0\.5b/);
+  assert.match(compose, /127\.0\.0\.1:11434:11434/);
+  assert.doesNotMatch(compose, /ports:\s*\n\s+- ["']?8088:8088/);
 });
 
 test('documented root setup commands exist and stale setup claims stay out', () => {
